@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
-import { Cow } from 'lucide-react';
+import { Beef } from 'lucide-react';
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -68,7 +68,7 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-16 h-16 bg-green-600 rounded-full flex items-center justify-center">
-            <Cow className="h-8 w-8 text-white" />
+            <Beef className="h-8 w-8 text-white" />
           </div>
           <CardTitle className="text-2xl">TIWA Kilimo</CardTitle>
           <p className="text-gray-600">Dairy Farm Management</p>

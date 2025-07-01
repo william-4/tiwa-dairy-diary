@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Home, BookOpen, CheckSquare, DollarSign, LogOut, Cow } from 'lucide-react';
+import { Menu, Home, BookOpen, CheckSquare, DollarSign, LogOut, Beef } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -37,7 +37,7 @@ const MobileNavigation = () => {
           <div className="flex flex-col h-full">
             <div className="p-6 border-b">
               <div className="flex items-center gap-2">
-                <Cow className="h-8 w-8 text-green-600" />
+                <Beef className="h-8 w-8 text-green-600" />
                 <div>
                   <h1 className="text-xl font-bold">TIWA Kilimo</h1>
                   <p className="text-sm text-gray-600">Dairy Diary</p>

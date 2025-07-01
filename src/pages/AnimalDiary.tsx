@@ -41,14 +41,14 @@ const AnimalDiary = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <BookOpen className="h-6 w-6 text-green-600" />
-          {t('animalDiary')}
+          Dairy Diary
         </h1>
         <Button 
           className="bg-green-600 hover:bg-green-700"
           onClick={() => setShowRegisterForm(true)}
         >
           <Plus className="h-4 w-4 mr-2" />
-          Register Animal
+          Register New Cow
         </Button>
       </div>
 
@@ -68,18 +68,18 @@ const AnimalDiary = () => {
         <CardContent>
           {isLoading ? (
             <div className="text-center py-8">
-              <div className="animate-pulse text-gray-600">Loading animals...</div>
+              <div className="animate-pulse text-gray-600">Loading cows...</div>
             </div>
           ) : error ? (
             <div className="text-center py-8 text-red-600">
-              Error loading animals. Please try again.
+              Error loading cows. Please try again.
             </div>
           ) : filteredAnimals.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500 mb-4">
                 {animals?.length === 0 
-                  ? "No animals registered yet. Click 'Register Animal' to get started."
-                  : "No animals match your search criteria."
+                  ? "No cows registered yet. Click 'Register New Cow' to get started."
+                  : "No cows match your search criteria."
                 }
               </p>
             </div>

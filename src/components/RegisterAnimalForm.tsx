@@ -33,7 +33,7 @@ const RegisterAnimalForm = ({ onClose }: RegisterAnimalFormProps) => {
       await createAnimal.mutateAsync(formData);
       onClose();
     } catch (error) {
-      console.error('Error creating animal:', error);
+      console.error('Error creating cow:', error);
     }
   };
 
@@ -45,7 +45,7 @@ const RegisterAnimalForm = ({ onClose }: RegisterAnimalFormProps) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Register New Animal</CardTitle>
+          <CardTitle>Register New Cow</CardTitle>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
@@ -53,7 +53,7 @@ const RegisterAnimalForm = ({ onClose }: RegisterAnimalFormProps) => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Animal Name *</Label>
+              <Label htmlFor="name">Cow Name or Tag *</Label>
               <Input
                 id="name"
                 value={formData.name}
@@ -63,7 +63,7 @@ const RegisterAnimalForm = ({ onClose }: RegisterAnimalFormProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="tag">Tag/ID</Label>
+              <Label htmlFor="tag">Tag/ID Number</Label>
               <Input
                 id="tag"
                 value={formData.tag}
@@ -140,7 +140,7 @@ const RegisterAnimalForm = ({ onClose }: RegisterAnimalFormProps) => {
                 Cancel
               </Button>
               <Button type="submit" disabled={createAnimal.isPending} className="flex-1">
-                {createAnimal.isPending ? 'Registering...' : 'Register Animal'}
+                {createAnimal.isPending ? 'Registering...' : 'Register Cow'}
               </Button>
             </div>
           </form>

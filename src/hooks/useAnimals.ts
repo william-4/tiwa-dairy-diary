@@ -60,7 +60,7 @@ export const useCreateAnimal = () => {
       queryClient.invalidateQueries({ queryKey: ['animals'] });
       toast({
         title: "Success",
-        description: "Animal registered successfully!",
+        description: "Cow registered successfully!",
       });
     },
     onError: (error) => {
@@ -92,7 +92,7 @@ export const useUpdateAnimal = () => {
       queryClient.invalidateQueries({ queryKey: ['animals'] });
       toast({
         title: "Success",
-        description: "Animal updated successfully!",
+        description: "Cow updated successfully!",
       });
     },
   });

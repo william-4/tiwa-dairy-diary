@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,7 @@ const MobileNavigation = () => {
 
   const navigation = [
     { name: t('dashboard'), href: '/', icon: Home },
-    { name: t('dairyDiary'), href: '/diary', icon: BookOpen },
+    { name: 'Dairy Diary', href: '/diary', icon: BookOpen },
     { name: t('tasks'), href: '/tasks', icon: CheckSquare },
     { name: t('finances'), href: '/finances', icon: DollarSign },
   ];

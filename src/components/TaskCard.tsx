@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, User, Cow, Edit, Trash2, Check } from 'lucide-react';
+import { Calendar, Clock, User, Beef, Edit, Trash2, Check } from 'lucide-react';
 import { format, isAfter, isToday, isTomorrow } from 'date-fns';
 import { Tables } from '@/integrations/supabase/types';
 import { useUpdateTask, useDeleteTask } from '@/hooks/useTasks';
@@ -100,7 +100,7 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
 
           {task.animals && (
             <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Cow className="h-4 w-4" />
+              <Beef className="h-4 w-4" />
               <span>
                 Related to: {task.animals.name}
                 {task.animals.tag && ` (${task.animals.tag})`}

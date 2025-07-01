@@ -371,6 +371,71 @@ export type Database = {
         }
         Relationships: []
       }
+      tasks: {
+        Row: {
+          animal_id: string | null
+          assigned_to: string | null
+          created_at: string
+          description: string | null
+          due_date: string
+          due_time: string | null
+          id: string
+          photo_url: string | null
+          priority: string
+          reminder_date: string | null
+          reminder_enabled: boolean | null
+          reminder_time: string | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          animal_id?: string | null
+          assigned_to?: string | null
+          created_at?: string
+          description?: string | null
+          due_date: string
+          due_time?: string | null
+          id?: string
+          photo_url?: string | null
+          priority?: string
+          reminder_date?: string | null
+          reminder_enabled?: boolean | null
+          reminder_time?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          animal_id?: string | null
+          assigned_to?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          due_time?: string | null
+          id?: string
+          photo_url?: string | null
+          priority?: string
+          reminder_date?: string | null
+          reminder_enabled?: boolean | null
+          reminder_time?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_animal_id_fkey"
+            columns: ["animal_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

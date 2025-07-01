@@ -2,17 +2,20 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, CheckSquare, DollarSign, Calendar, ArrowUp, ArrowDown } from 'lucide-react';
+import { BookOpen, CheckSquare, DollarSign, Calendar, ArrowUp, ArrowDown, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTasks } from '@/hooks/useTasks';
+import { format, isToday, isTomorrow, isAfter } from 'date-fns';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { data: tasks = [] } = useTasks();
 
   const features = [
     {
-      title: t('animalDiary'),
+      title: 'Dairy Diary',
       icon: BookOpen,
       path: '/diary',
       description: 'Track your dairy cows',
@@ -52,11 +55,42 @@ const Dashboard = () => {
     balance: 7000,
   };
 
-  const upcomingTasks = [
-    { id: 1, title: 'Milk collection', date: 'Today', time: '6:00 AM' },
-    { id: 2, title: 'Feed preparation', date: 'Tomorrow', time: '8:00 AM' },
-    { id: 3, title: 'Vet checkup - Cow #003', date: 'Friday', time: '2:00 PM' },
-  ];
+  // Process tasks for dashboard display
+  const taskSummary = React.useMemo(() => {
+    const now = new Date();
+    const todayTasks = tasks.filter(task => isToday(new Date(task.due_date)) && task.status !== 'Done');
+    const tomorrowTasks = tasks.filter(task => isTomorrow(new Date(task.due_date)) && task.status !== 'Done');
+    const overdueTasks = tasks.filter(task => 
+      isAfter(now, new Date(task.due_date)) && task.status !== 'Done'
+    );
+    
+    const upcomingTasks = [...todayTasks, ...tomorrowTasks, ...overdueTasks]
+      .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
+      .slice(0, 5);
+
+    return {
+      today: todayTasks.length,
+      tomorrow: tomorrowTasks.length,
+      overdue: overdueTasks.length,
+      upcoming: upcomingTasks
+    };
+  }, [tasks]);
+
+  const getDateLabel = (date: string) => {
+    const taskDate = new Date(date);
+    if (isToday(taskDate)) return 'Today';
+    if (isTomorrow(taskDate)) return 'Tomorrow';
+    return format(taskDate, 'MMM d');
+  };
+
+  const getPriorityIcon = (priority: string) => {
+    switch (priority) {
+      case 'High': return '🔴';
+      case 'Medium': return '🟠';
+      case 'Low': return '🟢';
+      default: return '⚪';
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -76,6 +110,28 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Alerts for overdue tasks */}
+      {taskSummary.overdue > 0 && (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 text-red-700">
+              <AlertCircle className="h-5 w-5" />
+              <span className="font-medium">
+                You have {taskSummary.overdue} overdue task{taskSummary.overdue > 1 ? 's' : ''}!
+              </span>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="ml-auto text-red-700 border-red-300"
+                onClick={() => navigate('/tasks')}
+              >
+                View Tasks
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Feature Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -144,31 +200,62 @@ const Dashboard = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckSquare className="h-5 w-5 text-blue-600" />
-              {t('upcomingTasksWeek')}
+              Upcoming Tasks 🗓️
+              {(taskSummary.today + taskSummary.overdue) > 0 && (
+                <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+                  {taskSummary.today + taskSummary.overdue} urgent
+                </span>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {upcomingTasks.length > 0 ? (
+            {taskSummary.upcoming.length > 0 ? (
               <div className="space-y-3">
-                {upcomingTasks.map((task) => (
-                  <div key={task.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-sm">{task.title}</p>
-                      <p className="text-xs text-gray-600">{task.date} at {task.time}</p>
+                {taskSummary.upcoming.map((task) => {
+                  const isOverdue = isAfter(new Date(), new Date(task.due_date));
+                  return (
+                    <div 
+                      key={task.id} 
+                      className={`flex justify-between items-center p-3 rounded-lg ${
+                        isOverdue ? 'bg-red-50 border border-red-200' : 'bg-gray-50'
+                      }`}
+                    >
+                      <div>
+                        <p className="font-medium text-sm flex items-center gap-1">
+                          {getPriorityIcon(task.priority)} {task.title}
+                        </p>
+                        <p className={`text-xs ${isOverdue ? 'text-red-600' : 'text-gray-600'}`}>
+                          {getDateLabel(task.due_date)} 
+                          {task.due_time && ` at ${task.due_time}`}
+                          {isOverdue && ' (Overdue)'}
+                        </p>
+                        {task.assigned_to && (
+                          <p className="text-xs text-gray-500">👤 {task.assigned_to}</p>
+                        )}
+                      </div>
+                      <CheckSquare className="h-4 w-4 text-gray-400" />
                     </div>
-                    <CheckSquare className="h-4 w-4 text-gray-400" />
-                  </div>
-                ))}
+                  );
+                })}
                 <Button 
                   variant="outline" 
                   className="w-full mt-4"
                   onClick={() => navigate('/tasks')}
                 >
-                  View All Tasks
+                  View All Tasks 📋
                 </Button>
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-8">{t('noUpcomingTasks')}</p>
+              <div className="text-center py-8">
+                <CheckSquare className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <p className="text-gray-500 mb-4">No upcoming tasks. Great job! 👏</p>
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate('/tasks')}
+                >
+                  Create New Task ➕
+                </Button>
+              </div>
             )}
           </CardContent>
         </Card>

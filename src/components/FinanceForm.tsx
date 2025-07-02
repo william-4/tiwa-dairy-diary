@@ -151,7 +151,7 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
           <div>
             <Label htmlFor="category">Category</Label>
             <Select
-              value={selectedCategory}
+              value={selectedCategory || ''}
               onValueChange={(value) => setValue('category', value)}
             >
               <SelectTrigger>
@@ -231,14 +231,14 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
           <div>
             <Label htmlFor="animal_id">Linked Cow (Optional)</Label>
             <Select
-              value={watch('animal_id') || ''}
-              onValueChange={(value) => setValue('animal_id', value || undefined)}
+              value={watch('animal_id') || 'none'}
+              onValueChange={(value) => setValue('animal_id', value === 'none' ? undefined : value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select cow or leave blank" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Not linked to any cow</SelectItem>
+                <SelectItem value="none">Not linked to any cow</SelectItem>
                 {animals.map((animal) => (
                   <SelectItem key={animal.id} value={animal.id}>
                     🐄 {animal.name} {animal.tag && `(${animal.tag})`}

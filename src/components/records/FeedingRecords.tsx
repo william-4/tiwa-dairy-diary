@@ -24,6 +24,7 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
     source_of_feed: '',
     cost: '',
     notes: '',
+    custom_mix_description: '',
   });
 
   const { data: records, isLoading } = useFeedingRecords(animalId);
@@ -33,14 +34,22 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    let finalFeedType = formData.feed_type;
+    let finalNotes = formData.notes;
+
+    // If Mixed Feed is selected, combine the description with notes
+    if (formData.feed_type === 'Mixed Feed (Custom)' && formData.custom_mix_description) {
+      finalNotes = `Mixed Feed: ${formData.custom_mix_description}${formData.notes ? '\n' + formData.notes : ''}`;
+    }
+
     const recordData = {
       animal_id: animalId,
       date: formData.date,
-      feed_type: formData.feed_type,
+      feed_type: finalFeedType,
       quantity: formData.quantity ? parseFloat(formData.quantity) : null,
       source_of_feed: formData.source_of_feed || null,
       cost: formData.cost ? parseFloat(formData.cost) : null,
-      notes: formData.notes || null,
+      notes: finalNotes || null,
     };
 
     try {
@@ -59,6 +68,7 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
         source_of_feed: '',
         cost: '',
         notes: '',
+        custom_mix_description: '',
       });
     } catch (error) {
       console.error('Error saving feeding record:', error);
@@ -67,13 +77,27 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
 
   const handleEdit = (record: any) => {
     setEditingRecord(record);
+    
+    // Parse mixed feed description from notes if it exists
+    let customMixDescription = '';
+    let regularNotes = record.notes || '';
+    
+    if (record.feed_type === 'Mixed Feed (Custom)' && record.notes) {
+      const mixMatch = record.notes.match(/^Mixed Feed: (.+?)(?:\n(.+))?$/);
+      if (mixMatch) {
+        customMixDescription = mixMatch[1];
+        regularNotes = mixMatch[2] || '';
+      }
+    }
+    
     setFormData({
       date: record.date,
       feed_type: record.feed_type,
       quantity: record.quantity?.toString() || '',
       source_of_feed: record.source_of_feed || '',
       cost: record.cost?.toString() || '',
-      notes: record.notes || '',
+      notes: regularNotes,
+      custom_mix_description: customMixDescription,
     });
     setShowForm(true);
   };
@@ -118,10 +142,25 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
                     <SelectItem value="Dairy Meal">Dairy Meal</SelectItem>
                     <SelectItem value="Silage">Silage</SelectItem>
                     <SelectItem value="Hay">Hay</SelectItem>
+                    <SelectItem value="Mixed Feed (Custom)">Mixed Feed (Custom)</SelectItem>
                     <SelectItem value="Other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+
+              {formData.feed_type === 'Mixed Feed (Custom)' && (
+                <div className="space-y-2">
+                  <Label htmlFor="custom_mix_description">Describe Your Feed Mix *</Label>
+                  <Textarea
+                    id="custom_mix_description"
+                    value={formData.custom_mix_description}
+                    onChange={(e) => setFormData(prev => ({ ...prev, custom_mix_description: e.target.value }))}
+                    placeholder="e.g., Napier + Dairy Meal + Molasses, or 2kg Hay + 1kg Silage"
+                    rows={2}
+                    required
+                  />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="quantity">Quantity (kg)</Label>
@@ -158,13 +197,13 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="notes">Notes</Label>
+                <Label htmlFor="notes">Additional Notes</Label>
                 <Textarea
                   id="notes"
                   value={formData.notes}
                   onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                   rows={3}
-                  placeholder="Additional notes..."
+                  placeholder="Any other notes about this feeding..."
                 />
               </div>
 

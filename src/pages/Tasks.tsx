@@ -10,6 +10,7 @@ import { useTasks } from '@/hooks/useTasks';
 import { useAnimals } from '@/hooks/useAnimals';
 import TaskForm from '@/components/TaskForm';
 import TaskCard from '@/components/TaskCard';
+import PageHeader from '@/components/PageHeader';
 import { format, isToday, isTomorrow, isAfter, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { Tables } from '@/integrations/supabase/types';
 
@@ -123,168 +124,193 @@ const Tasks = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <CheckSquare className="h-6 w-6 text-blue-600" />
-          {t('tasks')} 🗓️
-        </h1>
-        <Button 
-          className="bg-blue-600 hover:bg-blue-700"
-          onClick={() => setShowForm(true)}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Task 📝
-        </Button>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-3 text-center">
-            <div className="text-2xl font-bold text-blue-600">{taskStats.today}</div>
-            <div className="text-sm text-gray-600">Today</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-3 text-center">
-            <div className="text-2xl font-bold text-red-600">{taskStats.overdue}</div>
-            <div className="text-sm text-gray-600">Overdue</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-3 text-center">
-            <div className="text-2xl font-bold text-orange-600">{taskStats.upcoming}</div>
-            <div className="text-sm text-gray-600">Upcoming</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-3 text-center">
-            <div className="text-2xl font-bold text-gray-600">{taskStats.total}</div>
-            <div className="text-sm text-gray-600">Total</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters and Search */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            Filters & Search
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Select value={viewMode} onValueChange={(value: any) => setViewMode(value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="View" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="today">📅 Today</SelectItem>
-                <SelectItem value="week">📆 This Week</SelectItem>
-                <SelectItem value="month">🗓️ This Month</SelectItem>
-                <SelectItem value="all">📋 All Tasks</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger>
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="Pending">⏳ Pending</SelectItem>
-                <SelectItem value="Done">✅ Done</SelectItem>
-                <SelectItem value="overdue">🚨 Overdue</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={filterPriority} onValueChange={setFilterPriority}>
-              <SelectTrigger>
-                <SelectValue placeholder="Priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Priority</SelectItem>
-                <SelectItem value="High">🔴 High</SelectItem>
-                <SelectItem value="Medium">🟠 Medium</SelectItem>
-                <SelectItem value="Low">🟢 Low</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={filterAnimal} onValueChange={setFilterAnimal}>
-              <SelectTrigger>
-                <SelectValue placeholder="Related Cow" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Cows</SelectItem>
-                {animals.map((animal) => (
-                  <SelectItem key={animal.id} value={animal.id}>
-                    {animal.name} {animal.tag ? `(${animal.tag})` : ''}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+    <div className="min-h-screen bg-gray-50">
+      <PageHeader title="My Tasks" />
+      
+      <div className="p-4 space-y-6 max-w-4xl mx-auto">
+        {/* Header with Add Button */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              <CheckSquare className="h-6 w-6 text-blue-600" />
+              {t('tasks')} 📝
+            </h1>
+            <p className="text-gray-600 text-sm mt-1">Manage your daily farm tasks</p>
           </div>
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700"
+            onClick={() => setShowForm(true)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Task
+          </Button>
+        </div>
 
-          <Input
-            placeholder="Search tasks by title, description, or assigned person..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full"
-          />
-        </CardContent>
-      </Card>
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="animate-pulse text-gray-600 mb-2">Loading your tasks...</div>
+              <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
+            </div>
+          </div>
+        )}
 
-      {/* Tasks List */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>
-              Tasks ({filteredTasks.length})
-              {viewMode === 'today' && ' - Today'}
-              {viewMode === 'week' && ' - This Week'}
-              {viewMode === 'month' && ' - This Month'}
-            </span>
-            {taskStats.overdue > 0 && (
-              <div className="flex items-center gap-1 text-red-600">
-                <AlertCircle className="h-4 w-4" />
-                <span className="text-sm">{taskStats.overdue} overdue</span>
+        {/* Stats Cards */}
+        {!isLoading && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="text-2xl font-bold text-blue-600">{taskStats.today}</div>
+                <div className="text-sm text-gray-600">Today</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="text-2xl font-bold text-red-600">{taskStats.overdue}</div>
+                <div className="text-sm text-gray-600">Overdue</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="text-2xl font-bold text-orange-600">{taskStats.upcoming}</div>
+                <div className="text-sm text-gray-600">Upcoming</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="text-2xl font-bold text-gray-600">{taskStats.total}</div>
+                <div className="text-sm text-gray-600">Total</div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Filters */}
+        {!isLoading && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Filter className="h-5 w-5" />
+                Filters & Search
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Select value={viewMode} onValueChange={(value: any) => setViewMode(value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="View" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="today">📅 Today</SelectItem>
+                    <SelectItem value="week">📆 This Week</SelectItem>
+                    <SelectItem value="month">🗓️ This Month</SelectItem>
+                    <SelectItem value="all">📋 All Tasks</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="Pending">⏳ Pending</SelectItem>
+                    <SelectItem value="Done">✅ Done</SelectItem>
+                    <SelectItem value="overdue">🚨 Overdue</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterPriority} onValueChange={setFilterPriority}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Priority</SelectItem>
+                    <SelectItem value="High">🔴 High</SelectItem>
+                    <SelectItem value="Medium">🟠 Medium</SelectItem>
+                    <SelectItem value="Low">🟢 Low</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterAnimal} onValueChange={setFilterAnimal}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Related Cow" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Cows</SelectItem>
+                    {animals.map((animal) => (
+                      <SelectItem key={animal.id} value={animal.id}>
+                        {animal.name} {animal.tag ? `(${animal.tag})` : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-pulse text-gray-600">Loading tasks...</div>
-            </div>
-          ) : filteredTasks.length > 0 ? (
-            <div className="space-y-4">
-              {filteredTasks.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  onEdit={handleEditTask}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-gray-500 text-center py-8">
-              <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>No tasks found matching your filters.</p>
-              <Button 
-                className="mt-4"
-                onClick={() => setShowForm(true)}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Create Your First Task
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+
+              <Input
+                placeholder="Search tasks by title, description, or assigned person..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full"
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Tasks List */}
+        {!isLoading && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>
+                  Tasks ({filteredTasks.length})
+                  {viewMode === 'today' && ' - Today'}
+                  {viewMode === 'week' && ' - This Week'}
+                  {viewMode === 'month' && ' - This Month'}
+                </span>
+                {taskStats.overdue > 0 && (
+                  <div className="flex items-center gap-1 text-red-600">
+                    <AlertCircle className="h-4 w-4" />
+                    <span className="text-sm">{taskStats.overdue} overdue</span>
+                  </div>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {filteredTasks.length > 0 ? (
+                <div className="space-y-4">
+                  {filteredTasks.map((task) => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      onEdit={handleEditTask}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-500 text-center py-12">
+                  <Calendar className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                  <h3 className="text-lg font-medium mb-2">No tasks found</h3>
+                  <p className="text-sm mb-6">
+                    {tasks.length === 0 
+                      ? "You haven't added any tasks yet. Create your first task to get started!"
+                      : "No tasks match your current filters. Try adjusting your search criteria."
+                    }
+                  </p>
+                  <Button 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={() => setShowForm(true)}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Your First Task
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };

@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Edit, Calendar } from 'lucide-react';
+import { Plus, Edit, Calendar, Wheat } from 'lucide-react';
 import { useFeedingRecords, useCreateFeedingRecord, useUpdateFeedingRecord } from '@/hooks/useFeedingRecords';
+import { useCreateFinancialRecord } from '@/hooks/useFinancialRecords';
 import { format } from 'date-fns';
 
 interface FeedingRecordsProps {
@@ -20,43 +21,67 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     feed_type: '',
+    custom_feed_description: '',
     quantity: '',
-    source_of_feed: '',
     cost: '',
+    source_of_feed: '',
     notes: '',
-    custom_mix_description: '',
   });
 
   const { data: records, isLoading } = useFeedingRecords(animalId);
   const createRecord = useCreateFeedingRecord();
   const updateRecord = useUpdateFeedingRecord();
+  const createFinancialRecord = useCreateFinancialRecord();
+
+  const feedTypes = [
+    'Napier Grass',
+    'Rhodes Grass',
+    'Dairy Meal',
+    'Wheat Bran',
+    'Maize Germ',
+    'Cotton Seed Cake',
+    'Molasses',
+    'Hay',
+    'Silage',
+    'Mixed Feed (Custom)',
+    'Other'
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    let finalFeedType = formData.feed_type;
-    let finalNotes = formData.notes;
-
-    // If Mixed Feed is selected, combine the description with notes
-    if (formData.feed_type === 'Mixed Feed (Custom)' && formData.custom_mix_description) {
-      finalNotes = `Mixed Feed: ${formData.custom_mix_description}${formData.notes ? '\n' + formData.notes : ''}`;
-    }
-
+    const finalFeedType = formData.feed_type === 'Mixed Feed (Custom)' && formData.custom_feed_description 
+      ? `Mixed Feed: ${formData.custom_feed_description}` 
+      : formData.feed_type;
+    
     const recordData = {
       animal_id: animalId,
       date: formData.date,
       feed_type: finalFeedType,
       quantity: formData.quantity ? parseFloat(formData.quantity) : null,
-      source_of_feed: formData.source_of_feed || null,
       cost: formData.cost ? parseFloat(formData.cost) : null,
-      notes: finalNotes || null,
+      source_of_feed: formData.source_of_feed || null,
+      notes: formData.notes || null,
     };
 
     try {
+      let savedRecord;
       if (editingRecord) {
-        await updateRecord.mutateAsync({ id: editingRecord.id, ...recordData });
+        savedRecord = await updateRecord.mutateAsync({ id: editingRecord.id, ...recordData });
       } else {
-        await createRecord.mutateAsync(recordData);
+        savedRecord = await createRecord.mutateAsync(recordData);
+      }
+
+      // Auto-create financial record if cost is provided
+      if (formData.cost && parseFloat(formData.cost) > 0) {
+        await createFinancialRecord.mutateAsync({
+          transaction_type: 'Expense',
+          category: 'Feed',
+          amount: parseFloat(formData.cost),
+          transaction_date: formData.date,
+          animal_id: animalId,
+          description: `Feed expense: ${finalFeedType}${formData.quantity ? ` (${formData.quantity}kg)` : ''}`,
+        });
       }
       
       setShowForm(false);
@@ -64,11 +89,11 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
       setFormData({
         date: new Date().toISOString().split('T')[0],
         feed_type: '',
+        custom_feed_description: '',
         quantity: '',
-        source_of_feed: '',
         cost: '',
+        source_of_feed: '',
         notes: '',
-        custom_mix_description: '',
       });
     } catch (error) {
       console.error('Error saving feeding record:', error);
@@ -78,26 +103,18 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
   const handleEdit = (record: any) => {
     setEditingRecord(record);
     
-    // Parse mixed feed description from notes if it exists
-    let customMixDescription = '';
-    let regularNotes = record.notes || '';
-    
-    if (record.feed_type === 'Mixed Feed (Custom)' && record.notes) {
-      const mixMatch = record.notes.match(/^Mixed Feed: (.+?)(?:\n(.+))?$/);
-      if (mixMatch) {
-        customMixDescription = mixMatch[1];
-        regularNotes = mixMatch[2] || '';
-      }
-    }
+    // Check if it's a custom mixed feed
+    const isCustomMixed = record.feed_type.startsWith('Mixed Feed:');
+    const customDescription = isCustomMixed ? record.feed_type.replace('Mixed Feed: ', '') : '';
     
     setFormData({
       date: record.date,
-      feed_type: record.feed_type,
+      feed_type: isCustomMixed ? 'Mixed Feed (Custom)' : record.feed_type,
+      custom_feed_description: customDescription,
       quantity: record.quantity?.toString() || '',
-      source_of_feed: record.source_of_feed || '',
       cost: record.cost?.toString() || '',
-      notes: regularNotes,
-      custom_mix_description: customMixDescription,
+      source_of_feed: record.source_of_feed || '',
+      notes: record.notes || '',
     });
     setShowForm(true);
   };
@@ -133,77 +150,95 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
 
               <div className="space-y-2">
                 <Label htmlFor="feed_type">Feed Type *</Label>
-                <Select value={formData.feed_type} onValueChange={(value) => setFormData(prev => ({ ...prev, feed_type: value }))}>
+                <Select 
+                  value={formData.feed_type} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, feed_type: value }))}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select feed type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Napier">Napier</SelectItem>
-                    <SelectItem value="Dairy Meal">Dairy Meal</SelectItem>
-                    <SelectItem value="Silage">Silage</SelectItem>
-                    <SelectItem value="Hay">Hay</SelectItem>
-                    <SelectItem value="Mixed Feed (Custom)">Mixed Feed (Custom)</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
+                    {feedTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
               {formData.feed_type === 'Mixed Feed (Custom)' && (
-                <div className="space-y-2">
-                  <Label htmlFor="custom_mix_description">Describe Your Feed Mix *</Label>
+                <div className="space-y-2 p-4 bg-yellow-50 rounded-lg">
+                  <Label htmlFor="custom_feed_description">Describe Your Feed Mix *</Label>
                   <Textarea
-                    id="custom_mix_description"
-                    value={formData.custom_mix_description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, custom_mix_description: e.target.value }))}
-                    placeholder="e.g., Napier + Dairy Meal + Molasses, or 2kg Hay + 1kg Silage"
-                    rows={2}
+                    id="custom_feed_description"
+                    value={formData.custom_feed_description}
+                    onChange={(e) => setFormData(prev => ({ ...prev, custom_feed_description: e.target.value }))}
+                    placeholder="e.g., Napier + Dairy Meal + Molasses (2:1:0.5 ratio)"
                     required
+                    rows={2}
                   />
+                  <p className="text-xs text-yellow-700">
+                    Describe the types of feed and proportions used in your mix
+                  </p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="quantity">Quantity (kg)</Label>
+                  <Input
+                    id="quantity"
+                    type="number"
+                    step="0.1"
+                    value={formData.quantity}
+                    onChange={(e) => setFormData(prev => ({ ...prev, quantity: e.target.value }))}
+                    placeholder="e.g., 25"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cost">Cost (KSh)</Label>
+                  <Input
+                    id="cost"
+                    type="number"
+                    step="0.01"
+                    value={formData.cost}
+                    onChange={(e) => setFormData(prev => ({ ...prev, cost: e.target.value }))}
+                    placeholder="e.g., 1500"
+                  />
+                </div>
+              </div>
+
+              {formData.cost && parseFloat(formData.cost) > 0 && (
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <p className="text-sm font-medium text-blue-800">
+                    Cost: KSh {parseFloat(formData.cost).toFixed(2)}
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    This will be automatically added to your Finance records
+                  </p>
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="quantity">Quantity (kg)</Label>
-                <Input
-                  id="quantity"
-                  type="number"
-                  step="0.1"
-                  value={formData.quantity}
-                  onChange={(e) => setFormData(prev => ({ ...prev, quantity: e.target.value }))}
-                  placeholder="Enter quantity"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="source_of_feed">Feed Source</Label>
+                <Label htmlFor="source_of_feed">Source/Supplier</Label>
                 <Input
                   id="source_of_feed"
                   value={formData.source_of_feed}
                   onChange={(e) => setFormData(prev => ({ ...prev, source_of_feed: e.target.value }))}
-                  placeholder="e.g., Own farm, Market, Supplier name"
+                  placeholder="e.g., Local supplier, Own production"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="cost">Cost (KSH)</Label>
-                <Input
-                  id="cost"
-                  type="number"
-                  step="0.01"
-                  value={formData.cost}
-                  onChange={(e) => setFormData(prev => ({ ...prev, cost: e.target.value }))}
-                  placeholder="Enter cost"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="notes">Additional Notes</Label>
+                <Label htmlFor="notes">Notes</Label>
                 <Textarea
                   id="notes"
                   value={formData.notes}
                   onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                   rows={3}
-                  placeholder="Any other notes about this feeding..."
+                  placeholder="Additional notes about feeding..."
                 />
               </div>
 
@@ -247,10 +282,13 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
                       <Calendar className="h-4 w-4 text-gray-500" />
                       <span className="font-medium">{format(new Date(record.date), 'PPP')}</span>
                     </div>
-                    <p className="text-sm"><strong>Feed Type:</strong> {record.feed_type}</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Wheat className="h-4 w-4 text-green-500" />
+                      <span className="font-medium">{record.feed_type}</span>
+                    </div>
                     {record.quantity && <p className="text-sm"><strong>Quantity:</strong> {record.quantity} kg</p>}
+                    {record.cost && <p className="text-sm"><strong>Cost:</strong> KSh {record.cost}</p>}
                     {record.source_of_feed && <p className="text-sm"><strong>Source:</strong> {record.source_of_feed}</p>}
-                    {record.cost && <p className="text-sm"><strong>Cost:</strong> KSH {record.cost}</p>}
                     {record.notes && <p className="text-sm text-gray-600 mt-2">{record.notes}</p>}
                   </div>
                   <Button

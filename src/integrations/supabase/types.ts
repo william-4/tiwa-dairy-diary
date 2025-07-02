@@ -346,8 +346,10 @@ export type Database = {
           date: string
           deleted_at: string | null
           id: string
+          noon_yield: number | null
           notes: string | null
           pm_yield: number | null
+          price_per_litre: number | null
           total_yield: number | null
           updated_at: string
           use_type: string | null
@@ -360,8 +362,10 @@ export type Database = {
           date: string
           deleted_at?: string | null
           id?: string
+          noon_yield?: number | null
           notes?: string | null
           pm_yield?: number | null
+          price_per_litre?: number | null
           total_yield?: number | null
           updated_at?: string
           use_type?: string | null
@@ -374,8 +378,10 @@ export type Database = {
           date?: string
           deleted_at?: string | null
           id?: string
+          noon_yield?: number | null
           notes?: string | null
           pm_yield?: number | null
+          price_per_litre?: number | null
           total_yield?: number | null
           updated_at?: string
           use_type?: string | null

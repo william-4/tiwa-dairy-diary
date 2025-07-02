@@ -2,145 +2,94 @@
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { CheckSquare, Plus, Filter, Calendar, AlertCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle, Clock, Plus, Search, Filter, Calendar } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTasks } from '@/hooks/useTasks';
 import { useAnimals } from '@/hooks/useAnimals';
 import TaskForm from '@/components/TaskForm';
 import TaskCard from '@/components/TaskCard';
 import PageHeader from '@/components/PageHeader';
-import { format, isToday, isTomorrow, isAfter, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { Tables } from '@/integrations/supabase/types';
 
-type TaskWithAnimal = Tables<'tasks'> & { 
-  animals?: { name: string; tag: string | null } 
-};
+type Task = Tables<'tasks'>;
 
 const Tasks = () => {
   const { t } = useLanguage();
   const { data: tasks = [], isLoading } = useTasks();
   const { data: animals = [] } = useAnimals();
-  const [showForm, setShowForm] = useState(false);
-  const [editingTask, setEditingTask] = useState<TaskWithAnimal | null>(null);
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [filterPriority, setFilterPriority] = useState<string>('all');
-  const [filterAnimal, setFilterAnimal] = useState<string>('all');
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | undefined>();
   const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState<'today' | 'week' | 'month' | 'all'>('today');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState('');
+  const [animalFilter, setAnimalFilter] = useState('');
 
   const filteredTasks = useMemo(() => {
     let filtered = tasks;
 
-    // Filter by view mode
-    const now = new Date();
-    switch (viewMode) {
-      case 'today':
-        filtered = filtered.filter(task => isToday(new Date(task.due_date)));
-        break;
-      case 'week':
-        const weekStart = startOfWeek(now);
-        const weekEnd = endOfWeek(now);
-        filtered = filtered.filter(task => {
-          const taskDate = new Date(task.due_date);
-          return taskDate >= weekStart && taskDate <= weekEnd;
-        });
-        break;
-      case 'month':
-        const monthStart = startOfMonth(now);
-        const monthEnd = endOfMonth(now);
-        filtered = filtered.filter(task => {
-          const taskDate = new Date(task.due_date);
-          return taskDate >= monthStart && taskDate <= monthEnd;
-        });
-        break;
-    }
-
-    // Filter by status
-    if (filterStatus !== 'all') {
-      if (filterStatus === 'overdue') {
-        filtered = filtered.filter(task => 
-          isAfter(now, new Date(task.due_date)) && task.status !== 'Done'
-        );
-      } else {
-        filtered = filtered.filter(task => task.status === filterStatus);
-      }
-    }
-
-    // Filter by priority
-    if (filterPriority !== 'all') {
-      filtered = filtered.filter(task => task.priority === filterPriority);
-    }
-
-    // Filter by animal
-    if (filterAnimal !== 'all') {
-      filtered = filtered.filter(task => task.animal_id === filterAnimal);
-    }
-
-    // Filter by search term
     if (searchTerm) {
-      filtered = filtered.filter(task =>
+      filtered = filtered.filter(task => 
         task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        task.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        task.assigned_to?.toLowerCase().includes(searchTerm.toLowerCase())
+        task.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
+    if (statusFilter) {
+      filtered = filtered.filter(task => task.status === statusFilter);
+    }
+
+    if (priorityFilter) {
+      filtered = filtered.filter(task => task.priority === priorityFilter);
+    }
+
+    if (animalFilter) {
+      filtered = filtered.filter(task => task.animal_id === animalFilter);
+    }
+
     return filtered;
-  }, [tasks, viewMode, filterStatus, filterPriority, filterAnimal, searchTerm]);
+  }, [tasks, searchTerm, statusFilter, priorityFilter, animalFilter]);
 
   const taskStats = useMemo(() => {
-    const now = new Date();
-    const todayTasks = tasks.filter(task => isToday(new Date(task.due_date)));
-    const overdueTasks = tasks.filter(task => 
-      isAfter(now, new Date(task.due_date)) && task.status !== 'Done'
-    );
-    const upcomingTasks = tasks.filter(task => 
-      isTomorrow(new Date(task.due_date)) || 
-      (new Date(task.due_date) > now && !isToday(new Date(task.due_date)))
-    );
+    const pending = tasks.filter(t => t.status === 'Pending').length;
+    const completed = tasks.filter(t => t.status === 'Completed').length;
+    const overdue = tasks.filter(t => {
+      const dueDate = new Date(t.due_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return t.status === 'Pending' && dueDate < today;
+    }).length;
 
-    return {
-      today: todayTasks.length,
-      overdue: overdueTasks.length,
-      upcoming: upcomingTasks.length,
-      total: tasks.length
-    };
+    return { pending, completed, overdue, total: tasks.length };
   }, [tasks]);
 
-  const handleEditTask = (task: TaskWithAnimal) => {
+  const handleAddTask = () => {
+    setEditingTask(undefined);
+    setFormOpen(true);
+  };
+
+  const handleEditTask = (task: Task) => {
     setEditingTask(task);
-    setShowForm(true);
+    setFormOpen(true);
   };
-
-  const handleCloseForm = () => {
-    setShowForm(false);
-    setEditingTask(null);
-  };
-
-  if (showForm) {
-    return <TaskForm task={editingTask} onClose={handleCloseForm} />;
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <PageHeader title="My Tasks" />
+      <PageHeader title="Farm Tasks" />
       
       <div className="p-4 space-y-6 max-w-4xl mx-auto">
         {/* Header with Add Button */}
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
-              <CheckSquare className="h-6 w-6 text-blue-600" />
-              {t('tasks')} 📝
+              <CheckCircle className="h-6 w-6 text-green-600" />
+              {t('tasks')} ✅
             </h1>
-            <p className="text-gray-600 text-sm mt-1">Manage your daily farm tasks</p>
+            <p className="text-gray-600 text-sm mt-1">Manage your farm tasks and reminders</p>
           </div>
-          <Button 
-            className="bg-blue-600 hover:bg-blue-700"
-            onClick={() => setShowForm(true)}
-          >
+          <Button onClick={handleAddTask} className="bg-green-600 hover:bg-green-700">
             <Plus className="h-4 w-4 mr-2" />
             Add Task
           </Button>
@@ -151,36 +100,39 @@ const Tasks = () => {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="animate-pulse text-gray-600 mb-2">Loading your tasks...</div>
-              <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
+              <div className="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto"></div>
             </div>
           </div>
         )}
 
-        {/* Stats Cards */}
+        {/* Task Summary */}
         {!isLoading && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card>
+            <Card className="bg-blue-50 border-blue-200">
               <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-blue-600">{taskStats.today}</div>
-                <div className="text-sm text-gray-600">Today</div>
+                <div className="text-2xl font-bold text-blue-600">{taskStats.pending}</div>
+                <div className="text-sm text-blue-700">Pending</div>
               </CardContent>
             </Card>
-            <Card>
+
+            <Card className="bg-green-50 border-green-200">
+              <CardContent className="p-4 text-center">
+                <div className="text-2xl font-bold text-green-600">{taskStats.completed}</div>
+                <div className="text-sm text-green-700">Completed</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-red-50 border-red-200">
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold text-red-600">{taskStats.overdue}</div>
-                <div className="text-sm text-gray-600">Overdue</div>
+                <div className="text-sm text-red-700">Overdue</div>
               </CardContent>
             </Card>
-            <Card>
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-orange-600">{taskStats.upcoming}</div>
-                <div className="text-sm text-gray-600">Upcoming</div>
-              </CardContent>
-            </Card>
-            <Card>
+
+            <Card className="bg-gray-50 border-gray-200">
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold text-gray-600">{taskStats.total}</div>
-                <div className="text-sm text-gray-600">Total</div>
+                <div className="text-sm text-gray-700">Total</div>
               </CardContent>
             </Card>
           </div>
@@ -189,127 +141,112 @@ const Tasks = () => {
         {/* Filters */}
         {!isLoading && (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Filter className="h-5 w-5" />
-                Filters & Search
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Select value={viewMode} onValueChange={(value: any) => setViewMode(value)}>
+            <CardContent className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search tasks..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder="View" />
+                    <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="today">📅 Today</SelectItem>
-                    <SelectItem value="week">📆 This Week</SelectItem>
-                    <SelectItem value="month">🗓️ This Month</SelectItem>
-                    <SelectItem value="all">📋 All Tasks</SelectItem>
+                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
+                    <SelectItem value="Cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
 
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <Select value={priorityFilter} onValueChange={setPriorityFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Status" />
+                    <SelectValue placeholder="All Priority" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="Pending">⏳ Pending</SelectItem>
-                    <SelectItem value="Done">✅ Done</SelectItem>
-                    <SelectItem value="overdue">🚨 Overdue</SelectItem>
+                    <SelectItem value="">All Priority</SelectItem>
+                    <SelectItem value="High">High</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="Low">Low</SelectItem>
                   </SelectContent>
                 </Select>
 
-                <Select value={filterPriority} onValueChange={setFilterPriority}>
+                <Select value={animalFilter} onValueChange={setAnimalFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Priority" />
+                    <SelectValue placeholder="All Cows" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Priority</SelectItem>
-                    <SelectItem value="High">🔴 High</SelectItem>
-                    <SelectItem value="Medium">🟠 Medium</SelectItem>
-                    <SelectItem value="Low">🟢 Low</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={filterAnimal} onValueChange={setFilterAnimal}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Related Cow" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Cows</SelectItem>
+                    <SelectItem value="">All Cows</SelectItem>
                     {animals.map((animal) => (
                       <SelectItem key={animal.id} value={animal.id}>
-                        {animal.name} {animal.tag ? `(${animal.tag})` : ''}
+                        {animal.name} {animal.tag && `(${animal.tag})`}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
 
-              <Input
-                placeholder="Search tasks by title, description, or assigned person..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full"
-              />
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setSearchTerm('');
+                    setStatusFilter('');
+                    setPriorityFilter('');
+                    setAnimalFilter('');
+                  }}
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  Clear
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
 
         {/* Tasks List */}
         {!isLoading && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>
-                  Tasks ({filteredTasks.length})
-                  {viewMode === 'today' && ' - Today'}
-                  {viewMode === 'week' && ' - This Week'}
-                  {viewMode === 'month' && ' - This Month'}
-                </span>
-                {taskStats.overdue > 0 && (
-                  <div className="flex items-center gap-1 text-red-600">
-                    <AlertCircle className="h-4 w-4" />
-                    <span className="text-sm">{taskStats.overdue} overdue</span>
-                  </div>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {filteredTasks.length > 0 ? (
-                <div className="space-y-4">
-                  {filteredTasks.map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      onEdit={handleEditTask}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-gray-500 text-center py-12">
+          <>
+            {filteredTasks.length > 0 ? (
+              <div className="space-y-3">
+                {filteredTasks.map((task) => (
+                  <TaskCard key={task.id} task={task} onEdit={handleEditTask} />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="p-12 text-center">
                   <Calendar className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                  <h3 className="text-lg font-medium mb-2">No tasks found</h3>
-                  <p className="text-sm mb-6">
+                  <h3 className="text-lg font-medium mb-2">
+                    {tasks.length === 0 ? 'No tasks yet' : 'No tasks found'}
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-6">
                     {tasks.length === 0 
-                      ? "You haven't added any tasks yet. Create your first task to get started!"
-                      : "No tasks match your current filters. Try adjusting your search criteria."
+                      ? 'Start by adding your first farm task to stay organized.'
+                      : 'Try adjusting your filters to find the tasks you\'re looking for.'
                     }
                   </p>
-                  <Button 
-                    className="bg-blue-600 hover:bg-blue-700"
-                    onClick={() => setShowForm(true)}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Your First Task
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                  {tasks.length === 0 && (
+                    <Button onClick={handleAddTask} className="bg-green-600 hover:bg-green-700">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Your First Task
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </>
         )}
+
+        <TaskForm
+          open={formOpen}
+          onOpenChange={setFormOpen}
+          task={editingTask}
+        />
       </div>
     </div>
   );

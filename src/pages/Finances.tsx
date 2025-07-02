@@ -91,7 +91,7 @@ const Finances = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <PageHeader title="My Farm Finances" />
+      <PageHeader title="Farm Finances" />
       
       <div className="p-4 space-y-6 max-w-4xl mx-auto">
         {/* Header with Add Button */}

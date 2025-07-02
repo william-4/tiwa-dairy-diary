@@ -32,7 +32,7 @@ export const useCreateProductionRecord = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const total_yield = (record.am_yield || 0) + (record.pm_yield || 0);
+      const total_yield = (record.am_yield || 0) + (record.noon_yield || 0) + (record.pm_yield || 0);
 
       const { data, error } = await supabase
         .from('production_records')
@@ -65,7 +65,7 @@ export const useUpdateProductionRecord = () => {
   
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<ProductionRecord> & { id: string }) => {
-      const total_yield = (updates.am_yield || 0) + (updates.pm_yield || 0);
+      const total_yield = (updates.am_yield || 0) + (updates.noon_yield || 0) + (updates.pm_yield || 0);
       
       const { data, error } = await supabase
         .from('production_records')

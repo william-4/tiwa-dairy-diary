@@ -1,8 +1,8 @@
 
 import React from 'react';
-import MobileNavigation from './MobileNavigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
+import BottomNavigation from './BottomNavigation';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -27,10 +27,10 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <MobileNavigation />
-      <main className="p-4 pt-20 md:pt-6">
+      <main className="pb-20">
         {children}
       </main>
+      <BottomNavigation />
     </div>
   );
 };

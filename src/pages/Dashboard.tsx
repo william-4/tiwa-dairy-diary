@@ -2,55 +2,63 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, CheckSquare, DollarSign, Calendar, ArrowUp, ArrowDown, AlertCircle } from 'lucide-react';
+import { BookOpen, CheckSquare, DollarSign, Calendar, ArrowUp, ArrowDown, AlertCircle, Plus, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useTasks } from '@/hooks/useTasks';
 import { useFinancialRecords } from '@/hooks/useFinancialRecords';
-import { format, isToday, isTomorrow, isAfter } from 'date-fns';
+import { useAnimals } from '@/hooks/useAnimals';
+import { format, isToday, isTomorrow, isAfter, isThisWeek } from 'date-fns';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { user } = useAuth();
   const { data: tasks = [] } = useTasks();
   const { data: financialRecords = [] } = useFinancialRecords();
+  const { data: animals = [] } = useAnimals();
 
   const features = [
     {
       title: 'Dairy Diary',
       icon: BookOpen,
       path: '/diary',
-      description: 'Track your dairy cows',
+      description: `${animals.length} cows registered`,
       bgColor: 'bg-green-100',
       iconColor: 'text-green-600',
+      emoji: '🐄'
     },
     {
-      title: t('tasksCalendar'),
+      title: t('tasks'),
       icon: CheckSquare,
       path: '/tasks',
-      description: 'Manage farm tasks',
+      description: `${tasks.filter(t => t.status !== 'Done').length} pending`,
       bgColor: 'bg-blue-100',
       iconColor: 'text-blue-600',
+      emoji: '✅'
     },
     {
-      title: t('financesOverview'),
+      title: t('finances'),
       icon: DollarSign,
       path: '/finances',
       description: 'Track income & expenses',
       bgColor: 'bg-purple-100',
       iconColor: 'text-purple-600',
+      emoji: '💰'
     },
     {
-      title: t('calendarOverview'),
+      title: 'Calendar',
       icon: Calendar,
-      path: '/calendar',
+      path: '/tasks',
       description: 'View schedule',
       bgColor: 'bg-orange-100',
       iconColor: 'text-orange-600',
+      emoji: '📆'
     },
   ];
 
-  // Calculate financial data from actual records
+  // Calculate financial data
   const financialData = React.useMemo(() => {
     const income = financialRecords
       .filter(r => r.transaction_type === 'Income')
@@ -75,113 +83,125 @@ const Dashboard = () => {
     const overdueTasks = tasks.filter(task => 
       isAfter(now, new Date(task.due_date)) && task.status !== 'Done'
     );
+    const thisWeekTasks = tasks.filter(task => 
+      isThisWeek(new Date(task.due_date)) && task.status !== 'Done'
+    );
     
-    const upcomingTasks = [...todayTasks, ...tomorrowTasks, ...overdueTasks]
-      .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
-      .slice(0, 5);
-
     return {
       today: todayTasks.length,
       tomorrow: tomorrowTasks.length,
       overdue: overdueTasks.length,
-      upcoming: upcomingTasks
+      thisWeek: thisWeekTasks.length,
+      urgent: todayTasks.length + overdueTasks.length
     };
   }, [tasks]);
 
-  const getDateLabel = (date: string) => {
-    const taskDate = new Date(date);
-    if (isToday(taskDate)) return 'Today';
-    if (isTomorrow(taskDate)) return 'Tomorrow';
-    return format(taskDate, 'MMM d');
-  };
+  // Week summary
+  const weekSummary = React.useMemo(() => {
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    
+    const newRecordsThisWeek = financialRecords.filter(record => 
+      isThisWeek(new Date(record.created_at))
+    ).length;
 
-  const getPriorityIcon = (priority: string) => {
-    switch (priority) {
-      case 'High': return '🔴';
-      case 'Medium': return '🟠';
-      case 'Low': return '🟢';
-      default: return '⚪';
-    }
-  };
+    return {
+      tasksThisWeek: taskSummary.thisWeek,
+      newRecords: newRecordsThisWeek
+    };
+  }, [financialRecords, taskSummary]);
+
+  const userName = user?.user_metadata?.full_name || 'Farmer';
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Section */}
-      <Card className="bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden">
-        <CardContent className="p-6">
-          <div className="relative">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">
-              {t('welcome')}
-            </h1>
-            <p className="text-green-100 text-lg mb-4">
-              {t('tagline')}
-            </p>
-            <div className="absolute top-0 right-0 opacity-20">
-              <BookOpen className="h-24 w-24" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen bg-gray-50">
+      {/* Welcome Banner */}
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-8">
+        <div className="max-w-md mx-auto">
+          <h1 className="text-2xl font-bold mb-2">
+            Karibu {userName}! 👋
+          </h1>
+          <h2 className="text-xl mb-1">TIWA Kilimo – Dairy Diary</h2>
+          <p className="text-green-100">Record. Reflect. Grow.</p>
+        </div>
+      </div>
 
-      {/* Alerts for overdue tasks */}
-      {taskSummary.overdue > 0 && (
-        <Card className="border-red-200 bg-red-50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-red-700">
-              <AlertCircle className="h-5 w-5" />
-              <span className="font-medium">
-                You have {taskSummary.overdue} overdue task{taskSummary.overdue > 1 ? 's' : ''}!
-              </span>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="ml-auto text-red-700 border-red-300"
-                onClick={() => navigate('/tasks')}
+      <div className="px-4 py-6 space-y-6 max-w-md mx-auto">
+        {/* Urgent Alerts */}
+        {taskSummary.urgent > 0 && (
+          <Card className="border-red-200 bg-red-50">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-red-700">
+                <Bell className="h-5 w-5" />
+                <span className="font-medium">
+                  🔔 {taskSummary.urgent} urgent task{taskSummary.urgent > 1 ? 's' : ''}!
+                </span>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="ml-auto text-red-700 border-red-300"
+                  onClick={() => navigate('/tasks')}
+                >
+                  View
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Feature Cards */}
+        <div className="grid grid-cols-2 gap-4">
+          {features.map((feature) => {
+            const Icon = feature.icon;
+            return (
+              <Card 
+                key={feature.path} 
+                className="cursor-pointer hover:shadow-lg transition-all border-0 shadow-md"
+                onClick={() => navigate(feature.path)}
               >
-                View Tasks
-              </Button>
+                <CardContent className="p-4 text-center">
+                  <div className={`w-12 h-12 ${feature.bgColor} rounded-full flex items-center justify-center mx-auto mb-3`}>
+                    <span className="text-2xl">{feature.emoji}</span>
+                  </div>
+                  <h3 className="font-semibold text-sm mb-1">{feature.title}</h3>
+                  <p className="text-gray-600 text-xs">{feature.description}</p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* This Week Summary */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              📊 This Week
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Tasks Due:</span>
+              <span className="font-semibold">{weekSummary.tasksThisWeek}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">New Records:</span>
+              <span className="font-semibold">{weekSummary.newRecords}</span>
             </div>
           </CardContent>
         </Card>
-      )}
 
-      {/* Feature Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {features.map((feature) => {
-          const Icon = feature.icon;
-          return (
-            <Card 
-              key={feature.path} 
-              className="cursor-pointer hover:shadow-lg transition-shadow border-0 shadow-md"
-              onClick={() => navigate(feature.path)}
-            >
-              <CardContent className="p-6 text-center">
-                <div className={`w-16 h-16 ${feature.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                  <Icon className={`h-8 w-8 ${feature.iconColor}`} />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-                <p className="text-gray-600 text-sm">{feature.description}</p>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Summary Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Financial Snapshot */}
+        {/* Finances Summary */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-green-600" />
-              {t('farmFinancialSnapshot')}
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              💰 {t('farmFinancialSnapshot')}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3">
             <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
               <div className="flex items-center gap-2">
                 <ArrowUp className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium">{t('totalIncome')}</span>
+                <span className="text-sm font-medium">Income</span>
               </div>
               <span className="font-bold text-green-600">
                 KSh {financialData.totalIncome.toLocaleString()}
@@ -191,7 +211,7 @@ const Dashboard = () => {
             <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
               <div className="flex items-center gap-2">
                 <ArrowDown className="h-4 w-4 text-red-600" />
-                <span className="text-sm font-medium">{t('totalExpenses')}</span>
+                <span className="text-sm font-medium">Expenses</span>
               </div>
               <span className="font-bold text-red-600">
                 KSh {financialData.totalExpenses.toLocaleString()}
@@ -199,7 +219,7 @@ const Dashboard = () => {
             </div>
             
             <div className="flex justify-between items-center p-3 bg-gray-100 rounded-lg border-2">
-              <span className="font-semibold">{t('balance')}</span>
+              <span className="font-semibold">Balance</span>
               <span className={`font-bold text-lg ${financialData.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 KSh {financialData.balance.toLocaleString()}
               </span>
@@ -207,70 +227,66 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Upcoming Tasks */}
+        {/* Quick Actions */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CheckSquare className="h-5 w-5 text-blue-600" />
-              Upcoming Tasks 🗓️
-              {(taskSummary.today + taskSummary.overdue) > 0 && (
-                <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
-                  {taskSummary.today + taskSummary.overdue} urgent
-                </span>
-              )}
-            </CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">⚡ Quick Actions</CardTitle>
           </CardHeader>
-          <CardContent>
-            {taskSummary.upcoming.length > 0 ? (
-              <div className="space-y-3">
-                {taskSummary.upcoming.map((task) => {
-                  const isOverdue = isAfter(new Date(), new Date(task.due_date));
-                  return (
-                    <div 
-                      key={task.id} 
-                      className={`flex justify-between items-center p-3 rounded-lg ${
-                        isOverdue ? 'bg-red-50 border border-red-200' : 'bg-gray-50'
-                      }`}
-                    >
-                      <div>
-                        <p className="font-medium text-sm flex items-center gap-1">
-                          {getPriorityIcon(task.priority)} {task.title}
-                        </p>
-                        <p className={`text-xs ${isOverdue ? 'text-red-600' : 'text-gray-600'}`}>
-                          {getDateLabel(task.due_date)} 
-                          {task.due_time && ` at ${task.due_time}`}
-                          {isOverdue && ' (Overdue)'}
-                        </p>
-                        {task.assigned_to && (
-                          <p className="text-xs text-gray-500">👤 {task.assigned_to}</p>
-                        )}
-                      </div>
-                      <CheckSquare className="h-4 w-4 text-gray-400" />
-                    </div>
-                  );
-                })}
-                <Button 
-                  variant="outline" 
-                  className="w-full mt-4"
-                  onClick={() => navigate('/tasks')}
-                >
-                  View All Tasks 📋
-                </Button>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <CheckSquare className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p className="text-gray-500 mb-4">No upcoming tasks. Great job! 👏</p>
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/tasks')}
-                >
-                  Create New Task ➕
-                </Button>
-              </div>
-            )}
+          <CardContent className="space-y-2">
+            <Button 
+              className="w-full justify-start bg-green-600 hover:bg-green-700"
+              onClick={() => navigate('/diary')}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              🐄 Register New Cow
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start"
+              onClick={() => navigate('/tasks')}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              ✅ Add New Task
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start"
+              onClick={() => navigate('/finances')}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              💰 Record Transaction
+            </Button>
           </CardContent>
         </Card>
+
+        {/* Reminders */}
+        {(taskSummary.today > 0 || taskSummary.tomorrow > 0) && (
+          <Card className="border-orange-200 bg-orange-50">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg text-orange-800">🔔 Reminders</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {taskSummary.today > 0 && (
+                <p className="text-sm text-orange-700">
+                  📅 <strong>Today:</strong> {taskSummary.today} task{taskSummary.today > 1 ? 's' : ''} due
+                </p>
+              )}
+              {taskSummary.tomorrow > 0 && (
+                <p className="text-sm text-orange-700">
+                  📅 <strong>Tomorrow:</strong> {taskSummary.tomorrow} task{taskSummary.tomorrow > 1 ? 's' : ''} due
+                </p>
+              )}
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="w-full mt-2 text-orange-700 border-orange-300"
+                onClick={() => navigate('/tasks')}
+              >
+                View All Tasks
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

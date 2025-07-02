@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import AnimalCard from '@/components/AnimalCard';
 import RegisterAnimalForm from '@/components/RegisterAnimalForm';
 import AnimalProfile from '@/components/AnimalProfile';
 import { Tables } from '@/integrations/supabase/types';
+import PageHeader from '@/components/PageHeader';
 
 type Animal = Tables<'animals'>;
 
@@ -37,69 +37,68 @@ const AnimalDiary = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <BookOpen className="h-6 w-6 text-green-600" />
-          Dairy Diary
-        </h1>
-        <Button 
-          className="bg-green-600 hover:bg-green-700"
-          onClick={() => setShowRegisterForm(true)}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Register New Cow
-        </Button>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <PageHeader title="🐄 Dairy Diary" />
+      
+      <div className="p-4 space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-bold">Your Dairy Cows</h2>
+          <Button 
+            className="bg-green-600 hover:bg-green-700"
+            onClick={() => setShowRegisterForm(true)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Register Cow
+          </Button>
+        </div>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Search by name, tag, or breed..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            {isLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-pulse text-gray-600">Loading cows...</div>
+              </div>
+            ) : error ? (
+              <div className="text-center py-8 text-red-600">
+                Error loading cows. Please try again.
+              </div>
+            ) : filteredAnimals.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500 mb-4">
+                  {animals?.length === 0 
+                    ? "No cows registered yet. Click 'Register Cow' to get started."
+                    : "No cows match your search criteria."
+                  }
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredAnimals.map((animal) => (
+                  <AnimalCard
+                    key={animal.id}
+                    animal={animal}
+                    onViewProfile={setSelectedAnimal}
+                  />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {showRegisterForm && (
+          <RegisterAnimalForm onClose={() => setShowRegisterForm(false)} />
+        )}
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Dairy Cows</CardTitle>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Search by name, tag, or breed..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-pulse text-gray-600">Loading cows...</div>
-            </div>
-          ) : error ? (
-            <div className="text-center py-8 text-red-600">
-              Error loading cows. Please try again.
-            </div>
-          ) : filteredAnimals.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500 mb-4">
-                {animals?.length === 0 
-                  ? "No cows registered yet. Click 'Register New Cow' to get started."
-                  : "No cows match your search criteria."
-                }
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredAnimals.map((animal) => (
-                <AnimalCard
-                  key={animal.id}
-                  animal={animal}
-                  onViewProfile={setSelectedAnimal}
-                />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {showRegisterForm && (
-        <RegisterAnimalForm onClose={() => setShowRegisterForm(false)} />
-      )}
     </div>
   );
 };

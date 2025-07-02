@@ -26,7 +26,7 @@ const translations = {
     calendarOverview: 'Calendar Overview',
     
     // Summary sections
-    farmFinancialSnapshot: 'Farm Financial Snapshot',
+    farmFinancialSnapshot: 'Financial Summary',
     totalIncome: 'Total Income',
     totalExpenses: 'Total Expenses',
     balance: 'Balance',
@@ -35,7 +35,7 @@ const translations = {
     
     // Auth
     login: 'Login',
-    logout: 'Logout',
+    logout: 'Sign Out',
     email: 'Email',
     password: 'Password',
     loginWithGoogle: 'Login with Google',
@@ -65,7 +65,7 @@ const translations = {
     calendarOverview: 'Kalenda',
     
     // Summary sections
-    farmFinancialSnapshot: 'Muhtasari wa Fedha za Shamba',
+    farmFinancialSnapshot: 'Muhtasari wa Fedha',
     totalIncome: 'Mapato Yote',
     totalExpenses: 'Matumizi Yote',
     balance: 'Salio',

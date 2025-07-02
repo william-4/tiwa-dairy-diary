@@ -6,12 +6,14 @@ import { BookOpen, CheckSquare, DollarSign, Calendar, ArrowUp, ArrowDown, AlertC
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTasks } from '@/hooks/useTasks';
+import { useFinancialRecords } from '@/hooks/useFinancialRecords';
 import { format, isToday, isTomorrow, isAfter } from 'date-fns';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { data: tasks = [] } = useTasks();
+  const { data: financialRecords = [] } = useFinancialRecords();
 
   const features = [
     {
@@ -48,12 +50,22 @@ const Dashboard = () => {
     },
   ];
 
-  // Mock data - will be replaced with real data from Supabase
-  const financialData = {
-    totalIncome: 25000,
-    totalExpenses: 18000,
-    balance: 7000,
-  };
+  // Calculate financial data from actual records
+  const financialData = React.useMemo(() => {
+    const income = financialRecords
+      .filter(r => r.transaction_type === 'Income')
+      .reduce((sum, r) => sum + Number(r.amount), 0);
+    
+    const expenses = financialRecords
+      .filter(r => r.transaction_type === 'Expense')
+      .reduce((sum, r) => sum + Number(r.amount), 0);
+
+    return {
+      totalIncome: income,
+      totalExpenses: expenses,
+      balance: income - expenses,
+    };
+  }, [financialRecords]);
 
   // Process tasks for dashboard display
   const taskSummary = React.useMemo(() => {

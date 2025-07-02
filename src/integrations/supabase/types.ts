@@ -226,6 +226,56 @@ export type Database = {
           },
         ]
       }
+      financial_records: {
+        Row: {
+          amount: number
+          animal_id: string | null
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          photo_url: string | null
+          transaction_date: string
+          transaction_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          animal_id?: string | null
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          photo_url?: string | null
+          transaction_date: string
+          transaction_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          animal_id?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          photo_url?: string | null
+          transaction_date?: string
+          transaction_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_records_animal_id_fkey"
+            columns: ["animal_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       health_records: {
         Row: {
           animal_id: string

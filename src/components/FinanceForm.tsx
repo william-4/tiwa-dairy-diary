@@ -96,9 +96,13 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
       const finalCategory = data.category === 'Other' && customCategory ? customCategory : data.category;
       
       const recordData = {
-        ...data,
+        transaction_type: data.transaction_type,
         category: finalCategory,
+        amount: data.amount,
         transaction_date: format(data.transaction_date, 'yyyy-MM-dd'),
+        animal_id: data.animal_id || null,
+        description: data.description || null,
+        photo_url: data.photo_url || null,
       };
 
       if (record) {

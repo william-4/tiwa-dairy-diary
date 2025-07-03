@@ -13,12 +13,15 @@ import TaskForm from '@/components/TaskForm';
 import TaskCard from '@/components/TaskCard';
 import PageHeader from '@/components/PageHeader';
 import { Tables } from '@/integrations/supabase/types';
+import { useAuth } from '@/contexts/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 type Task = Tables<'tasks'>;
 
 const Tasks = () => {
   const { t } = useLanguage();
-  const { data: tasks = [], isLoading } = useTasks();
+  const { user, loading: authLoading } = useAuth();
+  const { data: tasks = [], isLoading, error } = useTasks();
   const { data: animals = [] } = useAnimals();
   const [formOpen, setFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>();
@@ -26,6 +29,23 @@ const Tasks = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [animalFilter, setAnimalFilter] = useState('all');
+
+  // Redirect to auth if not authenticated
+  if (!authLoading && !user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  // Show loading state while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="text-gray-600">Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   const filteredTasks = useMemo(() => {
     let filtered = tasks;
@@ -66,16 +86,19 @@ const Tasks = () => {
   }, [tasks]);
 
   const handleAddTask = () => {
+    console.log('Add Task button clicked');
     setEditingTask(undefined);
     setFormOpen(true);
   };
 
   const handleEditTask = (task: Task) => {
+    console.log('Edit Task clicked for:', task.id);
     setEditingTask(task);
     setFormOpen(true);
   };
 
   const handleCloseForm = () => {
+    console.log('Closing task form');
     setFormOpen(false);
     setEditingTask(undefined);
   };
@@ -86,6 +109,26 @@ const Tasks = () => {
     setPriorityFilter('all');
     setAnimalFilter('all');
   };
+
+  // Show error state if there's an error loading tasks
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-20">
+        <PageHeader title={t('tasks')} />
+        <div className="p-4 max-w-6xl mx-auto">
+          <Card>
+            <CardContent className="p-12 text-center">
+              <div className="text-red-600 mb-4">⚠️ Error loading tasks</div>
+              <p className="text-gray-600 mb-4">Please try refreshing the page</p>
+              <Button onClick={() => window.location.reload()}>
+                Refresh Page
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -251,7 +294,7 @@ const Tasks = () => {
         )}
       </div>
 
-      {/* Task Form Modal - Fixed to show properly */}
+      {/* Task Form Modal - Fixed positioning and z-index */}
       {formOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">

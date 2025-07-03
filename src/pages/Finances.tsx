@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,12 +13,15 @@ import FinanceForm from '@/components/FinanceForm';
 import FinanceCard from '@/components/FinanceCard';
 import PageHeader from '@/components/PageHeader';
 import { Tables } from '@/integrations/supabase/types';
+import { useAuth } from '@/contexts/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 type FinancialRecord = Tables<'financial_records'>;
 
 const Finances = () => {
   const { t } = useLanguage();
-  const { data: records = [], isLoading } = useFinancialRecords();
+  const { user, loading: authLoading } = useAuth();
+  const { data: records = [], isLoading, error } = useFinancialRecords();
   const { data: animals = [] } = useAnimals();
   const [formOpen, setFormOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | undefined>();
@@ -25,6 +29,23 @@ const Finances = () => {
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterAnimal, setFilterAnimal] = useState('all');
   const [activeTab, setActiveTab] = useState('all');
+
+  // Redirect to auth if not authenticated
+  if (!authLoading && !user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  // Show loading state while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="text-gray-600">Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   const filteredRecords = useMemo(() => {
     let filtered = records;
@@ -75,11 +96,13 @@ const Finances = () => {
   }, [records]);
 
   const handleAddRecord = () => {
+    console.log('Add Record button clicked');
     setEditingRecord(undefined);
     setFormOpen(true);
   };
 
   const handleEditRecord = (record: any) => {
+    console.log('Edit Record clicked for:', record.id);
     setEditingRecord(record);
     setFormOpen(true);
   };
@@ -89,6 +112,26 @@ const Finances = () => {
     setFilterCategory('all');
     setFilterAnimal('all');
   };
+
+  // Show error state if there's an error loading records
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-20">
+        <PageHeader title={t('finances')} />
+        <div className="p-4 max-w-6xl mx-auto">
+          <Card>
+            <CardContent className="p-12 text-center">
+              <div className="text-red-600 mb-4">⚠️ Error loading financial records</div>
+              <p className="text-gray-600 mb-4">Please try refreshing the page</p>
+              <Button onClick={() => window.location.reload()}>
+                Refresh Page
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">

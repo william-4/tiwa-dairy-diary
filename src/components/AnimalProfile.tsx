@@ -1,193 +1,178 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar } from 'lucide-react';
-import { format } from 'date-fns';
-import { useProductionRecords } from '@/hooks/useProductionRecords';
-import { useFeedingRecords } from '@/hooks/useFeedingRecords';
-import { useHealthRecords } from '@/hooks/useHealthRecords';
-import { useBreedingRecords } from '@/hooks/useBreedingRecords';
+import { ArrowLeft, Calendar, Heart, Stethoscope, Utensils, Milk2, Edit, Camera } from 'lucide-react';
+import { format, differenceInDays, differenceInMonths } from 'date-fns';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Tables } from '@/integrations/supabase/types';
 import ProductionRecords from './records/ProductionRecords';
-import FeedingRecords from './records/FeedingRecords';
 import HealthRecords from './records/HealthRecords';
+import FeedingRecords from './records/FeedingRecords';
 import BreedingRecords from './records/BreedingRecords';
 import GeneralDairyRecords from './GeneralDairyRecords';
-import PageHeader from './PageHeader';
-import { Tables } from '@/integrations/supabase/types';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 type Animal = Tables<'animals'>;
 
 interface AnimalProfileProps {
   animal: Animal;
   onBack: () => void;
+  onEdit: () => void;
 }
 
-const AnimalProfile = ({ animal, onBack }: AnimalProfileProps) => {
+const AnimalProfile = ({ animal, onBack, onEdit }: AnimalProfileProps) => {
   const { t } = useLanguage();
-  // Set 'history' as default tab instead of 'production'
+  // Default to 'history' tab (Full History)
   const [activeTab, setActiveTab] = useState('history');
-  const { data: productionRecords = [] } = useProductionRecords(animal.id);
-  const { data: feedingRecords = [] } = useFeedingRecords(animal.id);
-  const { data: healthRecords = [] } = useHealthRecords(animal.id);
-  const { data: breedingRecords = [] } = useBreedingRecords(animal.id);
 
-  // Combine all records for Full History
-  const allRecords = useMemo(() => {
-    const combined = [
-      ...productionRecords.map(r => ({
-        id: r.id,
-        date: r.date,
-        type: 'production',
-        icon: '🥛',
-        title: `Milk Production: ${r.total_yield}L`,
-        details: `AM: ${r.am_yield || 0}L, Noon: ${r.noon_yield || 0}L, PM: ${r.pm_yield || 0}L`,
-      })),
-      ...feedingRecords.map(r => ({
-        id: r.id,
-        date: r.date,
-        type: 'feeding',
-        icon: '🍽️',
-        title: `Feeding: ${r.feed_type}`,
-        details: r.quantity ? `${r.quantity}kg` : 'Quantity not specified',
-      })),
-      ...healthRecords.map(r => ({
-        id: r.id,
-        date: r.date,
-        type: 'health',
-        icon: '🩺',
-        title: `Health: ${r.health_issue || 'General checkup'}`,
-        details: r.treatment_given || r.vaccine_dewormer || 'Treatment recorded',
-      })),
-      ...breedingRecords.map(r => ({
-        id: r.id,
-        date: r.date_of_heat || r.pregnancy_confirmation_date || r.expected_calving_date || r.actual_calving_date || '',
-        type: 'breeding',
-        icon: '🐮',
-        title: 'Breeding Record',
-        details: r.conception_status || r.mating_method || 'Breeding activity',
-      })),
-    ];
-
-    return combined
-      .filter(r => r.date)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [productionRecords, feedingRecords, healthRecords, breedingRecords]);
-
-  const age = useMemo(() => {
-    const birthDate = new Date(animal.date_of_birth);
-    const today = new Date();
-    const diffTime = Math.abs(today.getTime() - birthDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const getAge = (birthDate: string) => {
+    const birth = new Date(birthDate);
+    const now = new Date();
+    const months = differenceInMonths(now, birth);
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
     
-    if (diffDays < 30) return `${diffDays} days`;
-    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months`;
-    
-    const years = Math.floor(diffDays / 365);
-    const months = Math.floor((diffDays % 365) / 30);
-    return months > 0 ? `${years}y ${months}m` : `${years} years`;
-  }, [animal.date_of_birth]);
+    if (years > 0) {
+      return `${years}y ${remainingMonths}m`;
+    }
+    return `${months}m`;
+  };
+
+  const getHealthStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'healthy': return 'bg-green-100 text-green-800';
+      case 'sick': return 'bg-red-100 text-red-800';
+      case 'recovering': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getGenderEmoji = (gender: string) => {
+    return gender === 'Male' ? '🐂' : '🐄';
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <PageHeader title={`${animal.name}${animal.tag ? ` (${animal.tag})` : ''}`} onBack={onBack} />
-      
-      <div className="p-4 space-y-6 max-w-6xl mx-auto">
+      {/* Header */}
+      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 z-40">
+        <div className="flex items-center justify-between max-w-6xl mx-auto">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" onClick={onBack}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{getGenderEmoji(animal.gender)}</span>
+              <h1 className="text-lg md:text-xl font-semibold text-gray-900">
+                {animal.name}
+              </h1>
+              {animal.tag && (
+                <Badge variant="outline" className="text-xs">
+                  #{animal.tag}
+                </Badge>
+              )}
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={onEdit}>
+            <Edit className="h-4 w-4 mr-1" />
+            {t('edit')}
+          </Button>
+        </div>
+      </div>
+
+      <div className="p-4 space-y-4 max-w-6xl mx-auto">
         {/* Animal Info Card */}
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-2xl">🐄</span>
-              </div>
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold mb-2">{animal.name}</h1>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div><span className="font-medium">Tag:</span> {animal.tag || 'Not assigned'}</div>
-                  <div><span className="font-medium">Breed:</span> {animal.breed}</div>
-                  <div><span className="font-medium">Age:</span> {age}</div>
-                  <div><span className="font-medium">Gender:</span> {animal.gender}</div>
-                  <div><span className="font-medium">Source:</span> {animal.source}</div>
-                  <div><span className="font-medium">Health:</span> 
-                    <Badge variant={animal.health_status === 'Healthy' ? 'default' : 'destructive'} className="ml-1">
-                      {animal.health_status}
-                    </Badge>
-                  </div>
+          <CardContent className="p-4 md:p-6">
+            <div className="flex flex-col md:flex-row md:items-center gap-4">
+              {/* Photo */}
+              <div className="flex-shrink-0">
+                <div className="w-24 h-24 md:w-32 md:h-32 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                  {animal.photo_url ? (
+                    <img 
+                      src={animal.photo_url} 
+                      alt={animal.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-center text-gray-400">
+                      <Camera className="h-8 w-8 mx-auto mb-1" />
+                      <span className="text-xs">No photo</span>
+                    </div>
+                  )}
                 </div>
-                {animal.notes && (
-                  <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm">{animal.notes}</p>
-                  </div>
-                )}
+              </div>
+
+              {/* Details */}
+              <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <p className="text-sm text-gray-600">{t('breed')}</p>
+                  <p className="font-medium">{animal.breed}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">{t('age')}</p>
+                  <p className="font-medium">{getAge(animal.date_of_birth)}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">{t('gender')}</p>
+                  <p className="font-medium">{animal.gender}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">{t('health')}</p>
+                  <Badge className={getHealthStatusColor(animal.health_status || 'Healthy')}>
+                    {animal.health_status || 'Healthy'}
+                  </Badge>
+                </div>
               </div>
             </div>
+
+            {animal.notes && (
+              <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-700">{animal.notes}</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Tabs Navigation */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1">
-            <TabsTrigger value="history" className="text-xs md:text-sm">📋 {t('fullHistory')}</TabsTrigger>
-            <TabsTrigger value="production" className="text-xs md:text-sm">🥛 Production</TabsTrigger>
-            <TabsTrigger value="feeding" className="text-xs md:text-sm">🍽️ {t('feeding')}</TabsTrigger>
-            <TabsTrigger value="health" className="text-xs md:text-sm">🩺 {t('health')}</TabsTrigger>
-            <TabsTrigger value="breeding" className="text-xs md:text-sm">🐮 {t('breeding')}</TabsTrigger>
-            <TabsTrigger value="general" className="text-xs md:text-sm">🏠 General</TabsTrigger>
+        {/* Records Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6">
+            <TabsTrigger value="history" className="text-xs">
+              📋 {t('fullHistory')}
+            </TabsTrigger>
+            <TabsTrigger value="production" className="text-xs">
+              🥛 {t('production')}
+            </TabsTrigger>
+            <TabsTrigger value="health" className="text-xs">
+              🩺 {t('health')}
+            </TabsTrigger>
+            <TabsTrigger value="feeding" className="text-xs">
+              🌾 {t('feeding')}
+            </TabsTrigger>
+            <TabsTrigger value="breeding" className="text-xs">
+              💕 {t('breeding')}
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="history" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Full Activity History</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {allRecords.length > 0 ? (
-                  <div className="space-y-4">
-                    {allRecords.map((record) => (
-                      <div key={`${record.type}-${record.id}`} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                        <span className="text-xl">{record.icon}</span>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-1">
-                            <h4 className="font-medium">{record.title}</h4>
-                            <span className="text-sm text-gray-500">
-                              {format(new Date(record.date), 'MMM d, yyyy')}
-                            </span>
-                          </div>
-                          <p className="text-sm text-gray-600">{record.details}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-center text-gray-500 py-8">
-                    No activity records yet. Start by adding production, feeding, health, or breeding records.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+          <TabsContent value="history" className="mt-4">
+            <GeneralDairyRecords animalId={animal.id} />
           </TabsContent>
 
-          <TabsContent value="production" className="mt-6">
+          <TabsContent value="production" className="mt-4">
             <ProductionRecords animalId={animal.id} />
           </TabsContent>
 
-          <TabsContent value="feeding" className="mt-6">
-            <FeedingRecords animalId={animal.id} />
-          </TabsContent>
-
-          <TabsContent value="health" className="mt-6">
+          <TabsContent value="health" className="mt-4">
             <HealthRecords animalId={animal.id} />
           </TabsContent>
 
-          <TabsContent value="breeding" className="mt-6">
-            <BreedingRecords animalId={animal.id} />
+          <TabsContent value="feeding" className="mt-4">
+            <FeedingRecords animalId={animal.id} />
           </TabsContent>
 
-          <TabsContent value="general" className="mt-6">
-            <GeneralDairyRecords />
+          <TabsContent value="breeding" className="mt-4">
+            <BreedingRecords animalId={animal.id} />
           </TabsContent>
         </Tabs>
       </div>

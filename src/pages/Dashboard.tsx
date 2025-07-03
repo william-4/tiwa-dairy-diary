@@ -51,83 +51,52 @@ const Dashboard = () => {
           <p className="text-lg text-gray-600">{t('tagline')}</p>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-green-50 border-green-200">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl mb-1">🐄</div>
-              <div className="text-xl font-bold text-green-600">{animals.length}</div>
-              <div className="text-sm text-green-700">Cows</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-blue-50 border-blue-200">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl mb-1">✅</div>
-              <div className="text-xl font-bold text-blue-600">{tasks.filter(t => t.status === 'Pending').length}</div>
-              <div className="text-sm text-blue-700">Pending Tasks</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-purple-50 border-purple-200">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl mb-1">💰</div>
-              <div className="text-xl font-bold text-purple-600">KSh {totalIncome.toLocaleString()}</div>
-              <div className="text-sm text-purple-700">Income</div>
-            </CardContent>
-          </Card>
-
-          <Card className={`${balance >= 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl mb-1">📊</div>
-              <div className={`text-xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                KSh {balance.toLocaleString()}
-              </div>
-              <div className={`text-sm ${balance >= 0 ? 'text-green-700' : 'text-red-700'}`}>Balance</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/diary')}>
+        {/* Quick Actions - Four Button Layout */}
+        <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer bg-green-50 border-green-200" onClick={() => navigate('/diary')}>
             <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <BookOpen className="h-6 w-6 text-green-600" />
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <BookOpen className="h-8 w-8 text-green-600" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg">{t('animalDiary')}</h3>
-                  <p className="text-sm text-gray-600">Track your cows</p>
-                </div>
+                <h3 className="font-semibold text-lg text-green-800">{t('animalDiary')}</h3>
+                <p className="text-sm text-green-600 mt-1">Track your cows</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/tasks')}>
+          <Card className="hover:shadow-md transition-shadow cursor-pointer bg-blue-50 border-blue-200" onClick={() => navigate('/tasks')}>
             <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <CheckSquare className="h-6 w-6 text-blue-600" />
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <CheckSquare className="h-8 w-8 text-blue-600" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg">{t('tasksCalendar')}</h3>
-                  <p className="text-sm text-gray-600">Manage tasks</p>
-                </div>
+                <h3 className="font-semibold text-lg text-blue-800">{t('tasksCalendar')}</h3>
+                <p className="text-sm text-blue-600 mt-1">Manage tasks</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/finances')}>
+          <Card className="hover:shadow-md transition-shadow cursor-pointer bg-purple-50 border-purple-200" onClick={() => navigate('/finances')}>
             <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                  <DollarSign className="h-6 w-6 text-purple-600" />
+              <div className="text-center">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <DollarSign className="h-8 w-8 text-purple-600" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg">{t('financesOverview')}</h3>
-                  <p className="text-sm text-gray-600">Track finances</p>
+                <h3 className="font-semibold text-lg text-purple-800">{t('financesOverview')}</h3>
+                <p className="text-sm text-purple-600 mt-1">Track finances</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-md transition-shadow cursor-pointer bg-orange-50 border-orange-200" onClick={() => navigate('/tasks')}>
+            <CardContent className="p-6">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Calendar className="h-8 w-8 text-orange-600" />
                 </div>
+                <h3 className="font-semibold text-lg text-orange-800">{t('calendarOverview')}</h3>
+                <p className="text-sm text-orange-600 mt-1">View calendar</p>
               </div>
             </CardContent>
           </Card>

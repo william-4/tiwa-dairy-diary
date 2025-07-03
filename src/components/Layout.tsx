@@ -1,6 +1,7 @@
 
 import React from 'react';
 import BottomNavigation from './BottomNavigation';
+import LanguageToggle from './LanguageToggle';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -9,6 +10,11 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Language Toggle in Top Right */}
+      <div className="fixed top-4 right-4 z-40">
+        <LanguageToggle />
+      </div>
+      
       <main className="pb-20">
         {children}
       </main>

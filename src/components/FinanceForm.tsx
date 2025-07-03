@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Upload, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -21,23 +21,6 @@ import { Tables } from '@/integrations/supabase/types';
 
 type FinancialRecord = Tables<'financial_records'>;
 
-const expenseCategories = [
-  'Feed',
-  'Vet/Health',
-  'Medicine',
-  'Breeding/AI',
-  'Labor',
-  'Equipment',
-  'Other'
-];
-
-const incomeCategories = [
-  'Milk Sales',
-  'Animal Sales',
-  'Manure Sales',
-  'Other'
-];
-
 const financeSchema = z.object({
   transaction_type: z.enum(['Income', 'Expense']),
   category: z.string().min(1, 'Category is required'),
@@ -46,6 +29,10 @@ const financeSchema = z.object({
   animal_id: z.string().optional(),
   description: z.string().optional(),
   photo_url: z.string().optional(),
+  buyer_supplier_name: z.string().optional(),
+  buyer_supplier_phone: z.string().optional(),
+  is_credit: z.boolean().optional(),
+  repayment_date: z.date().optional(),
 });
 
 type FinanceFormData = z.infer<typeof financeSchema>;
@@ -62,6 +49,24 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
   const createRecord = useCreateFinancialRecord();
   const updateRecord = useUpdateFinancialRecord();
   const [customCategory, setCustomCategory] = useState('');
+  const [showCreditOptions, setShowCreditOptions] = useState(false);
+
+  const expenseCategories = [
+    'Feed',
+    'Vet/Health',
+    'Medicine',
+    'Breeding/AI',
+    'Labor',
+    'Equipment',
+    'Other'
+  ];
+
+  const incomeCategories = [
+    'Milk Sales',
+    'Animal Sales',
+    'Manure Sales',
+    'Other'
+  ];
 
   const {
     register,
@@ -83,11 +88,13 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
     } : {
       transaction_type: 'Expense',
       transaction_date: new Date(),
+      is_credit: false,
     },
   });
 
   const transactionType = watch('transaction_type');
   const selectedCategory = watch('category');
+  const isCredit = watch('is_credit');
 
   const categories = transactionType === 'Income' ? incomeCategories : expenseCategories;
 
@@ -113,6 +120,7 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
       
       reset();
       setCustomCategory('');
+      setShowCreditOptions(false);
       onOpenChange(false);
     } catch (error) {
       console.error('Error saving financial record:', error);
@@ -121,7 +129,7 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {record ? 'Edit Financial Record' : 'Add Financial Record'}
@@ -172,7 +180,7 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
 
           {selectedCategory === 'Other' && (
             <div>
-              <Label htmlFor="customCategory">Custom Category</Label>
+              <Label htmlFor="customCategory">Please specify</Label>
               <Input
                 value={customCategory}
                 onChange={(e) => setCustomCategory(e.target.value)}
@@ -228,6 +236,26 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
             )}
           </div>
 
+          {/* Buyer/Supplier Details */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="buyer_supplier_name">
+                {transactionType === 'Income' ? 'Buyer Name' : 'Supplier Name'} (Optional)
+              </Label>
+              <Input
+                {...register('buyer_supplier_name')}
+                placeholder={transactionType === 'Income' ? 'e.g., John Kamau' : 'e.g., Agro Vet'}
+              />
+            </div>
+            <div>
+              <Label htmlFor="buyer_supplier_phone">Phone (Optional)</Label>
+              <Input
+                {...register('buyer_supplier_phone')}
+                placeholder="e.g., 0712345678"
+              />
+            </div>
+          </div>
+
           <div>
             <Label htmlFor="animal_id">Linked Cow (Optional)</Label>
             <Select
@@ -248,6 +276,51 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
             </Select>
           </div>
 
+          {/* Credit Purchase Option for Expenses */}
+          {transactionType === 'Expense' && (
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="is_credit"
+                {...register('is_credit')}
+                onChange={(e) => setShowCreditOptions(e.target.checked)}
+              />
+              <Label htmlFor="is_credit">Was this purchased on credit?</Label>
+            </div>
+          )}
+
+          {showCreditOptions && isCredit && (
+            <div>
+              <Label>Repayment Due Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !watch('repayment_date') && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {watch('repayment_date') ? (
+                      format(watch('repayment_date'), "PPP")
+                    ) : (
+                      <span>Pick repayment date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={watch('repayment_date')}
+                    onSelect={(date) => date && setValue('repayment_date', date)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
+
           <div>
             <Label htmlFor="description">Description (Optional)</Label>
             <Textarea
@@ -257,6 +330,24 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
             />
           </div>
 
+          {/* Photo Upload */}
+          <div>
+            <Label htmlFor="photo_url">Receipt/Photo (Optional)</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                {...register('photo_url')}
+                placeholder="Photo URL or upload coming soon..."
+                className="flex-1"
+              />
+              <Button type="button" variant="outline" size="sm">
+                <Upload className="h-4 w-4" />
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              Photo upload feature coming soon. For now, you can add a URL.
+            </p>
+          </div>
+
           <div className="flex gap-3 pt-4">
             <Button
               type="button"
@@ -264,7 +355,7 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
               onClick={() => onOpenChange(false)}
               className="flex-1"
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button 
               type="submit" 

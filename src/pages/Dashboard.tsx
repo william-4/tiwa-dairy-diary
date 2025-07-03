@@ -2,291 +2,206 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, CheckSquare, DollarSign, Calendar, ArrowUp, ArrowDown, AlertCircle, Plus, Bell } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { BookOpen, CheckSquare, DollarSign, Calendar, TrendingUp, Bell } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTasks } from '@/hooks/useTasks';
+import { useNavigate } from 'react-router-dom';
 import { useFinancialRecords } from '@/hooks/useFinancialRecords';
+import { useTasks } from '@/hooks/useTasks';
 import { useAnimals } from '@/hooks/useAnimals';
-import { format, isToday, isTomorrow, isAfter, isThisWeek } from 'date-fns';
+import PageHeader from '@/components/PageHeader';
 
 const Dashboard = () => {
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
-  const { t } = useLanguage();
-  const { user } = useAuth();
-  const { data: tasks = [] } = useTasks();
   const { data: financialRecords = [] } = useFinancialRecords();
+  const { data: tasks = [] } = useTasks();
   const { data: animals = [] } = useAnimals();
 
-  const features = [
-    {
-      title: 'Dairy Diary',
-      icon: BookOpen,
-      path: '/diary',
-      description: `${animals.length} cows registered`,
-      bgColor: 'bg-green-100',
-      iconColor: 'text-green-600',
-      emoji: '🐄'
-    },
-    {
-      title: t('tasks'),
-      icon: CheckSquare,
-      path: '/tasks',
-      description: `${tasks.filter(t => t.status !== 'Done').length} pending`,
-      bgColor: 'bg-blue-100',
-      iconColor: 'text-blue-600',
-      emoji: '✅'
-    },
-    {
-      title: t('finances'),
-      icon: DollarSign,
-      path: '/finances',
-      description: 'Track income & expenses',
-      bgColor: 'bg-purple-100',
-      iconColor: 'text-purple-600',
-      emoji: '💰'
-    },
-    {
-      title: 'Calendar',
-      icon: Calendar,
-      path: '/tasks',
-      description: 'View schedule',
-      bgColor: 'bg-orange-100',
-      iconColor: 'text-orange-600',
-      emoji: '📆'
-    },
-  ];
+  // Calculate financial summary
+  const totalIncome = financialRecords
+    .filter(r => r.transaction_type === 'Income')
+    .reduce((sum, r) => sum + Number(r.amount), 0);
+  
+  const totalExpenses = financialRecords
+    .filter(r => r.transaction_type === 'Expense')
+    .reduce((sum, r) => sum + Number(r.amount), 0);
 
-  // Calculate financial data
-  const financialData = React.useMemo(() => {
-    const income = financialRecords
-      .filter(r => r.transaction_type === 'Income')
-      .reduce((sum, r) => sum + Number(r.amount), 0);
-    
-    const expenses = financialRecords
-      .filter(r => r.transaction_type === 'Expense')
-      .reduce((sum, r) => sum + Number(r.amount), 0);
+  const balance = totalIncome - totalExpenses;
 
-    return {
-      totalIncome: income,
-      totalExpenses: expenses,
-      balance: income - expenses,
-    };
-  }, [financialRecords]);
-
-  // Process tasks for dashboard display
-  const taskSummary = React.useMemo(() => {
-    const now = new Date();
-    const todayTasks = tasks.filter(task => isToday(new Date(task.due_date)) && task.status !== 'Done');
-    const tomorrowTasks = tasks.filter(task => isTomorrow(new Date(task.due_date)) && task.status !== 'Done');
-    const overdueTasks = tasks.filter(task => 
-      isAfter(now, new Date(task.due_date)) && task.status !== 'Done'
-    );
-    const thisWeekTasks = tasks.filter(task => 
-      isThisWeek(new Date(task.due_date)) && task.status !== 'Done'
-    );
-    
-    return {
-      today: todayTasks.length,
-      tomorrow: tomorrowTasks.length,
-      overdue: overdueTasks.length,
-      thisWeek: thisWeekTasks.length,
-      urgent: todayTasks.length + overdueTasks.length
-    };
-  }, [tasks]);
-
-  // Week summary
-  const weekSummary = React.useMemo(() => {
-    const weekStart = new Date();
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-    
-    const newRecordsThisWeek = financialRecords.filter(record => 
-      isThisWeek(new Date(record.created_at))
-    ).length;
-
-    return {
-      tasksThisWeek: taskSummary.thisWeek,
-      newRecords: newRecordsThisWeek
-    };
-  }, [financialRecords, taskSummary]);
-
-  const userName = user?.user_metadata?.full_name || 'Farmer';
+  // Get upcoming tasks (next 7 days)
+  const upcomingTasks = tasks.filter(task => {
+    if (task.status === 'Done') return false;
+    const dueDate = new Date(task.due_date);
+    const today = new Date();
+    const nextWeek = new Date();
+    nextWeek.setDate(today.getDate() + 7);
+    return dueDate >= today && dueDate <= nextWeek;
+  }).slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-8">
-        <div className="max-w-md mx-auto">
-          <h1 className="text-2xl font-bold mb-2">
-            Karibu {userName}! 👋
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <PageHeader title={t('home')} />
+      
+      <div className="p-2 md:p-4 space-y-4 md:space-y-6 max-w-6xl mx-auto">
+        {/* Welcome Section */}
+        <div className="text-center py-4 md:py-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+            {t('welcome')}
           </h1>
-          <h2 className="text-xl mb-1">TIWA Kilimo – Dairy Diary</h2>
-          <p className="text-green-100">Record. Reflect. Grow.</p>
+          <p className="text-base md:text-lg text-gray-600">{t('tagline')}</p>
         </div>
-      </div>
 
-      <div className="px-4 py-6 space-y-6 max-w-md mx-auto">
-        {/* Urgent Alerts */}
-        {taskSummary.urgent > 0 && (
-          <Card className="border-red-200 bg-red-50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 text-red-700">
-                <Bell className="h-5 w-5" />
-                <span className="font-medium">
-                  🔔 {taskSummary.urgent} urgent task{taskSummary.urgent > 1 ? 's' : ''}!
-                </span>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="ml-auto text-red-700 border-red-300"
-                  onClick={() => navigate('/tasks')}
-                >
-                  View
-                </Button>
-              </div>
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <Card className="bg-green-50 border-green-200">
+            <CardContent className="p-3 md:p-4 text-center">
+              <div className="text-2xl mb-1">🐄</div>
+              <div className="text-lg md:text-xl font-bold text-green-600">{animals.length}</div>
+              <div className="text-xs md:text-sm text-green-700">Cows</div>
             </CardContent>
           </Card>
-        )}
 
-        {/* Feature Cards */}
-        <div className="grid grid-cols-2 gap-4">
-          {features.map((feature) => {
-            const Icon = feature.icon;
-            return (
-              <Card 
-                key={feature.path} 
-                className="cursor-pointer hover:shadow-lg transition-all border-0 shadow-md"
-                onClick={() => navigate(feature.path)}
-              >
-                <CardContent className="p-4 text-center">
-                  <div className={`w-12 h-12 ${feature.bgColor} rounded-full flex items-center justify-center mx-auto mb-3`}>
-                    <span className="text-2xl">{feature.emoji}</span>
-                  </div>
-                  <h3 className="font-semibold text-sm mb-1">{feature.title}</h3>
-                  <p className="text-gray-600 text-xs">{feature.description}</p>
-                </CardContent>
-              </Card>
-            );
-          })}
+          <Card className="bg-blue-50 border-blue-200">
+            <CardContent className="p-3 md:p-4 text-center">
+              <div className="text-2xl mb-1">✅</div>
+              <div className="text-lg md:text-xl font-bold text-blue-600">{tasks.filter(t => t.status === 'Pending').length}</div>
+              <div className="text-xs md:text-sm text-blue-700">Pending Tasks</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-purple-50 border-purple-200">
+            <CardContent className="p-3 md:p-4 text-center">
+              <div className="text-2xl mb-1">💰</div>
+              <div className="text-lg md:text-xl font-bold text-purple-600">KSh {totalIncome.toLocaleString()}</div>
+              <div className="text-xs md:text-sm text-purple-700">Income</div>
+            </CardContent>
+          </Card>
+
+          <Card className={`${balance >= 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+            <CardContent className="p-3 md:p-4 text-center">
+              <div className="text-2xl mb-1">📊</div>
+              <div className={`text-lg md:text-xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                KSh {balance.toLocaleString()}
+              </div>
+              <div className={`text-xs md:text-sm ${balance >= 0 ? 'text-green-700' : 'text-red-700'}`}>Balance</div>
+            </CardContent>
+          </Card>
         </div>
-
-        {/* This Week Summary */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              📊 This Week
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Tasks Due:</span>
-              <span className="font-semibold">{weekSummary.tasksThisWeek}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">New Records:</span>
-              <span className="font-semibold">{weekSummary.newRecords}</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Finances Summary */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              💰 {t('farmFinancialSnapshot')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-              <div className="flex items-center gap-2">
-                <ArrowUp className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium">Income</span>
-              </div>
-              <span className="font-bold text-green-600">
-                KSh {financialData.totalIncome.toLocaleString()}
-              </span>
-            </div>
-            
-            <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-              <div className="flex items-center gap-2">
-                <ArrowDown className="h-4 w-4 text-red-600" />
-                <span className="text-sm font-medium">Expenses</span>
-              </div>
-              <span className="font-bold text-red-600">
-                KSh {financialData.totalExpenses.toLocaleString()}
-              </span>
-            </div>
-            
-            <div className="flex justify-between items-center p-3 bg-gray-100 rounded-lg border-2">
-              <span className="font-semibold">Balance</span>
-              <span className={`font-bold text-lg ${financialData.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                KSh {financialData.balance.toLocaleString()}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/diary')}>
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-base md:text-lg">{t('animalDiary')}</h3>
+                  <p className="text-sm text-gray-600">Track your cows</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/tasks')}>
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <CheckSquare className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-base md:text-lg">{t('tasksCalendar')}</h3>
+                  <p className="text-sm text-gray-600">Manage tasks</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/finances')}>
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                  <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-base md:text-lg">{t('financesOverview')}</h3>
+                  <p className="text-sm text-gray-600">Track finances</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Upcoming Tasks */}
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">⚡ Quick Actions</CardTitle>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bell className="h-5 w-5 text-orange-600" />
+              {t('upcomingTasksWeek')}
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <Button 
-              className="w-full justify-start bg-green-600 hover:bg-green-700"
-              onClick={() => navigate('/diary')}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              🐄 Register New Cow
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
-              onClick={() => navigate('/tasks')}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              ✅ Add New Task
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
-              onClick={() => navigate('/finances')}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              💰 Record Transaction
-            </Button>
+          <CardContent>
+            {upcomingTasks.length > 0 ? (
+              <div className="space-y-3">
+                {upcomingTasks.map((task) => (
+                  <div key={task.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <h4 className="font-medium">{task.title}</h4>
+                      <p className="text-sm text-gray-600">
+                        Due: {new Date(task.due_date).toLocaleDateString()}
+                        {task.assigned_to && ` • Assigned to: ${task.assigned_to}`}
+                      </p>
+                    </div>
+                    <div className={`px-2 py-1 rounded text-xs font-medium ${
+                      task.priority === 'High' ? 'bg-red-100 text-red-700' :
+                      task.priority === 'Medium' ? 'bg-orange-100 text-orange-700' :
+                      'bg-green-100 text-green-700'
+                    }`}>
+                      {task.priority}
+                    </div>
+                  </div>
+                ))}
+                <Button variant="outline" onClick={() => navigate('/tasks')} className="w-full mt-3">
+                  View All Tasks
+                </Button>
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-4">{t('noUpcomingTasks')}</p>
+            )}
           </CardContent>
         </Card>
 
-        {/* Reminders */}
-        {(taskSummary.today > 0 || taskSummary.tomorrow > 0) && (
-          <Card className="border-orange-200 bg-orange-50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg text-orange-800">🔔 Reminders</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {taskSummary.today > 0 && (
-                <p className="text-sm text-orange-700">
-                  📅 <strong>Today:</strong> {taskSummary.today} task{taskSummary.today > 1 ? 's' : ''} due
+        {/* Financial Summary */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-green-600" />
+              {t('farmFinancialSnapshot')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center">
+                <p className="text-sm text-gray-600">{t('totalIncome')}</p>
+                <p className="text-xl font-bold text-green-600">KSh {totalIncome.toLocaleString()}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">{t('totalExpenses')}</p>
+                <p className="text-xl font-bold text-red-600">KSh {totalExpenses.toLocaleString()}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">{t('balance')}</p>
+                <p className={`text-xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  KSh {balance.toLocaleString()}
                 </p>
-              )}
-              {taskSummary.tomorrow > 0 && (
-                <p className="text-sm text-orange-700">
-                  📅 <strong>Tomorrow:</strong> {taskSummary.tomorrow} task{taskSummary.tomorrow > 1 ? 's' : ''} due
-                </p>
-              )}
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="w-full mt-2 text-orange-700 border-orange-300"
-                onClick={() => navigate('/tasks')}
-              >
-                View All Tasks
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+              </div>
+            </div>
+            <Button variant="outline" onClick={() => navigate('/finances')} className="w-full mt-4">
+              View Detailed Finances
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

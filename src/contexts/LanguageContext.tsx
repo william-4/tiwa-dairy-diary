@@ -48,6 +48,31 @@ const translations = {
     edit: 'Edit',
     add: 'Add',
     loading: 'Loading...',
+    
+    // Tasks
+    addTask: 'Add Task',
+    editTask: 'Edit Task',
+    taskTitle: 'Task Title',
+    assignTo: 'Assign To',
+    dueDate: 'Due Date',
+    priority: 'Priority',
+    description: 'Description',
+    
+    // Finances
+    addRecord: 'Add Record',
+    income: 'Income',
+    expense: 'Expense',
+    amount: 'Amount',
+    category: 'Category',
+    transactionDate: 'Transaction Date',
+    
+    // Animal Diary
+    registerCow: 'Register Cow',
+    milkProduction: 'Milk Production',
+    feeding: 'Feeding',
+    health: 'Health',
+    breeding: 'Breeding',
+    fullHistory: 'Full History',
   },
   sw: {
     // Navigation
@@ -87,6 +112,31 @@ const translations = {
     edit: 'Hariri',
     add: 'Ongeza',
     loading: 'Inapakia...',
+    
+    // Tasks
+    addTask: 'Ongeza Kazi',
+    editTask: 'Hariri Kazi',
+    taskTitle: 'Jina la Kazi',
+    assignTo: 'Kabidhi kwa',
+    dueDate: 'Tarehe ya Mwisho',
+    priority: 'Kipaumbele',
+    description: 'Maelezo',
+    
+    // Finances
+    addRecord: 'Ongeza Rekodi',
+    income: 'Mapato',
+    expense: 'Matumizi',
+    amount: 'Kiasi',
+    category: 'Aina',
+    transactionDate: 'Tarehe ya Muamala',
+    
+    // Animal Diary
+    registerCow: 'Sajili Ng\'ombe',
+    milkProduction: 'Uzalishaji wa Maziwa',
+    feeding: 'Kulisha',
+    health: 'Afya',
+    breeding: 'Uzazi',
+    fullHistory: 'Historia Kamili',
   }
 };
 

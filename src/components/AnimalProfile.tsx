@@ -25,7 +25,8 @@ interface AnimalProfileProps {
 }
 
 const AnimalProfile = ({ animal, onBack }: AnimalProfileProps) => {
-  const [activeTab, setActiveTab] = useState('production');
+  // Set 'history' as default tab instead of 'production'
+  const [activeTab, setActiveTab] = useState('history');
   const { data: productionRecords = [] } = useProductionRecords(animal.id);
   const { data: feedingRecords = [] } = useFeedingRecords(animal.id);
   const { data: healthRecords = [] } = useHealthRecords(animal.id);
@@ -91,17 +92,17 @@ const AnimalProfile = ({ animal, onBack }: AnimalProfileProps) => {
     <div className="min-h-screen bg-gray-50 pb-20">
       <PageHeader title={`${animal.name}${animal.tag ? ` (${animal.tag})` : ''}`} onBack={onBack} />
       
-      <div className="p-4 space-y-6 max-w-4xl mx-auto">
+      <div className="p-2 md:p-4 space-y-4 md:space-y-6 max-w-6xl mx-auto">
         {/* Animal Info Card */}
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 md:p-6">
             <div className="flex items-start gap-4">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-2xl">🐄</span>
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-xl md:text-2xl">🐄</span>
               </div>
               <div className="flex-1">
-                <h1 className="text-2xl font-bold mb-2">{animal.name}</h1>
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <h1 className="text-xl md:text-2xl font-bold mb-2">{animal.name}</h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 text-sm">
                   <div><span className="font-medium">Tag:</span> {animal.tag || 'Not assigned'}</div>
                   <div><span className="font-medium">Breed:</span> {animal.breed}</div>
                   <div><span className="font-medium">Age:</span> {age}</div>
@@ -125,36 +126,16 @@ const AnimalProfile = ({ animal, onBack }: AnimalProfileProps) => {
 
         {/* Tabs Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="production">🥛 Production</TabsTrigger>
-            <TabsTrigger value="feeding">🍽️ Feeding</TabsTrigger>
-            <TabsTrigger value="health">🩺 Health</TabsTrigger>
-            <TabsTrigger value="breeding">🐮 Breeding</TabsTrigger>
-            <TabsTrigger value="general">🏠 General</TabsTrigger>
-            <TabsTrigger value="history">📋 Full History</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1">
+            <TabsTrigger value="history" className="text-xs md:text-sm">📋 History</TabsTrigger>
+            <TabsTrigger value="production" className="text-xs md:text-sm">🥛 Milk</TabsTrigger>
+            <TabsTrigger value="feeding" className="text-xs md:text-sm">🍽️ Feed</TabsTrigger>
+            <TabsTrigger value="health" className="text-xs md:text-sm">🩺 Health</TabsTrigger>
+            <TabsTrigger value="breeding" className="text-xs md:text-sm">🐮 Breed</TabsTrigger>
+            <TabsTrigger value="general" className="text-xs md:text-sm">🏠 General</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="production" className="mt-6">
-            <ProductionRecords animalId={animal.id} />
-          </TabsContent>
-
-          <TabsContent value="feeding" className="mt-6">
-            <FeedingRecords animalId={animal.id} />
-          </TabsContent>
-
-          <TabsContent value="health" className="mt-6">
-            <HealthRecords animalId={animal.id} />
-          </TabsContent>
-
-          <TabsContent value="breeding" className="mt-6">
-            <BreedingRecords animalId={animal.id} />
-          </TabsContent>
-
-          <TabsContent value="general" className="mt-6">
-            <GeneralDairyRecords />
-          </TabsContent>
-
-          <TabsContent value="history" className="mt-6">
+          <TabsContent value="history" className="mt-4 md:mt-6">
             <Card>
               <CardHeader>
                 <CardTitle>Full Activity History</CardTitle>
@@ -184,6 +165,26 @@ const AnimalProfile = ({ animal, onBack }: AnimalProfileProps) => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="production" className="mt-4 md:mt-6">
+            <ProductionRecords animalId={animal.id} />
+          </TabsContent>
+
+          <TabsContent value="feeding" className="mt-4 md:mt-6">
+            <FeedingRecords animalId={animal.id} />
+          </TabsContent>
+
+          <TabsContent value="health" className="mt-4 md:mt-6">
+            <HealthRecords animalId={animal.id} />
+          </TabsContent>
+
+          <TabsContent value="breeding" className="mt-4 md:mt-6">
+            <BreedingRecords animalId={animal.id} />
+          </TabsContent>
+
+          <TabsContent value="general" className="mt-4 md:mt-6">
+            <GeneralDairyRecords />
           </TabsContent>
         </Tabs>
       </div>

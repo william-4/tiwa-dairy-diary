@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -89,21 +88,21 @@ const Tasks = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <PageHeader title="My Tasks" />
+      <PageHeader title={t('tasks')} />
       
-      <div className="p-4 space-y-6 max-w-4xl mx-auto">
+      <div className="p-2 md:p-4 space-y-4 max-w-6xl mx-auto">
         {/* Header with Add Button */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <CheckCircle className="h-6 w-6 text-green-600" />
-              My Tasks ✅
+            <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
+              {t('tasks')} ✅
             </h1>
             <p className="text-gray-600 text-sm mt-1">Manage your farm tasks and reminders</p>
           </div>
-          <Button onClick={handleAddTask} className="bg-green-600 hover:bg-green-700">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Task
+          <Button onClick={handleAddTask} className="bg-green-600 hover:bg-green-700" size="sm">
+            <Plus className="h-4 w-4 mr-1 md:mr-2" />
+            {t('add')} Task
           </Button>
         </div>
 
@@ -112,39 +111,39 @@ const Tasks = () => {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
-              <div className="text-gray-600">Loading your tasks...</div>
+              <div className="text-gray-600">{t('loading')}</div>
             </div>
           </div>
         )}
 
         {/* Task Summary - Only show when not loading */}
         {!isLoading && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             <Card className="bg-blue-50 border-blue-200">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-blue-600">{taskStats.pending}</div>
-                <div className="text-sm text-blue-700">Pending</div>
+              <CardContent className="p-3 md:p-4 text-center">
+                <div className="text-lg md:text-2xl font-bold text-blue-600">{taskStats.pending}</div>
+                <div className="text-xs md:text-sm text-blue-700">Pending</div>
               </CardContent>
             </Card>
 
             <Card className="bg-green-50 border-green-200">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-green-600">{taskStats.completed}</div>
-                <div className="text-sm text-green-700">Completed</div>
+              <CardContent className="p-3 md:p-4 text-center">
+                <div className="text-lg md:text-2xl font-bold text-green-600">{taskStats.completed}</div>
+                <div className="text-xs md:text-sm text-green-700">Completed</div>
               </CardContent>
             </Card>
 
             <Card className="bg-red-50 border-red-200">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-red-600">{taskStats.overdue}</div>
-                <div className="text-sm text-red-700">Overdue</div>
+              <CardContent className="p-3 md:p-4 text-center">
+                <div className="text-lg md:text-2xl font-bold text-red-600">{taskStats.overdue}</div>
+                <div className="text-xs md:text-sm text-red-700">Overdue</div>
               </CardContent>
             </Card>
 
             <Card className="bg-gray-50 border-gray-200">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-gray-600">{taskStats.total}</div>
-                <div className="text-sm text-gray-700">Total</div>
+              <CardContent className="p-3 md:p-4 text-center">
+                <div className="text-lg md:text-2xl font-bold text-gray-600">{taskStats.total}</div>
+                <div className="text-xs md:text-sm text-gray-700">Total</div>
               </CardContent>
             </Card>
           </div>
@@ -153,8 +152,8 @@ const Tasks = () => {
         {/* Filters - Only show when not loading */}
         {!isLoading && (
           <Card>
-            <CardContent className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <CardContent className="p-3 md:p-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-2 md:gap-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
@@ -203,8 +202,8 @@ const Tasks = () => {
                   </SelectContent>
                 </Select>
 
-                <Button variant="outline" onClick={clearFilters}>
-                  <Filter className="h-4 w-4 mr-2" />
+                <Button variant="outline" onClick={clearFilters} size="sm">
+                  <Filter className="h-4 w-4 mr-1 md:mr-2" />
                   Clear
                 </Button>
               </div>
@@ -223,8 +222,8 @@ const Tasks = () => {
               </div>
             ) : (
               <Card>
-                <CardContent className="p-12 text-center">
-                  <Calendar className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                <CardContent className="p-6 md:p-12 text-center">
+                  <Calendar className="h-12 w-12 md:h-16 md:w-16 mx-auto mb-4 text-gray-300" />
                   <h3 className="text-lg font-medium mb-2">
                     {tasks.length === 0 ? 'You haven\'t added any tasks yet' : 'No tasks found'}
                   </h3>
@@ -245,15 +244,19 @@ const Tasks = () => {
             )}
           </>
         )}
-
-        {/* Task Form Modal */}
-        {formOpen && (
-          <TaskForm
-            task={editingTask}
-            onClose={handleCloseForm}
-          />
-        )}
       </div>
+
+      {/* Task Form Modal - Fixed to show properly */}
+      {formOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <TaskForm
+              task={editingTask}
+              onClose={handleCloseForm}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

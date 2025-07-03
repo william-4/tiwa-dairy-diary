@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,14 +29,12 @@ const Finances = () => {
   const filteredRecords = useMemo(() => {
     let filtered = records;
 
-    // Filter by tab
     if (activeTab === 'income') {
       filtered = filtered.filter(r => r.transaction_type === 'Income');
     } else if (activeTab === 'expenses') {
       filtered = filtered.filter(r => r.transaction_type === 'Expense');
     }
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(r => 
         r.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -45,12 +42,10 @@ const Finances = () => {
       );
     }
 
-    // Filter by category
     if (filterCategory && filterCategory !== 'all') {
       filtered = filtered.filter(r => r.category === filterCategory);
     }
 
-    // Filter by animal
     if (filterAnimal && filterAnimal !== 'all') {
       filtered = filtered.filter(r => r.animal_id === filterAnimal);
     }
@@ -97,21 +92,21 @@ const Finances = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <PageHeader title="My Farm Finances" />
+      <PageHeader title={t('finances')} />
       
-      <div className="p-4 space-y-6 max-w-4xl mx-auto">
+      <div className="p-2 md:p-4 space-y-4 md:space-y-6 max-w-6xl mx-auto">
         {/* Header with Add Button */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <DollarSign className="h-6 w-6 text-purple-600" />
-              My Farm Finances 💰
+            <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+              <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+              {t('finances')} 💰
             </h1>
             <p className="text-gray-600 text-sm mt-1">Track your farm income and expenses</p>
           </div>
-          <Button onClick={handleAddRecord} className="bg-purple-600 hover:bg-purple-700">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Record
+          <Button onClick={handleAddRecord} className="bg-purple-600 hover:bg-purple-700" size="sm">
+            <Plus className="h-4 w-4 mr-1 md:mr-2" />
+            {t('addRecord')}
           </Button>
         </div>
 
@@ -120,41 +115,41 @@ const Finances = () => {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
-              <div className="text-gray-600">Loading your financial records...</div>
+              <div className="text-gray-600">{t('loading')}</div>
             </div>
           </div>
         )}
 
         {/* Financial Summary - Only show when not loading */}
         {!isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
             <Card className="bg-green-50 border-green-200">
-              <CardContent className="p-6 text-center">
-                <ArrowUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                <p className="text-sm text-green-700 mb-1">Total Income</p>
-                <p className="text-2xl font-bold text-green-600">
+              <CardContent className="p-4 md:p-6 text-center">
+                <ArrowUp className="h-6 w-6 md:h-8 md:w-8 text-green-600 mx-auto mb-2" />
+                <p className="text-sm text-green-700 mb-1">{t('totalIncome')}</p>
+                <p className="text-lg md:text-2xl font-bold text-green-600">
                   KSh {summary.totalIncome.toLocaleString()}
                 </p>
               </CardContent>
             </Card>
 
             <Card className="bg-red-50 border-red-200">
-              <CardContent className="p-6 text-center">
-                <ArrowDown className="h-8 w-8 text-red-600 mx-auto mb-2" />
-                <p className="text-sm text-red-700 mb-1">Total Expenses</p>
-                <p className="text-2xl font-bold text-red-600">
+              <CardContent className="p-4 md:p-6 text-center">
+                <ArrowDown className="h-6 w-6 md:h-8 md:w-8 text-red-600 mx-auto mb-2" />
+                <p className="text-sm text-red-700 mb-1">{t('totalExpenses')}</p>
+                <p className="text-lg md:text-2xl font-bold text-red-600">
                   KSh {summary.totalExpenses.toLocaleString()}
                 </p>
               </CardContent>
             </Card>
 
             <Card className={`${summary.balance >= 0 ? 'bg-blue-50 border-blue-200' : 'bg-red-50 border-red-200'}`}>
-              <CardContent className="p-6 text-center">
-                <DollarSign className={`h-8 w-8 mx-auto mb-2 ${summary.balance >= 0 ? 'text-blue-600' : 'text-red-600'}`} />
+              <CardContent className="p-4 md:p-6 text-center">
+                <DollarSign className={`h-6 w-6 md:h-8 md:w-8 mx-auto mb-2 ${summary.balance >= 0 ? 'text-blue-600' : 'text-red-600'}`} />
                 <p className={`text-sm mb-1 ${summary.balance >= 0 ? 'text-blue-700' : 'text-red-700'}`}>
-                  Balance
+                  {t('balance')}
                 </p>
-                <p className={`text-2xl font-bold ${summary.balance >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                <p className={`text-lg md:text-2xl font-bold ${summary.balance >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
                   KSh {summary.balance.toLocaleString()}
                 </p>
               </CardContent>
@@ -165,8 +160,8 @@ const Finances = () => {
         {/* Filters - Only show when not loading */}
         {!isLoading && (
           <Card>
-            <CardContent className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <CardContent className="p-3 md:p-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2 md:gap-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
@@ -205,8 +200,8 @@ const Finances = () => {
                   </SelectContent>
                 </Select>
 
-                <Button variant="outline" onClick={clearFilters}>
-                  <Filter className="h-4 w-4 mr-2" />
+                <Button variant="outline" onClick={clearFilters} size="sm">
+                  <Filter className="h-4 w-4 mr-1 md:mr-2" />
                   Clear Filters
                 </Button>
               </div>
@@ -218,24 +213,24 @@ const Finances = () => {
         {!isLoading && (
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="all">All Records ({records.length})</TabsTrigger>
-              <TabsTrigger value="income">
-                💰 Income ({records.filter(r => r.transaction_type === 'Income').length})
+              <TabsTrigger value="all" className="text-xs md:text-sm">All ({records.length})</TabsTrigger>
+              <TabsTrigger value="income" className="text-xs md:text-sm">
+                💰 {t('income')} ({records.filter(r => r.transaction_type === 'Income').length})
               </TabsTrigger>
-              <TabsTrigger value="expenses">
+              <TabsTrigger value="expenses" className="text-xs md:text-sm">
                 💸 Expenses ({records.filter(r => r.transaction_type === 'Expense').length})
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="all" className="mt-6">
+            <TabsContent value="all" className="mt-4 md:mt-6">
               <RecordsList records={filteredRecords} onEdit={handleEditRecord} />
             </TabsContent>
 
-            <TabsContent value="income" className="mt-6">
+            <TabsContent value="income" className="mt-4 md:mt-6">
               <RecordsList records={filteredRecords} onEdit={handleEditRecord} />
             </TabsContent>
 
-            <TabsContent value="expenses" className="mt-6">
+            <TabsContent value="expenses" className="mt-4 md:mt-6">
               <RecordsList records={filteredRecords} onEdit={handleEditRecord} />
             </TabsContent>
           </Tabs>
@@ -258,11 +253,13 @@ interface RecordsListProps {
 }
 
 const RecordsList = ({ records, onEdit }: RecordsListProps) => {
+  const { t } = useLanguage();
+  
   if (records.length === 0) {
     return (
       <Card>
-        <CardContent className="p-12 text-center">
-          <DollarSign className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+        <CardContent className="p-6 md:p-12 text-center">
+          <DollarSign className="h-12 w-12 md:h-16 md:w-16 mx-auto mb-4 text-gray-300" />
           <h3 className="text-lg font-medium mb-2">You haven't added any financial records yet</h3>
           <p className="text-sm text-gray-500 mb-6">
             Start tracking your farm finances by adding your first transaction.

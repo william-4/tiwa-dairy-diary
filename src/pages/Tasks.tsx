@@ -23,9 +23,9 @@ const Tasks = () => {
   const [formOpen, setFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>();
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [priorityFilter, setPriorityFilter] = useState('');
-  const [animalFilter, setAnimalFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [animalFilter, setAnimalFilter] = useState('all');
 
   const filteredTasks = useMemo(() => {
     let filtered = tasks;
@@ -37,15 +37,15 @@ const Tasks = () => {
       );
     }
 
-    if (statusFilter) {
+    if (statusFilter && statusFilter !== 'all') {
       filtered = filtered.filter(task => task.status === statusFilter);
     }
 
-    if (priorityFilter) {
+    if (priorityFilter && priorityFilter !== 'all') {
       filtered = filtered.filter(task => task.priority === priorityFilter);
     }
 
-    if (animalFilter) {
+    if (animalFilter && animalFilter !== 'all') {
       filtered = filtered.filter(task => task.animal_id === animalFilter);
     }
 
@@ -54,7 +54,7 @@ const Tasks = () => {
 
   const taskStats = useMemo(() => {
     const pending = tasks.filter(t => t.status === 'Pending').length;
-    const completed = tasks.filter(t => t.status === 'Completed').length;
+    const completed = tasks.filter(t => t.status === 'Done').length;
     const overdue = tasks.filter(t => {
       const dueDate = new Date(t.due_date);
       const today = new Date();
@@ -80,9 +80,16 @@ const Tasks = () => {
     setEditingTask(undefined);
   };
 
+  const clearFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('all');
+    setPriorityFilter('all');
+    setAnimalFilter('all');
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <PageHeader title="Farm Tasks" />
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <PageHeader title="My Tasks" />
       
       <div className="p-4 space-y-6 max-w-4xl mx-auto">
         {/* Header with Add Button */}
@@ -90,7 +97,7 @@ const Tasks = () => {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <CheckCircle className="h-6 w-6 text-green-600" />
-              {t('tasks')} ✅
+              My Tasks ✅
             </h1>
             <p className="text-gray-600 text-sm mt-1">Manage your farm tasks and reminders</p>
           </div>
@@ -104,13 +111,13 @@ const Tasks = () => {
         {isLoading && (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <div className="animate-pulse text-gray-600 mb-2">Loading your tasks...</div>
-              <div className="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto"></div>
+              <div className="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+              <div className="text-gray-600">Loading your tasks...</div>
             </div>
           </div>
         )}
 
-        {/* Task Summary */}
+        {/* Task Summary - Only show when not loading */}
         {!isLoading && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card className="bg-blue-50 border-blue-200">
@@ -143,7 +150,7 @@ const Tasks = () => {
           </div>
         )}
 
-        {/* Filters */}
+        {/* Filters - Only show when not loading */}
         {!isLoading && (
           <Card>
             <CardContent className="p-4">
@@ -163,9 +170,9 @@ const Tasks = () => {
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
+                    <SelectItem value="Done">Completed</SelectItem>
                     <SelectItem value="Cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
@@ -175,7 +182,7 @@ const Tasks = () => {
                     <SelectValue placeholder="All Priority" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Priority</SelectItem>
+                    <SelectItem value="all">All Priority</SelectItem>
                     <SelectItem value="High">High</SelectItem>
                     <SelectItem value="Medium">Medium</SelectItem>
                     <SelectItem value="Low">Low</SelectItem>
@@ -187,7 +194,7 @@ const Tasks = () => {
                     <SelectValue placeholder="All Cows" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Cows</SelectItem>
+                    <SelectItem value="all">All Cows</SelectItem>
                     {animals.map((animal) => (
                       <SelectItem key={animal.id} value={animal.id}>
                         {animal.name} {animal.tag && `(${animal.tag})`}
@@ -196,15 +203,7 @@ const Tasks = () => {
                   </SelectContent>
                 </Select>
 
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setSearchTerm('');
-                    setStatusFilter('');
-                    setPriorityFilter('');
-                    setAnimalFilter('');
-                  }}
-                >
+                <Button variant="outline" onClick={clearFilters}>
                   <Filter className="h-4 w-4 mr-2" />
                   Clear
                 </Button>
@@ -213,7 +212,7 @@ const Tasks = () => {
           </Card>
         )}
 
-        {/* Tasks List */}
+        {/* Tasks List - Show when not loading */}
         {!isLoading && (
           <>
             {filteredTasks.length > 0 ? (
@@ -227,7 +226,7 @@ const Tasks = () => {
                 <CardContent className="p-12 text-center">
                   <Calendar className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                   <h3 className="text-lg font-medium mb-2">
-                    {tasks.length === 0 ? 'No tasks yet' : 'No tasks found'}
+                    {tasks.length === 0 ? 'You haven\'t added any tasks yet' : 'No tasks found'}
                   </h3>
                   <p className="text-sm text-gray-500 mb-6">
                     {tasks.length === 0 
@@ -247,6 +246,7 @@ const Tasks = () => {
           </>
         )}
 
+        {/* Task Form Modal */}
         {formOpen && (
           <TaskForm
             task={editingTask}

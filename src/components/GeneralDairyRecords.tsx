@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Edit, Calendar, Barn } from 'lucide-react';
+import { Plus, Edit, Calendar, Building2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface GeneralRecord {
@@ -158,7 +157,7 @@ const GeneralDairyRecords = () => {
                       <span className="font-medium">{format(new Date(record.date), 'PPP')}</span>
                     </div>
                     <div className="flex items-center gap-2 mb-2">
-                      <Barn className="h-4 w-4 text-blue-500" />
+                      <Building2 className="h-4 w-4 text-blue-500" />
                       <span className="font-medium">{record.activity_type}</span>
                     </div>
                     {record.quantity && (

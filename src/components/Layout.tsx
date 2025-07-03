@@ -11,7 +11,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Language Toggle in Top Right */}
-      <div className="fixed top-4 right-4 z-40">
+      <div className="fixed top-4 right-4 z-50">
         <LanguageToggle />
       </div>
       

@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -90,7 +91,7 @@ const Tasks = () => {
     <div className="min-h-screen bg-gray-50 pb-20">
       <PageHeader title={t('tasks')} />
       
-      <div className="p-2 md:p-4 space-y-4 max-w-6xl mx-auto">
+      <div className="p-4 space-y-4 max-w-6xl mx-auto">
         {/* Header with Add Button */}
         <div className="flex justify-between items-center">
           <div>
@@ -100,7 +101,11 @@ const Tasks = () => {
             </h1>
             <p className="text-gray-600 text-sm mt-1">Manage your farm tasks and reminders</p>
           </div>
-          <Button onClick={handleAddTask} className="bg-green-600 hover:bg-green-700" size="sm">
+          <Button 
+            onClick={handleAddTask} 
+            className="bg-green-600 hover:bg-green-700" 
+            size="sm"
+          >
             <Plus className="h-4 w-4 mr-1 md:mr-2" />
             {t('add')} Task
           </Button>

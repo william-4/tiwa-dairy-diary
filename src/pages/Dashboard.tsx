@@ -42,62 +42,62 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-50 pb-20">
       <PageHeader title={t('home')} />
       
-      <div className="p-2 md:p-4 space-y-4 md:space-y-6 max-w-6xl mx-auto">
+      <div className="p-4 space-y-6 max-w-4xl mx-auto">
         {/* Welcome Section */}
-        <div className="text-center py-4 md:py-8">
+        <div className="text-center py-6">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
             {t('welcome')}
           </h1>
-          <p className="text-base md:text-lg text-gray-600">{t('tagline')}</p>
+          <p className="text-lg text-gray-600">{t('tagline')}</p>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="bg-green-50 border-green-200">
-            <CardContent className="p-3 md:p-4 text-center">
+            <CardContent className="p-4 text-center">
               <div className="text-2xl mb-1">🐄</div>
-              <div className="text-lg md:text-xl font-bold text-green-600">{animals.length}</div>
-              <div className="text-xs md:text-sm text-green-700">Cows</div>
+              <div className="text-xl font-bold text-green-600">{animals.length}</div>
+              <div className="text-sm text-green-700">Cows</div>
             </CardContent>
           </Card>
 
           <Card className="bg-blue-50 border-blue-200">
-            <CardContent className="p-3 md:p-4 text-center">
+            <CardContent className="p-4 text-center">
               <div className="text-2xl mb-1">✅</div>
-              <div className="text-lg md:text-xl font-bold text-blue-600">{tasks.filter(t => t.status === 'Pending').length}</div>
-              <div className="text-xs md:text-sm text-blue-700">Pending Tasks</div>
+              <div className="text-xl font-bold text-blue-600">{tasks.filter(t => t.status === 'Pending').length}</div>
+              <div className="text-sm text-blue-700">Pending Tasks</div>
             </CardContent>
           </Card>
 
           <Card className="bg-purple-50 border-purple-200">
-            <CardContent className="p-3 md:p-4 text-center">
+            <CardContent className="p-4 text-center">
               <div className="text-2xl mb-1">💰</div>
-              <div className="text-lg md:text-xl font-bold text-purple-600">KSh {totalIncome.toLocaleString()}</div>
-              <div className="text-xs md:text-sm text-purple-700">Income</div>
+              <div className="text-xl font-bold text-purple-600">KSh {totalIncome.toLocaleString()}</div>
+              <div className="text-sm text-purple-700">Income</div>
             </CardContent>
           </Card>
 
           <Card className={`${balance >= 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-            <CardContent className="p-3 md:p-4 text-center">
+            <CardContent className="p-4 text-center">
               <div className="text-2xl mb-1">📊</div>
-              <div className={`text-lg md:text-xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <div className={`text-xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 KSh {balance.toLocaleString()}
               </div>
-              <div className={`text-xs md:text-sm ${balance >= 0 ? 'text-green-700' : 'text-red-700'}`}>Balance</div>
+              <div className={`text-sm ${balance >= 0 ? 'text-green-700' : 'text-red-700'}`}>Balance</div>
             </CardContent>
           </Card>
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/diary')}>
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <BookOpen className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-base md:text-lg">{t('animalDiary')}</h3>
+                  <h3 className="font-semibold text-lg">{t('animalDiary')}</h3>
                   <p className="text-sm text-gray-600">Track your cows</p>
                 </div>
               </div>
@@ -105,13 +105,13 @@ const Dashboard = () => {
           </Card>
 
           <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/tasks')}>
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <CheckSquare className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <CheckSquare className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-base md:text-lg">{t('tasksCalendar')}</h3>
+                  <h3 className="font-semibold text-lg">{t('tasksCalendar')}</h3>
                   <p className="text-sm text-gray-600">Manage tasks</p>
                 </div>
               </div>
@@ -119,13 +119,13 @@ const Dashboard = () => {
           </Card>
 
           <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/finances')}>
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                  <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                  <DollarSign className="h-6 w-6 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-base md:text-lg">{t('financesOverview')}</h3>
+                  <h3 className="font-semibold text-lg">{t('financesOverview')}</h3>
                   <p className="text-sm text-gray-600">Track finances</p>
                 </div>
               </div>

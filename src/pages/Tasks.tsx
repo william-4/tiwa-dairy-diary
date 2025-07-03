@@ -75,6 +75,11 @@ const Tasks = () => {
     setFormOpen(true);
   };
 
+  const handleCloseForm = () => {
+    setFormOpen(false);
+    setEditingTask(undefined);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <PageHeader title="Farm Tasks" />
@@ -242,11 +247,12 @@ const Tasks = () => {
           </>
         )}
 
-        <TaskForm
-          open={formOpen}
-          onOpenChange={setFormOpen}
-          task={editingTask}
-        />
+        {formOpen && (
+          <TaskForm
+            task={editingTask}
+            onClose={handleCloseForm}
+          />
+        )}
       </div>
     </div>
   );

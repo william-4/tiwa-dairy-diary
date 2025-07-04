@@ -156,23 +156,23 @@ const AnimalProfile = ({ animal, onBack, onEdit }: AnimalProfileProps) => {
           </TabsList>
 
           <TabsContent value="history" className="mt-4">
-            <GeneralDairyRecords />
+            <GeneralDairyRecords animalId={animal.id} />
           </TabsContent>
 
           <TabsContent value="production" className="mt-4">
-            <ProductionRecords />
+            <ProductionRecords animalId={animal.id} />
           </TabsContent>
 
           <TabsContent value="health" className="mt-4">
-            <HealthRecords />
+            <HealthRecords animalId={animal.id} />
           </TabsContent>
 
           <TabsContent value="feeding" className="mt-4">
-            <FeedingRecords />
+            <FeedingRecords animalId={animal.id} />
           </TabsContent>
 
           <TabsContent value="breeding" className="mt-4">
-            <BreedingRecords />
+            <BreedingRecords animalId={animal.id} />
           </TabsContent>
         </Tabs>
       </div>

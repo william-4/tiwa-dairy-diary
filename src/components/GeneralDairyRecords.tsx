@@ -22,11 +22,11 @@ const GeneralDairyRecords = ({ animalId }: GeneralDairyRecordsProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   
-  // Fetch all records
-  const { data: productionRecords = [] } = useProductionRecords();
-  const { data: healthRecords = [] } = useHealthRecords();
-  const { data: feedingRecords = [] } = useFeedingRecords();
-  const { data: breedingRecords = [] } = useBreedingRecords();
+  // Fetch all records - pass animalId to hooks
+  const { data: productionRecords = [] } = useProductionRecords(animalId);
+  const { data: healthRecords = [] } = useHealthRecords(animalId);
+  const { data: feedingRecords = [] } = useFeedingRecords(animalId);
+  const { data: breedingRecords = [] } = useBreedingRecords(animalId);
 
   // Filter records by animal if animalId is provided
   const filteredProductionRecords = animalId 
@@ -81,14 +81,17 @@ const GeneralDairyRecords = ({ animalId }: GeneralDairyRecordsProps) => {
       color: 'bg-pink-50 border-pink-200',
       badgeColor: 'bg-pink-100 text-pink-800',
       title: 'Breeding Record',
-      subtitle: record.conception_status || record.mating_method || 'Breeding activity'
+      subtitle: record.conception_status || record.mating_method || 'Breeding activity',
+      date: record.date_of_heat || record.pregnancy_confirmation_date || record.expected_calving_date || record.actual_calving_date
     }))
   ];
 
   // Sort by date (most recent first)
-  const sortedRecords = allRecords.sort((a, b) => 
-    new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  const sortedRecords = allRecords.sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return dateB.getTime() - dateA.getTime();
+  });
 
   // Apply filters
   const filteredRecords = sortedRecords.filter(record => {
@@ -173,9 +176,9 @@ const GeneralDairyRecords = ({ animalId }: GeneralDairyRecordsProps) => {
                       <div className="flex items-center gap-4 text-xs text-gray-500">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {format(new Date(record.date), 'MMM dd, yyyy')}
+                          {record.date && format(new Date(record.date), 'MMM dd, yyyy')}
                         </span>
-                        {record.cost && (
+                        {'cost' in record && record.cost && (
                           <span>Cost: KSh {Number(record.cost).toLocaleString()}</span>
                         )}
                       </div>

@@ -94,7 +94,7 @@ const AnimalDiary = () => {
         />
         <div className="p-4">
           <RegisterAnimalForm
-            animal={editingAnimal}
+            editingAnimal={editingAnimal}
             onClose={handleFormClose}
           />
         </div>
@@ -171,7 +171,7 @@ const AnimalDiary = () => {
                   <AnimalCard
                     key={animal.id}
                     animal={animal}
-                    onClick={() => handleSelectAnimal(animal)}
+                    onSelect={() => handleSelectAnimal(animal)}
                     onEdit={() => handleEditAnimal(animal)}
                   />
                 ))}

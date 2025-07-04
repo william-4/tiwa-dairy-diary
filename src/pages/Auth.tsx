@@ -5,15 +5,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Milk, Eye, EyeOff } from 'lucide-react';
+import { Milk, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Auth = () => {
   const { user, loading, signIn, signUp } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [signInData, setSignInData] = useState({
     email: '',
@@ -30,7 +32,8 @@ const Auth = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-pulse text-gray-600">Loading...</div>
+          <div className="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="text-gray-600">Loading...</div>
         </div>
       </div>
     );
@@ -43,21 +46,30 @@ const Auth = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     
     try {
       const { error } = await signIn(signInData.email, signInData.password);
       
       if (error) {
+        setError(error.message || 'An error occurred during sign in');
         toast({
-          title: "Error",
-          description: error.message,
+          title: "Sign In Failed",
+          description: error.message || 'Please check your credentials and try again',
           variant: "destructive",
         });
+      } else {
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error?.message || "An unexpected error occurred";
+      setError(errorMessage);
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -68,26 +80,32 @@ const Auth = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     
     try {
       const { error } = await signUp(signUpData.email, signUpData.password, signUpData.fullName);
       
       if (error) {
+        setError(error.message || 'An error occurred during sign up');
         toast({
-          title: "Error",
-          description: error.message,
+          title: "Sign Up Failed",
+          description: error.message || 'Please try again',
           variant: "destructive",
         });
       } else {
         toast({
-          title: "Success",
-          description: "Account created successfully! Please check your email for verification.",
+          title: "Account Created!",
+          description: "Please check your email for verification link.",
         });
+        // Reset form
+        setSignUpData({ email: '', password: '', fullName: '' });
       }
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error?.message || "An unexpected error occurred";
+      setError(errorMessage);
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -111,6 +129,13 @@ const Auth = () => {
             <CardTitle className="text-center">Welcome</CardTitle>
           </CardHeader>
           <CardContent>
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
@@ -127,6 +152,7 @@ const Auth = () => {
                       value={signInData.email}
                       onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                       required
+                      disabled={isLoading}
                     />
                   </div>
                   
@@ -139,6 +165,7 @@ const Auth = () => {
                         value={signInData.password}
                         onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                         required
+                        disabled={isLoading}
                       />
                       <Button
                         type="button"
@@ -146,6 +173,7 @@ const Auth = () => {
                         size="icon"
                         className="absolute right-2 top-1/2 transform -translate-y-1/2"
                         onClick={() => setShowPassword(!showPassword)}
+                        disabled={isLoading}
                       >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
@@ -168,6 +196,7 @@ const Auth = () => {
                       value={signUpData.fullName}
                       onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
                       required
+                      disabled={isLoading}
                     />
                   </div>
                   
@@ -179,6 +208,7 @@ const Auth = () => {
                       value={signUpData.email}
                       onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
                       required
+                      disabled={isLoading}
                     />
                   </div>
                   
@@ -191,6 +221,8 @@ const Auth = () => {
                         value={signUpData.password}
                         onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                         required
+                        minLength={6}
+                        disabled={isLoading}
                       />
                       <Button
                         type="button"
@@ -198,6 +230,7 @@ const Auth = () => {
                         size="icon"
                         className="absolute right-2 top-1/2 transform -translate-y-1/2"
                         onClick={() => setShowPassword(!showPassword)}
+                        disabled={isLoading}
                       >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>

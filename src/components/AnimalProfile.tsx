@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Calendar, Heart, Stethoscope, Utensils, Milk2, Edit, Camera } from 'lucide-react';
+import { ArrowLeft, Calendar, Heart, Stethoscope, Utensils, Milk, Edit, Camera } from 'lucide-react';
 import { format, differenceInDays, differenceInMonths } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Tables } from '@/integrations/supabase/types';
@@ -137,7 +137,7 @@ const AnimalProfile = ({ animal, onBack, onEdit }: AnimalProfileProps) => {
 
         {/* Records Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-5">
             <TabsTrigger value="history" className="text-xs">
               📋 {t('fullHistory')}
             </TabsTrigger>
@@ -156,23 +156,23 @@ const AnimalProfile = ({ animal, onBack, onEdit }: AnimalProfileProps) => {
           </TabsList>
 
           <TabsContent value="history" className="mt-4">
-            <GeneralDairyRecords animalId={animal.id} />
+            <GeneralDairyRecords />
           </TabsContent>
 
           <TabsContent value="production" className="mt-4">
-            <ProductionRecords animalId={animal.id} />
+            <ProductionRecords />
           </TabsContent>
 
           <TabsContent value="health" className="mt-4">
-            <HealthRecords animalId={animal.id} />
+            <HealthRecords />
           </TabsContent>
 
           <TabsContent value="feeding" className="mt-4">
-            <FeedingRecords animalId={animal.id} />
+            <FeedingRecords />
           </TabsContent>
 
           <TabsContent value="breeding" className="mt-4">
-            <BreedingRecords animalId={animal.id} />
+            <BreedingRecords />
           </TabsContent>
         </Tabs>
       </div>

@@ -86,7 +86,7 @@ const Tasks = () => {
   }, [tasks]);
 
   const handleAddTask = () => {
-    console.log('Add Task button clicked');
+    console.log('Add Task button clicked - opening form');
     setEditingTask(undefined);
     setFormOpen(true);
   };
@@ -150,7 +150,7 @@ const Tasks = () => {
             size="sm"
           >
             <Plus className="h-4 w-4 mr-1 md:mr-2" />
-            {t('add')} Task
+            Add Task
           </Button>
         </div>
 
@@ -294,10 +294,10 @@ const Tasks = () => {
         )}
       </div>
 
-      {/* Task Form Modal - Fixed positioning and z-index */}
+      {/* Task Form Modal - Improved positioning and backdrop */}
       {formOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl">
             <TaskForm
               task={editingTask}
               onClose={handleCloseForm}

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, X } from 'lucide-react';
+import { CalendarIcon, X, Upload, Image } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useAnimals } from '@/hooks/useAnimals';
@@ -43,6 +43,8 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
   const { data: animals = [] } = useAnimals();
   const createTask = useCreateTask();
   const updateTask = useUpdateTask();
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(task?.photo_url || null);
 
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
@@ -60,31 +62,59 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
     },
   });
 
-  const onSubmit = async (data: TaskFormData) => {
-    const taskData = {
-      title: data.title,
-      description: data.description,
-      assigned_to: data.assigned_to,
-      animal_id: data.animal_id || null,
-      due_date: format(data.due_date, 'yyyy-MM-dd'),
-      due_time: data.due_time || null,
-      priority: data.priority,
-      reminder_enabled: data.reminder_enabled,
-      reminder_date: data.reminder_date ? format(data.reminder_date, 'yyyy-MM-dd') : null,
-      reminder_time: data.reminder_time || null,
-    };
-
-    if (task) {
-      await updateTask.mutateAsync({ id: task.id, ...taskData });
-    } else {
-      await createTask.mutateAsync(taskData);
+  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setPhotoFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPhotoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-    onClose();
+  };
+
+  const removePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+  };
+
+  const onSubmit = async (data: TaskFormData) => {
+    console.log('Submitting task form with data:', data);
+    
+    try {
+      const taskData = {
+        title: data.title,
+        description: data.description,
+        assigned_to: data.assigned_to,
+        animal_id: data.animal_id || null,
+        due_date: format(data.due_date, 'yyyy-MM-dd'),
+        due_time: data.due_time || null,
+        priority: data.priority,
+        reminder_enabled: data.reminder_enabled,
+        reminder_date: data.reminder_date ? format(data.reminder_date, 'yyyy-MM-dd') : null,
+        reminder_time: data.reminder_time || null,
+        photo_url: photoPreview || null, // For now, just store the preview URL
+      };
+
+      if (task) {
+        console.log('Updating existing task:', task.id);
+        await updateTask.mutateAsync({ id: task.id, ...taskData });
+      } else {
+        console.log('Creating new task');
+        await createTask.mutateAsync(taskData);
+      }
+      
+      console.log('Task saved successfully');
+      onClose();
+    } catch (error) {
+      console.error('Error saving task:', error);
+    }
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader className="flex flex-row items-center justify-between">
+    <Card className="w-full max-w-2xl mx-auto border-0 shadow-none">
+      <CardHeader className="flex flex-row items-center justify-between pb-4">
         <CardTitle className="text-xl">
           {task ? 'Edit Task' : 'Add New Task'} 📝
         </CardTitle>
@@ -92,7 +122,7 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
           <X className="h-4 w-4" />
         </Button>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -102,7 +132,7 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
                 <FormItem>
                   <FormLabel>Task Title *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter task title" {...field} />
+                    <Input placeholder="Enter task title (e.g., Feed cattle, Vet checkup)" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -116,7 +146,7 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
                 <FormItem>
                   <FormLabel>Assign To 🧑🏽‍🌾</FormLabel>
                   <FormControl>
-                    <Input placeholder="Worker name (e.g., Wanjiku)" {...field} />
+                    <Input placeholder="Worker name (e.g., Wanjiku, John)" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -184,6 +214,7 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
                             date < new Date(new Date().setDate(new Date().getDate() - 1))
                           }
                           initialFocus
+                          className="pointer-events-auto"
                         />
                       </PopoverContent>
                     </Popover>
@@ -249,6 +280,47 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
               )}
             />
 
+            {/* Photo Upload Section */}
+            <div className="space-y-2">
+              <FormLabel>Photo (Optional) 📸</FormLabel>
+              <div className="flex items-center gap-4">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="hidden"
+                  id="photo-upload"
+                />
+                <label
+                  htmlFor="photo-upload"
+                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50"
+                >
+                  <Upload className="h-4 w-4" />
+                  Choose Photo
+                </label>
+                {photoPreview && (
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <img
+                        src={photoPreview}
+                        alt="Task photo preview"
+                        className="w-16 h-16 object-cover rounded-md"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-red-500 text-white hover:bg-red-600"
+                        onClick={removePhoto}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <FormField
               control={form.control}
               name="reminder_enabled"
@@ -306,6 +378,7 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
                               date < new Date() || date > form.getValues('due_date')
                             }
                             initialFocus
+                            className="pointer-events-auto"
                           />
                         </PopoverContent>
                       </Popover>
@@ -333,10 +406,13 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
             <div className="flex gap-3 pt-4">
               <Button 
                 type="submit" 
-                className="flex-1"
+                className="flex-1 bg-green-600 hover:bg-green-700"
                 disabled={createTask.isPending || updateTask.isPending}
               >
-                {task ? 'Update Task' : 'Create Task'}
+                {createTask.isPending || updateTask.isPending 
+                  ? 'Saving...' 
+                  : task ? 'Update Task' : 'Create Task'
+                }
               </Button>
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel

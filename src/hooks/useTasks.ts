@@ -11,6 +11,7 @@ export const useTasks = () => {
   return useQuery({
     queryKey: ['tasks'],
     queryFn: async () => {
+      console.log('Fetching tasks from database...');
       const { data, error } = await supabase
         .from('tasks')
         .select(`
@@ -22,7 +23,12 @@ export const useTasks = () => {
         `)
         .order('due_date', { ascending: true });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching tasks:', error);
+        throw error;
+      }
+      
+      console.log('Tasks fetched successfully:', data?.length || 0, 'tasks');
       return data as (Task & { animals?: { name: string; tag: string | null } })[];
     },
   });
@@ -33,8 +39,12 @@ export const useCreateTask = () => {
   
   return useMutation({
     mutationFn: async (task: Omit<TaskInsert, 'user_id'>) => {
+      console.log('Creating new task:', task);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      if (!user) {
+        console.error('User not authenticated');
+        throw new Error('Not authenticated');
+      }
 
       const { data, error } = await supabase
         .from('tasks')
@@ -42,20 +52,26 @@ export const useCreateTask = () => {
         .select()
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error creating task:', error);
+        throw error;
+      }
+      
+      console.log('Task created successfully:', data);
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       toast({
-        title: "Success",
+        title: "Success ✅",
         description: "Task created successfully!",
       });
     },
     onError: (error) => {
+      console.error('Task creation failed:', error);
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Error ❌",
+        description: error.message || "Failed to create task",
         variant: "destructive",
       });
     },
@@ -67,6 +83,7 @@ export const useUpdateTask = () => {
   
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Task> & { id: string }) => {
+      console.log('Updating task:', id, updates);
       const { data, error } = await supabase
         .from('tasks')
         .update(updates)
@@ -74,14 +91,27 @@ export const useUpdateTask = () => {
         .select()
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating task:', error);
+        throw error;
+      }
+      
+      console.log('Task updated successfully:', data);
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       toast({
-        title: "Success",
+        title: "Success ✅",
         description: "Task updated successfully!",
+      });
+    },
+    onError: (error) => {
+      console.error('Task update failed:', error);
+      toast({
+        title: "Error ❌",
+        description: error.message || "Failed to update task",
+        variant: "destructive",
       });
     },
   });
@@ -92,18 +122,32 @@ export const useDeleteTask = () => {
   
   return useMutation({
     mutationFn: async (id: string) => {
+      console.log('Deleting task:', id);
       const { error } = await supabase
         .from('tasks')
         .delete()
         .eq('id', id);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting task:', error);
+        throw error;
+      }
+      
+      console.log('Task deleted successfully');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       toast({
-        title: "Success",
+        title: "Success ✅",
         description: "Task deleted successfully!",
+      });
+    },
+    onError: (error) => {
+      console.error('Task deletion failed:', error);
+      toast({
+        title: "Error ❌",
+        description: error.message || "Failed to delete task",
+        variant: "destructive",
       });
     },
   });

@@ -13,14 +13,11 @@ import FinanceForm from '@/components/FinanceForm';
 import FinanceCard from '@/components/FinanceCard';
 import PageHeader from '@/components/PageHeader';
 import { Tables } from '@/integrations/supabase/types';
-import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
 
 type FinancialRecord = Tables<'financial_records'>;
 
 const Finances = () => {
   const { t } = useLanguage();
-  const { user, loading: authLoading } = useAuth();
   const { data: records = [], isLoading, error } = useFinancialRecords();
   const { data: animals = [] } = useAnimals();
   const [formOpen, setFormOpen] = useState(false);
@@ -29,23 +26,6 @@ const Finances = () => {
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterAnimal, setFilterAnimal] = useState('all');
   const [activeTab, setActiveTab] = useState('all');
-
-  // Redirect to auth if not authenticated
-  if (!authLoading && !user) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  // Show loading state while checking auth
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <div className="text-gray-600">Loading...</div>
-        </div>
-      </div>
-    );
-  }
 
   const filteredRecords = useMemo(() => {
     let filtered = records;

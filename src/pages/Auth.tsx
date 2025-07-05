@@ -5,14 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Milk, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Milk, Eye, EyeOff, AlertCircle, UserCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Auth = () => {
   const { user, loading, signIn, signUp } = useAuth();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -113,6 +114,23 @@ const Auth = () => {
     }
   };
 
+  const handleContinueAsGuest = () => {
+    // Create a temporary guest account
+    const guestEmail = `guest_${Date.now()}@tiwakilimo.local`;
+    const guestPassword = `guest_${Math.random().toString(36).substr(2, 9)}`;
+    
+    setIsLoading(true);
+    signUp(guestEmail, guestPassword, 'Guest User').then(({ error }) => {
+      if (!error) {
+        toast({
+          title: "Welcome Guest!",
+          description: "You can now use all features. Your data will be saved temporarily.",
+        });
+      }
+      setIsLoading(false);
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -122,6 +140,7 @@ const Auth = () => {
           </div>
           <h1 className="text-2xl font-bold text-gray-900">TIWA Kilimo</h1>
           <p className="text-gray-600">Dairy Diary</p>
+          <p className="text-sm text-gray-500 mt-2">Record. Reflect. Grow.</p>
         </div>
 
         <Card>
@@ -243,6 +262,22 @@ const Auth = () => {
                 </form>
               </TabsContent>
             </Tabs>
+
+            {/* Continue as Guest Option */}
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={handleContinueAsGuest}
+                disabled={isLoading}
+              >
+                <UserCheck className="h-4 w-4 mr-2" />
+                {isLoading ? 'Creating Guest Account...' : 'Continue as Guest'}
+              </Button>
+              <p className="text-xs text-gray-500 text-center mt-2">
+                Try all features without creating an account
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>

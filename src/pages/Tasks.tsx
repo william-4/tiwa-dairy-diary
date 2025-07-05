@@ -13,14 +13,11 @@ import TaskForm from '@/components/TaskForm';
 import TaskCard from '@/components/TaskCard';
 import PageHeader from '@/components/PageHeader';
 import { Tables } from '@/integrations/supabase/types';
-import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
 
 type Task = Tables<'tasks'>;
 
 const Tasks = () => {
   const { t } = useLanguage();
-  const { user, loading: authLoading } = useAuth();
   const { data: tasks = [], isLoading, error } = useTasks();
   const { data: animals = [] } = useAnimals();
   const [formOpen, setFormOpen] = useState(false);
@@ -29,23 +26,6 @@ const Tasks = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [animalFilter, setAnimalFilter] = useState('all');
-
-  // Redirect to auth if not authenticated
-  if (!authLoading && !user) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  // Show loading state while checking auth
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <div className="text-gray-600">Loading...</div>
-        </div>
-      </div>
-    );
-  }
 
   const filteredTasks = useMemo(() => {
     let filtered = tasks;

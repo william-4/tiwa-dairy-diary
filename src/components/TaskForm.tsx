@@ -166,7 +166,7 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">Not linked to any cow</SelectItem>
+                      <SelectItem value="none">Not linked to any cow</SelectItem>
                       {animals.map((animal) => (
                         <SelectItem key={animal.id} value={animal.id}>
                           {animal.name} {animal.tag ? `(${animal.tag})` : ''} - {animal.breed}

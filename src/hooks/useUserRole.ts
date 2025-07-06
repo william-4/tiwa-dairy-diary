@@ -11,20 +11,25 @@ export const useUserRole = () => {
     queryFn: async () => {
       if (!user) return null;
       
+      console.log('Fetching user role for:', user.id);
+      
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single to avoid errors when no data
       
       if (error) {
         console.error('Error fetching user role:', error);
-        return 'worker'; // Default to worker if no role found
+        return 'worker'; // Default to worker if error
       }
       
+      console.log('User role data:', data);
       return data?.role || 'worker';
     },
     enabled: !!user,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    retry: 1, // Only retry once on failure
   });
 };
 

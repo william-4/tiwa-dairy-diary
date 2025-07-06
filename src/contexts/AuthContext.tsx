@@ -64,8 +64,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(session?.user ?? null);
           
           if (session?.user) {
-            const role = await fetchUserRole(session.user.id);
-            setUserRole(role as 'admin' | 'worker');
+            // Use setTimeout to prevent blocking the auth state
+            setTimeout(async () => {
+              try {
+                const role = await fetchUserRole(session.user.id);
+                setUserRole(role as 'admin' | 'worker');
+              } catch (error) {
+                console.error('Error setting user role:', error);
+                setUserRole('worker');
+              }
+            }, 0);
+          } else {
+            setUserRole(null);
           }
         }
       } catch (error) {
@@ -85,8 +95,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          const role = await fetchUserRole(session.user.id);
-          setUserRole(role as 'admin' | 'worker');
+          // Use setTimeout to prevent blocking the auth callback
+          setTimeout(async () => {
+            try {
+              const role = await fetchUserRole(session.user.id);
+              setUserRole(role as 'admin' | 'worker');
+            } catch (error) {
+              console.error('Error setting user role:', error);
+              setUserRole('worker');
+            }
+          }, 0);
         } else {
           setUserRole(null);
         }

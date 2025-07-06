@@ -29,13 +29,17 @@ const AnimalDiary = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('individual');
 
+  console.log('AnimalDiary render - authLoading:', authLoading, 'user:', !!user);
+
   // Redirect to auth if not authenticated
   if (!authLoading && !user) {
+    console.log('Redirecting to auth - no user');
     return <Navigate to="/auth" replace />;
   }
 
   // Show loading state while checking auth
   if (authLoading) {
+    console.log('Showing auth loading state');
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -107,6 +111,7 @@ const AnimalDiary = () => {
 
   // Show error state
   if (error) {
+    console.error('AnimalDiary error:', error);
     return (
       <div className="min-h-screen bg-gray-50 pb-20">
         <PageHeader title={t('animalDiary')} />
@@ -124,6 +129,8 @@ const AnimalDiary = () => {
       </div>
     );
   }
+
+  console.log('Rendering main AnimalDiary content');
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">

@@ -276,6 +276,51 @@ export type Database = {
           },
         ]
       }
+      general_herd_records: {
+        Row: {
+          cost: number | null
+          created_at: string | null
+          date: string
+          description: string | null
+          id: string
+          notes: string | null
+          record_type: string
+          title: string
+          total_animals_affected: number | null
+          total_production: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string | null
+          date: string
+          description?: string | null
+          id?: string
+          notes?: string | null
+          record_type: string
+          title: string
+          total_animals_affected?: number | null
+          total_production?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          id?: string
+          notes?: string | null
+          record_type?: string
+          title?: string
+          total_animals_affected?: number | null
+          total_production?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       health_records: {
         Row: {
           animal_id: string
@@ -492,15 +537,52 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          assigned_by: string | null
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["user_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      user_role: "admin" | "worker"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -615,6 +697,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["admin", "worker"],
+    },
   },
 } as const

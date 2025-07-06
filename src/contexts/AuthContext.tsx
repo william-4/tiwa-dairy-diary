@@ -7,6 +7,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  userRole: 'admin' | 'worker' | null;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -26,6 +27,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<'admin' | 'worker' | null>(null);
+
+  const fetchUserRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching user role:', error);
+        return 'worker'; // Default to worker if no role found
+      }
+      
+      return data?.role || 'worker';
+    } catch (error) {
+      console.error('Error fetching user role:', error);
+      return 'worker';
+    }
+  };
 
   useEffect(() => {
     console.log('AuthProvider: Setting up auth state listener');
@@ -40,6 +62,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.log('Initial session:', session);
           setSession(session);
           setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            const role = await fetchUserRole(session.user.id);
+            setUserRole(role as 'admin' | 'worker');
+          }
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
@@ -56,6 +83,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.log('Auth state changed:', event, session);
         setSession(session);
         setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          const role = await fetchUserRole(session.user.id);
+          setUserRole(role as 'admin' | 'worker');
+        } else {
+          setUserRole(null);
+        }
+        
         setLoading(false);
       }
     );
@@ -138,6 +173,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.log('Sign out successful');
         setSession(null);
         setUser(null);
+        setUserRole(null);
       }
     } catch (error) {
       console.error('Unexpected sign out error:', error);
@@ -150,6 +186,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user,
     session,
     loading,
+    userRole,
     signUp,
     signIn,
     signOut,

@@ -32,9 +32,10 @@ type AnimalFormData = z.infer<typeof animalSchema>;
 
 interface RegisterAnimalFormProps {
   onSuccess?: () => void;
+  onClose?: () => void;
 }
 
-const RegisterAnimalForm = ({ onSuccess }: RegisterAnimalFormProps) => {
+const RegisterAnimalForm = ({ onSuccess, onClose }: RegisterAnimalFormProps) => {
   const { t } = useLanguage();
   const createAnimal = useCreateAnimal();
   const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
@@ -98,6 +99,7 @@ const RegisterAnimalForm = ({ onSuccess }: RegisterAnimalFormProps) => {
       form.reset();
       setUploadedPhoto(null);
       onSuccess?.();
+      onClose?.();
     } catch (error) {
       console.error('Error creating animal:', error);
     }
@@ -162,7 +164,7 @@ const RegisterAnimalForm = ({ onSuccess }: RegisterAnimalFormProps) => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Animal Name/ID Tag *</FormLabel>
+                  <FormLabel>Cow Name/ID Tag *</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="e.g., Bella, C001, or Cow #23" 

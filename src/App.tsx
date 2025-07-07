@@ -17,7 +17,7 @@ import More from "./pages/More";
 
 const queryClient = new QueryClient();
 
-// Protected Route wrapper
+// Protected Route wrapper that allows guest access
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   
@@ -32,10 +32,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
   
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
-  
+  // Allow access for both authenticated users and guests
+  // Guest mode is handled by checking if user exists in individual components
   return <>{children}</>;
 };
 
@@ -54,10 +52,7 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
   
-  if (user) {
-    return <Navigate to="/" replace />;
-  }
-  
+  // Always show auth page - users can choose to continue as guest
   return <>{children}</>;
 };
 

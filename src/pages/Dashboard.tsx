@@ -42,22 +42,22 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-50 pb-20">
       <PageHeader title={t('home')} />
       
-      <div className="px-4 py-4 space-y-6">
-        {/* Welcome Section */}
-        <div className="text-center py-4">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+      <div className="px-4 py-2 space-y-4 max-w-6xl mx-auto">
+        {/* Welcome Section - Reduced padding */}
+        <div className="text-center py-2">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-1">
             {t('welcome')}
           </h1>
-          <p className="text-lg text-gray-600">{t('tagline')}</p>
+          <p className="text-base text-gray-600">{t('tagline')}</p>
         </div>
 
-        {/* Quick Actions - Four Button Layout */}
-        <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto">
+        {/* Quick Actions - Improved Grid Layout */}
+        <div className="grid grid-cols-2 gap-3 max-w-lg mx-auto">
           <Card className="hover:shadow-md transition-shadow cursor-pointer bg-green-50 border-green-200" onClick={() => navigate('/diary')}>
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <div className="text-center">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <BookOpen className="h-6 w-6 text-green-600" />
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <BookOpen className="h-5 w-5 text-green-600" />
                 </div>
                 <h3 className="font-semibold text-sm text-green-800">{t('animalDiary')}</h3>
                 <p className="text-xs text-green-600 mt-1">Track your cows</p>
@@ -66,10 +66,10 @@ const Dashboard = () => {
           </Card>
 
           <Card className="hover:shadow-md transition-shadow cursor-pointer bg-blue-50 border-blue-200" onClick={() => navigate('/tasks')}>
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <CheckSquare className="h-6 w-6 text-blue-600" />
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <CheckSquare className="h-5 w-5 text-blue-600" />
                 </div>
                 <h3 className="font-semibold text-sm text-blue-800">{t('tasksCalendar')}</h3>
                 <p className="text-xs text-blue-600 mt-1">Manage tasks</p>
@@ -78,10 +78,10 @@ const Dashboard = () => {
           </Card>
 
           <Card className="hover:shadow-md transition-shadow cursor-pointer bg-purple-50 border-purple-200" onClick={() => navigate('/finances')}>
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <div className="text-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <DollarSign className="h-6 w-6 text-purple-600" />
+                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <DollarSign className="h-5 w-5 text-purple-600" />
                 </div>
                 <h3 className="font-semibold text-sm text-purple-800">{t('financesOverview')}</h3>
                 <p className="text-xs text-purple-600 mt-1">Track finances</p>
@@ -90,10 +90,10 @@ const Dashboard = () => {
           </Card>
 
           <Card className="hover:shadow-md transition-shadow cursor-pointer bg-orange-50 border-orange-200" onClick={() => navigate('/tasks')}>
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <div className="text-center">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Calendar className="h-6 w-6 text-orange-600" />
+                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Calendar className="h-5 w-5 text-orange-600" />
                 </div>
                 <h3 className="font-semibold text-sm text-orange-800">{t('calendarOverview')}</h3>
                 <p className="text-xs text-orange-600 mt-1">View calendar</p>
@@ -102,24 +102,24 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Upcoming Tasks */}
-        <Card className="mx-4">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-orange-600" />
+        {/* Upcoming Tasks - Compact design */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Bell className="h-4 w-4 text-orange-600" />
               {t('upcomingTasksWeek')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {upcomingTasks.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {upcomingTasks.map((task) => (
-                  <div key={task.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={task.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                     <div>
-                      <h4 className="font-medium">{task.title}</h4>
-                      <p className="text-sm text-gray-600">
+                      <h4 className="font-medium text-sm">{task.title}</h4>
+                      <p className="text-xs text-gray-600">
                         Due: {new Date(task.due_date).toLocaleDateString()}
-                        {task.assigned_to && ` • Assigned to: ${task.assigned_to}`}
+                        {task.assigned_to && ` • ${task.assigned_to}`}
                       </p>
                     </div>
                     <div className={`px-2 py-1 rounded text-xs font-medium ${
@@ -131,42 +131,42 @@ const Dashboard = () => {
                     </div>
                   </div>
                 ))}
-                <Button variant="outline" onClick={() => navigate('/tasks')} className="w-full mt-3">
+                <Button variant="outline" onClick={() => navigate('/tasks')} className="w-full mt-2" size="sm">
                   View All Tasks
                 </Button>
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-4">{t('noUpcomingTasks')}</p>
+              <p className="text-gray-500 text-center py-3 text-sm">{t('noUpcomingTasks')}</p>
             )}
           </CardContent>
         </Card>
 
-        {/* Financial Summary */}
-        <Card className="mx-4">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
+        {/* Financial Summary - Compact design */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <TrendingUp className="h-4 w-4 text-green-600" />
               {t('farmFinancialSnapshot')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center">
-                <p className="text-sm text-gray-600">{t('totalIncome')}</p>
-                <p className="text-xl font-bold text-green-600">KSh {totalIncome.toLocaleString()}</p>
+            <div className="grid grid-cols-3 gap-3 text-center">
+              <div>
+                <p className="text-xs text-gray-600">{t('totalIncome')}</p>
+                <p className="text-lg font-bold text-green-600">KSh {totalIncome.toLocaleString()}</p>
               </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-600">{t('totalExpenses')}</p>
-                <p className="text-xl font-bold text-red-600">KSh {totalExpenses.toLocaleString()}</p>
+              <div>
+                <p className="text-xs text-gray-600">{t('totalExpenses')}</p>
+                <p className="text-lg font-bold text-red-600">KSh {totalExpenses.toLocaleString()}</p>
               </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-600">{t('balance')}</p>
-                <p className={`text-xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <div>
+                <p className="text-xs text-gray-600">{t('balance')}</p>
+                <p className={`text-lg font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   KSh {balance.toLocaleString()}
                 </p>
               </div>
             </div>
-            <Button variant="outline" onClick={() => navigate('/finances')} className="w-full mt-4">
+            <Button variant="outline" onClick={() => navigate('/finances')} className="w-full mt-3" size="sm">
               View Detailed Finances
             </Button>
           </CardContent>

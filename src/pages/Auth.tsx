@@ -17,6 +17,7 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isGuestMode, setIsGuestMode] = useState(false);
 
   const [signInData, setSignInData] = useState({
     email: '',
@@ -40,7 +41,7 @@ const Auth = () => {
     );
   }
 
-  if (user) {
+  if (user && !isGuestMode) {
     return <Navigate to="/" replace />;
   }
 
@@ -53,10 +54,23 @@ const Auth = () => {
       const { error } = await signIn(signInData.email, signInData.password);
       
       if (error) {
-        setError(error.message || 'An error occurred during sign in');
+        let errorMessage = 'An error occurred during sign in';
+        
+        // Handle common authentication errors
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'Please check your email and click the confirmation link before signing in.';
+        } else if (error.message.includes('Too many requests')) {
+          errorMessage = 'Too many login attempts. Please wait a moment and try again.';
+        } else {
+          errorMessage = error.message;
+        }
+        
+        setError(errorMessage);
         toast({
           title: "Sign In Failed",
-          description: error.message || 'Please check your credentials and try again',
+          description: errorMessage,
           variant: "destructive",
         });
       } else {
@@ -64,6 +78,7 @@ const Auth = () => {
           title: "Welcome back!",
           description: "You have successfully signed in.",
         });
+        navigate('/');
       }
     } catch (error: any) {
       const errorMessage = error?.message || "An unexpected error occurred";
@@ -87,16 +102,29 @@ const Auth = () => {
       const { error } = await signUp(signUpData.email, signUpData.password, signUpData.fullName);
       
       if (error) {
-        setError(error.message || 'An error occurred during sign up');
+        let errorMessage = 'An error occurred during sign up';
+        
+        // Handle common sign up errors
+        if (error.message.includes('User already registered')) {
+          errorMessage = 'An account with this email already exists. Please sign in instead.';
+        } else if (error.message.includes('Password should be at least')) {
+          errorMessage = 'Password must be at least 6 characters long.';
+        } else if (error.message.includes('Unable to validate email address')) {
+          errorMessage = 'Please enter a valid email address.';
+        } else {
+          errorMessage = error.message;
+        }
+        
+        setError(errorMessage);
         toast({
           title: "Sign Up Failed",
-          description: error.message || 'Please try again',
+          description: errorMessage,
           variant: "destructive",
         });
       } else {
         toast({
           title: "Account Created!",
-          description: "Please check your email for verification link.",
+          description: "Please check your email for a confirmation link to complete your registration.",
         });
         // Reset form
         setSignUpData({ email: '', password: '', fullName: '' });
@@ -115,26 +143,18 @@ const Auth = () => {
   };
 
   const handleContinueAsGuest = () => {
-    // Create a temporary guest account
-    const guestEmail = `guest_${Date.now()}@tiwakilimo.local`;
-    const guestPassword = `guest_${Math.random().toString(36).substr(2, 9)}`;
-    
-    setIsLoading(true);
-    signUp(guestEmail, guestPassword, 'Guest User').then(({ error }) => {
-      if (!error) {
-        toast({
-          title: "Welcome Guest!",
-          description: "You can now use all features. Your data will be saved temporarily.",
-        });
-      }
-      setIsLoading(false);
+    setIsGuestMode(true);
+    toast({
+      title: "Welcome Guest!",
+      description: "You can explore the app features. Note that your data won't be saved.",
     });
+    navigate('/');
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <div className="flex justify-center mb-4">
             <Milk className="h-12 w-12 text-green-600" />
           </div>
@@ -144,8 +164,8 @@ const Auth = () => {
         </div>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-center">Welcome</CardTitle>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-center text-lg">Welcome</CardTitle>
           </CardHeader>
           <CardContent>
             {error && (
@@ -161,13 +181,14 @@ const Auth = () => {
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="signin">
+              <TabsContent value="signin" className="space-y-4">
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signin-email">Email</Label>
                     <Input
                       id="signin-email"
                       type="email"
+                      placeholder="Enter your email"
                       value={signInData.email}
                       onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                       required
@@ -181,6 +202,7 @@ const Auth = () => {
                       <Input
                         id="signin-password"
                         type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
                         value={signInData.password}
                         onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                         required
@@ -205,13 +227,14 @@ const Auth = () => {
                 </form>
               </TabsContent>
               
-              <TabsContent value="signup">
+              <TabsContent value="signup" className="space-y-4">
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signup-name">Full Name</Label>
                     <Input
                       id="signup-name"
                       type="text"
+                      placeholder="Enter your full name"
                       value={signUpData.fullName}
                       onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
                       required
@@ -224,6 +247,7 @@ const Auth = () => {
                     <Input
                       id="signup-email"
                       type="email"
+                      placeholder="Enter your email"
                       value={signUpData.email}
                       onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
                       required
@@ -237,6 +261,7 @@ const Auth = () => {
                       <Input
                         id="signup-password"
                         type={showPassword ? "text" : "password"}
+                        placeholder="At least 6 characters"
                         value={signUpData.password}
                         onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                         required
@@ -272,10 +297,10 @@ const Auth = () => {
                 disabled={isLoading}
               >
                 <UserCheck className="h-4 w-4 mr-2" />
-                {isLoading ? 'Creating Guest Account...' : 'Continue as Guest'}
+                Continue as Guest
               </Button>
               <p className="text-xs text-gray-500 text-center mt-2">
-                Try all features without creating an account
+                Explore all features without creating an account
               </p>
             </div>
           </CardContent>

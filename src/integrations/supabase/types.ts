@@ -127,6 +127,7 @@ export type Database = {
           conception_status: string | null
           created_at: string
           date_of_heat: string | null
+          date_served: string | null
           deleted_at: string | null
           expected_calving_date: string | null
           id: string
@@ -143,6 +144,7 @@ export type Database = {
           conception_status?: string | null
           created_at?: string
           date_of_heat?: string | null
+          date_served?: string | null
           deleted_at?: string | null
           expected_calving_date?: string | null
           id?: string
@@ -159,6 +161,7 @@ export type Database = {
           conception_status?: string | null
           created_at?: string
           date_of_heat?: string | null
+          date_served?: string | null
           deleted_at?: string | null
           expected_calving_date?: string | null
           id?: string
@@ -235,11 +238,16 @@ export type Database = {
         Row: {
           amount: number
           animal_id: string | null
+          buyer_contact: string | null
+          buyer_name: string | null
           category: string
           created_at: string
           description: string | null
           id: string
           photo_url: string | null
+          receipt_photo_url: string | null
+          supplier_contact: string | null
+          supplier_name: string | null
           transaction_date: string
           transaction_type: string
           updated_at: string
@@ -248,11 +256,16 @@ export type Database = {
         Insert: {
           amount: number
           animal_id?: string | null
+          buyer_contact?: string | null
+          buyer_name?: string | null
           category: string
           created_at?: string
           description?: string | null
           id?: string
           photo_url?: string | null
+          receipt_photo_url?: string | null
+          supplier_contact?: string | null
+          supplier_name?: string | null
           transaction_date: string
           transaction_type: string
           updated_at?: string
@@ -261,11 +274,16 @@ export type Database = {
         Update: {
           amount?: number
           animal_id?: string | null
+          buyer_contact?: string | null
+          buyer_name?: string | null
           category?: string
           created_at?: string
           description?: string | null
           id?: string
           photo_url?: string | null
+          receipt_photo_url?: string | null
+          supplier_contact?: string | null
+          supplier_name?: string | null
           transaction_date?: string
           transaction_type?: string
           updated_at?: string
@@ -388,6 +406,51 @@ export type Database = {
           },
         ]
       }
+      inventory: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          item_name: string
+          notes: string | null
+          quantity: number
+          reorder_level: number | null
+          supplier_contact: string | null
+          supplier_name: string | null
+          unit: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          item_name: string
+          notes?: string | null
+          quantity?: number
+          reorder_level?: number | null
+          supplier_contact?: string | null
+          supplier_name?: string | null
+          unit: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          item_name?: string
+          notes?: string | null
+          quantity?: number
+          reorder_level?: number | null
+          supplier_contact?: string | null
+          supplier_name?: string | null
+          unit?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       production_records: {
         Row: {
           am_yield: number | null
@@ -474,6 +537,51 @@ export type Database = {
           location?: string | null
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          animal_id: string | null
+          created_at: string
+          description: string | null
+          due_date: string
+          id: string
+          is_recurring: boolean | null
+          recurring_interval: number | null
+          reminder_type: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          animal_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date: string
+          id?: string
+          is_recurring?: boolean | null
+          recurring_interval?: number | null
+          reminder_type: string
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          animal_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          is_recurring?: boolean | null
+          recurring_interval?: number | null
+          reminder_type?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -574,6 +682,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_expected_calving_date: {
+        Args: { date_served: string }
+        Returns: string
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_role"]

@@ -19,7 +19,7 @@ import { useAnimals } from '@/hooks/useAnimals';
 import { useCreateFinancialRecord, useUpdateFinancialRecord } from '@/hooks/useFinancialRecords';
 import { Tables } from '@/integrations/supabase/types';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import CustomSelect from './CustomSelect';
 
 const financeSchema = z.object({
@@ -30,11 +30,9 @@ const financeSchema = z.object({
   description: z.string().optional(),
   animal_id: z.string().optional(),
   buyer_name: z.string().optional(),
-  buyer_phone: z.string().optional(),
+  buyer_contact: z.string().optional(),
   supplier_name: z.string().optional(),
-  supplier_phone: z.string().optional(),
-  is_credit: z.boolean().optional(),
-  repayment_date: z.date().optional(),
+  supplier_contact: z.string().optional(),
 });
 
 type FinanceFormData = z.infer<typeof financeSchema>;
@@ -77,12 +75,14 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
       transaction_date: record?.transaction_date ? new Date(record.transaction_date) : new Date(),
       description: record?.description || '',
       animal_id: record?.animal_id || '',
-      is_credit: false,
+      buyer_name: record?.buyer_name || '',
+      buyer_contact: record?.buyer_contact || '',
+      supplier_name: record?.supplier_name || '',
+      supplier_contact: record?.supplier_contact || '',
     },
   });
 
   const transactionType = form.watch('transaction_type');
-  const isCredit = form.watch('is_credit');
   const categories = transactionType === 'Income' ? incomeCategories : expenseCategories;
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,8 +126,12 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
         transaction_date: format(data.transaction_date, 'yyyy-MM-dd'),
         description: data.description || null,
         animal_id: data.animal_id || null,
+        buyer_name: data.buyer_name || null,
+        buyer_contact: data.buyer_contact || null,
+        supplier_name: data.supplier_name || null,
+        supplier_contact: data.supplier_contact || null,
         // Note: Photo upload would be implemented with Supabase Storage
-        photo_url: null, // Will be implemented when storage is set up
+        receipt_photo_url: null, // Will be implemented when storage is set up
       };
 
       if (record) {
@@ -262,69 +266,80 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
               />
             </div>
 
-            {/* Buyer/Supplier Details */}
+            {/* Buyer Details for Income */}
             {transactionType === 'Income' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="buyer_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Buyer Name (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., John Doe" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <>
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-green-800 mb-3">Buyer Information</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="buyer_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Buyer Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., John Doe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="buyer_phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Buyer Phone (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., +254712345678" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                    <FormField
+                      control={form.control}
+                      name="buyer_contact"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Buyer Contact</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., +254712345678" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </>
             )}
 
+            {/* Supplier Details for Expenses */}
             {transactionType === 'Expense' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="supplier_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Supplier Name (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., ABC Feed Store" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <>
+                <div className="bg-orange-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-orange-800 mb-3">Supplier Information</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="supplier_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Supplier Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., ABC Feed Store" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="supplier_phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Supplier Phone (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., +254712345678" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                    <FormField
+                      control={form.control}
+                      name="supplier_contact"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Supplier Contact</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., +254712345678" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </>
             )}
 
             <FormField
@@ -340,7 +355,7 @@ const FinanceForm = ({ open, onOpenChange, record }: FinanceFormProps) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="none">Not linked to any cow</SelectItem>
+                      <SelectItem value="">Not linked to any cow</SelectItem>
                       {animals.map((animal) => (
                         <SelectItem key={animal.id} value={animal.id}>
                           {animal.name} {animal.tag ? `(${animal.tag})` : ''} - {animal.breed}

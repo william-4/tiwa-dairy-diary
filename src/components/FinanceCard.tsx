@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Calendar, Beef, Receipt } from 'lucide-react';
+import { Edit, Trash2, Calendar, Beef, Receipt, User, Building } from 'lucide-react';
 import { format } from 'date-fns';
 import { Tables } from '@/integrations/supabase/types';
 import { useDeleteFinancialRecord } from '@/hooks/useFinancialRecords';
@@ -59,6 +59,28 @@ const FinanceCard = ({ record, onEdit }: FinanceCardProps) => {
             <span>{format(new Date(record.transaction_date), 'MMM d, yyyy')}</span>
           </div>
 
+          {/* Buyer details for income */}
+          {isIncome && record.buyer_name && (
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <User className="h-4 w-4" />
+              <span>
+                Buyer: {record.buyer_name}
+                {record.buyer_contact && ` (${record.buyer_contact})`}
+              </span>
+            </div>
+          )}
+
+          {/* Supplier details for expenses */}
+          {!isIncome && record.supplier_name && (
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Building className="h-4 w-4" />
+              <span>
+                Supplier: {record.supplier_name}
+                {record.supplier_contact && ` (${record.supplier_contact})`}
+              </span>
+            </div>
+          )}
+
           {record.animals && (
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Beef className="h-4 w-4" />
@@ -75,7 +97,7 @@ const FinanceCard = ({ record, onEdit }: FinanceCardProps) => {
             </p>
           )}
 
-          {record.photo_url && (
+          {record.receipt_photo_url && (
             <div className="flex items-center gap-2 text-sm text-blue-600">
               <Receipt className="h-4 w-4" />
               <span>Receipt/Photo attached</span>

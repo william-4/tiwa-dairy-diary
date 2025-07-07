@@ -11,6 +11,8 @@ import Dashboard from "@/pages/Dashboard";
 import AnimalDiary from "@/pages/AnimalDiary";
 import Tasks from "@/pages/Tasks";
 import Finances from "@/pages/Finances";
+import Inventory from "@/pages/Inventory";
+import Reminders from "@/pages/Reminders";
 import Auth from "@/pages/Auth";
 import NotFound from "./pages/NotFound";
 import More from "./pages/More";
@@ -88,6 +90,16 @@ const App = () => (
               <Route path="/finances" element={
                 <ProtectedRoute>
                   <Layout><Finances /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/inventory" element={
+                <ProtectedRoute>
+                  <Layout><Inventory /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/reminders" element={
+                <ProtectedRoute>
+                  <Layout><Reminders /></Layout>
                 </ProtectedRoute>
               } />
               <Route path="/more" element={

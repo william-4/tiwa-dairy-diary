@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Edit, Calendar, Baby, Heart } from 'lucide-react';
+import { Plus, Edit, Calendar, Baby, Heart, Zap } from 'lucide-react';
 import { useBreedingRecords, useCreateBreedingRecord, useUpdateBreedingRecord } from '@/hooks/useBreedingRecords';
 import { format } from 'date-fns';
 
@@ -19,6 +19,7 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
   const [editingRecord, setEditingRecord] = useState<any>(null);
   const [formData, setFormData] = useState({
     date_of_heat: '',
+    date_served: '',
     mating_method: '',
     bull_ai_source: '',
     conception_status: '',
@@ -32,12 +33,29 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
   const createRecord = useCreateBreedingRecord();
   const updateRecord = useUpdateBreedingRecord();
 
+  // Calculate expected calving date when date_served changes
+  const calculateExpectedCalvingDate = (dateServed: string) => {
+    if (!dateServed) return '';
+    const servedDate = new Date(dateServed);
+    const calvingDate = new Date(servedDate.getTime() + (283 * 24 * 60 * 60 * 1000)); // 283 days
+    return calvingDate.toISOString().split('T')[0];
+  };
+
+  const handleDateServedChange = (dateServed: string) => {
+    setFormData(prev => ({
+      ...prev,
+      date_served: dateServed,
+      expected_calving_date: calculateExpectedCalvingDate(dateServed)
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const recordData = {
       animal_id: animalId,
       date_of_heat: formData.date_of_heat || null,
+      date_served: formData.date_served || null,
       mating_method: formData.mating_method || null,
       bull_ai_source: formData.bull_ai_source || null,
       conception_status: formData.conception_status || null,
@@ -58,6 +76,7 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
       setEditingRecord(null);
       setFormData({
         date_of_heat: '',
+        date_served: '',
         mating_method: '',
         bull_ai_source: '',
         conception_status: '',
@@ -75,6 +94,7 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
     setEditingRecord(record);
     setFormData({
       date_of_heat: record.date_of_heat || '',
+      date_served: record.date_served || '',
       mating_method: record.mating_method || '',
       bull_ai_source: record.bull_ai_source || '',
       conception_status: record.conception_status || '',
@@ -112,6 +132,17 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
                   value={formData.date_of_heat}
                   onChange={(e) => setFormData(prev => ({ ...prev, date_of_heat: e.target.value }))}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="date_served">Date Served (AI/Bull Service) *</Label>
+                <Input
+                  id="date_served"
+                  type="date"
+                  value={formData.date_served}
+                  onChange={(e) => handleDateServedChange(e.target.value)}
+                />
+                <p className="text-xs text-gray-500">This will auto-calculate the expected calving date</p>
               </div>
 
               <div className="space-y-2">
@@ -168,7 +199,9 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
                   type="date"
                   value={formData.expected_calving_date}
                   onChange={(e) => setFormData(prev => ({ ...prev, expected_calving_date: e.target.value }))}
+                  className="bg-gray-50"
                 />
+                <p className="text-xs text-gray-500">Auto-calculated based on date served (283 days)</p>
               </div>
 
               <div className="space-y-2">
@@ -232,6 +265,12 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
                       <div className="flex items-center gap-2 mb-2">
                         <Heart className="h-4 w-4 text-red-500" />
                         <span className="font-medium">Heat: {format(new Date(record.date_of_heat), 'PPP')}</span>
+                      </div>
+                    )}
+                    {record.date_served && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <Zap className="h-4 w-4 text-blue-500" />
+                        <span className="font-medium">Served: {format(new Date(record.date_served), 'PPP')}</span>
                       </div>
                     )}
                     {record.mating_method && <p className="text-sm"><strong>Method:</strong> {record.mating_method}</p>}

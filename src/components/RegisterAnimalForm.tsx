@@ -1,218 +1,328 @@
 
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon, Upload, X, Camera } from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import { useCreateAnimal } from '@/hooks/useAnimals';
-import { X, Upload, Image } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { toast } from '@/hooks/use-toast';
+
+const animalSchema = z.object({
+  name: z.string().min(1, 'Animal name/tag is required'),
+  breed: z.string().min(1, 'Breed is required'),
+  date_of_birth: z.date({
+    required_error: 'Date of birth is required',
+  }),
+  gender: z.enum(['Male', 'Female']),
+  source: z.string().min(1, 'Source is required'),
+  notes: z.string().optional(),
+});
+
+type AnimalFormData = z.infer<typeof animalSchema>;
 
 interface RegisterAnimalFormProps {
-  onClose: () => void;
+  onSuccess?: () => void;
 }
 
-const RegisterAnimalForm = ({ onClose }: RegisterAnimalFormProps) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    breed: '',
-    date_of_birth: '',
-    source: '',
-    gender: 'Female',
-    notes: '',
-    photo_url: '',
+const RegisterAnimalForm = ({ onSuccess }: RegisterAnimalFormProps) => {
+  const { t } = useLanguage();
+  const createAnimal = useCreateAnimal();
+  const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
+
+  const form = useForm<AnimalFormData>({
+    resolver: zodResolver(animalSchema),
+    defaultValues: {
+      gender: 'Female',
+      source: 'Born on farm',
+    },
   });
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  const createAnimal = useCreateAnimal();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      // For now, we'll store the image preview as photo_url
-      // In a real app, you'd upload to Supabase Storage first
-      const animalData = {
-        ...formData,
-        tag: formData.name, // Using name as tag since we combined the fields
-        photo_url: imagePreview || undefined,
-      };
-      
-      await createAnimal.mutateAsync(animalData);
-      onClose();
-    } catch (error) {
-      console.error('Error creating cow:', error);
-    }
-  };
-
-  const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setImagePreview(result);
-      };
-      reader.readAsDataURL(file);
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please upload a photo smaller than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Check file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload a JPG, PNG, or WebP image",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setUploadedPhoto(file);
+      toast({
+        title: "Photo uploaded",
+        description: `${file.name} ready to attach`,
+      });
     }
   };
 
-  const removeImage = () => {
-    setSelectedFile(null);
-    setImagePreview(null);
+  const onSubmit = async (data: AnimalFormData) => {
+    try {
+      const animalData = {
+        name: data.name,
+        tag: data.name, // Use the same value for both name and tag
+        breed: data.breed,
+        date_of_birth: format(data.date_of_birth, 'yyyy-MM-dd'),
+        gender: data.gender,
+        source: data.source,
+        notes: data.notes || null,
+        // Note: Photo upload would be implemented with Supabase Storage
+        photo_url: null, // Will be implemented when storage is set up
+      };
+
+      await createAnimal.mutateAsync(animalData);
+      
+      form.reset();
+      setUploadedPhoto(null);
+      onSuccess?.();
+    } catch (error) {
+      console.error('Error creating animal:', error);
+    }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Register New Cow</CardTitle>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Cow Name/ID Tag *</Label>
-              <Input
-                id="name"
-                placeholder="e.g., Bessie, Cow-001, or Tag #123"
-                value={formData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
-                required
-              />
-            </div>
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-sm">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          🐄 Register New Animal
+        </h2>
+        <p className="text-gray-600">
+          Add a new animal to your dairy herd with all essential information
+        </p>
+      </div>
 
-            {/* Photo Upload Section */}
-            <div className="space-y-2">
-              <Label>Cow Photo (Optional)</Label>
-              {imagePreview ? (
-                <div className="relative">
-                  <img 
-                    src={imagePreview} 
-                    alt="Cow preview" 
-                    className="w-full h-32 object-cover rounded-lg border"
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={removeImage}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-              ) : (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                    id="photo-upload"
-                  />
-                  <label htmlFor="photo-upload" className="cursor-pointer">
-                    <div className="flex flex-col items-center space-y-2">
-                      <Image className="h-8 w-8 text-gray-400" />
-                      <span className="text-sm text-gray-500">
-                        Click to upload cow photo
-                      </span>
-                    </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Animal Photo Upload */}
+          <div className="space-y-2">
+            <FormLabel>Animal Photo (Optional) 📸</FormLabel>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+              <div className="text-center">
+                <Camera className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                <div className="flex justify-center">
+                  <label className="cursor-pointer">
+                    <Button type="button" variant="outline" className="pointer-events-none">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Choose Photo
+                    </Button>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                    />
                   </label>
                 </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  JPG, PNG, or WebP (max 5MB)
+                </p>
+                {uploadedPhoto && (
+                  <div className="mt-3 p-3 bg-green-50 rounded flex items-center justify-between">
+                    <span className="text-sm text-green-700">{uploadedPhoto.name}</span>
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setUploadedPhoto(null)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Animal Name/ID Tag *</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="e.g., Bella, C001, or Cow #23" 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="breed">Breed *</Label>
-              <Select value={formData.breed} onValueChange={(value) => handleChange('breed', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select breed" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Friesian">Friesian</SelectItem>
-                  <SelectItem value="Ayrshire">Ayrshire</SelectItem>
-                  <SelectItem value="Jersey">Jersey</SelectItem>
-                  <SelectItem value="Guernsey">Guernsey</SelectItem>
-                  <SelectItem value="Holstein">Holstein</SelectItem>
-                  <SelectItem value="Crossbreed">Crossbreed</SelectItem>
-                  <SelectItem value="Zebu">Zebu</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <FormField
+              control={form.control}
+              name="breed"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('breed')} *</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select breed" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Holstein">Holstein</SelectItem>
+                      <SelectItem value="Jersey">Jersey</SelectItem>
+                      <SelectItem value="Guernsey">Guernsey</SelectItem>
+                      <SelectItem value="Ayrshire">Ayrshire</SelectItem>
+                      <SelectItem value="Brown Swiss">Brown Swiss</SelectItem>
+                      <SelectItem value="Friesian">Friesian</SelectItem>
+                      <SelectItem value="Crossbred">Crossbred</SelectItem>
+                      <SelectItem value="Zebu">Zebu</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="date_of_birth">Date of Birth *</Label>
-              <Input
-                id="date_of_birth"
-                type="date"
-                value={formData.date_of_birth}
-                onChange={(e) => handleChange('date_of_birth', e.target.value)}
-                required
-              />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="date_of_birth"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>{t('dateOfBirth')} *</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="source">Source *</Label>
-              <Select value={formData.source} onValueChange={(value) => handleChange('source', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="How did you acquire this cow?" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Born on farm">Born on farm</SelectItem>
-                  <SelectItem value="Bought">Bought</SelectItem>
-                  <SelectItem value="Gifted">Gifted</SelectItem>
-                  <SelectItem value="Inherited">Inherited</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('gender')} *</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Female">🐄 Female</SelectItem>
+                      <SelectItem value="Male">🐂 Male</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="gender">Gender</Label>
-              <Select value={formData.gender} onValueChange={(value) => handleChange('gender', value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Female">Female</SelectItem>
-                  <SelectItem value="Male">Male</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <FormField
+            control={form.control}
+            name="source"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('source')} *</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select source" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Born on farm">🏠 Born on farm</SelectItem>
+                    <SelectItem value="Purchased">💰 Purchased</SelectItem>
+                    <SelectItem value="Gift">🎁 Gift</SelectItem>
+                    <SelectItem value="Inherited">👨‍👩‍👧‍👦 Inherited</SelectItem>
+                    <SelectItem value="Other">📝 Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <div className="space-y-2">
-              <Label htmlFor="notes">Additional Notes</Label>
-              <Textarea
-                id="notes"
-                placeholder="Any special characteristics, health notes, or other details..."
-                value={formData.notes}
-                onChange={(e) => handleChange('notes', e.target.value)}
-                rows={3}
-              />
-            </div>
+          <FormField
+            control={form.control}
+            name="notes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('notes')} (Optional)</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Any additional information about this animal..."
+                    className="resize-none" 
+                    rows={4}
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <div className="flex gap-2">
-              <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-                Cancel
-              </Button>
-              <Button type="submit" disabled={createAnimal.isPending} className="flex-1">
-                {createAnimal.isPending ? 'Registering...' : 'Register Cow'}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          <Button 
+            type="submit" 
+            className="w-full"
+            disabled={createAnimal.isPending}
+          >
+            {createAnimal.isPending ? 'Adding Animal...' : 'Add Animal to Herd'}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 };

@@ -2,176 +2,329 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, CheckSquare, DollarSign, Calendar, TrendingUp, Bell } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { useNavigate } from 'react-router-dom';
-import { useFinancialRecords } from '@/hooks/useFinancialRecords';
-import { useTasks } from '@/hooks/useTasks';
 import { useAnimals } from '@/hooks/useAnimals';
-import PageHeader from '@/components/PageHeader';
+import { useFinancialRecords } from '@/hooks/useFinancialRecords';
+import { useUpcomingReminders } from '@/hooks/useReminders';
+import { useLowStockItems } from '@/hooks/useInventory';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Link } from 'react-router-dom';
+import { 
+  Cow, 
+  DollarSign, 
+  TrendingUp, 
+  TrendingDown, 
+  Bell, 
+  AlertTriangle,
+  Package,
+  Calendar,
+  Plus
+} from 'lucide-react';
+import { format } from 'date-fns';
 
 const Dashboard = () => {
-  const { t, language } = useLanguage();
-  const navigate = useNavigate();
-  const { data: financialRecords = [] } = useFinancialRecords();
-  const { data: tasks = [] } = useTasks();
+  const { t } = useLanguage();
   const { data: animals = [] } = useAnimals();
+  const { data: financialRecords = [] } = useFinancialRecords();
+  const { data: upcomingReminders = [] } = useUpcomingReminders();
+  const { data: lowStockItems = [] } = useLowStockItems();
 
-  // Calculate financial summary
+  // Calculate financial summaries
   const totalIncome = financialRecords
-    .filter(r => r.transaction_type === 'Income')
-    .reduce((sum, r) => sum + Number(r.amount), 0);
-  
+    .filter(record => record.transaction_type === 'Income')
+    .reduce((sum, record) => sum + Number(record.amount), 0);
+
   const totalExpenses = financialRecords
-    .filter(r => r.transaction_type === 'Expense')
-    .reduce((sum, r) => sum + Number(r.amount), 0);
+    .filter(record => record.transaction_type === 'Expense')
+    .reduce((sum, record) => sum + Number(record.amount), 0);
 
-  const balance = totalIncome - totalExpenses;
+  const netProfit = totalIncome - totalExpenses;
 
-  // Get upcoming tasks (next 7 days)
-  const upcomingTasks = tasks.filter(task => {
-    if (task.status === 'Done') return false;
-    const dueDate = new Date(task.due_date);
-    const today = new Date();
-    const nextWeek = new Date();
-    nextWeek.setDate(today.getDate() + 7);
-    return dueDate >= today && dueDate <= nextWeek;
-  }).slice(0, 3);
+  // Get today's date for urgency checks
+  const today = new Date();
+  const urgentReminders = upcomingReminders.filter(reminder => {
+    const dueDate = new Date(reminder.due_date);
+    const diffDays = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return diffDays <= 1; // Due today or overdue
+  });
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <PageHeader title={t('home')} />
-      
-      <div className="px-4 py-2 space-y-4 max-w-6xl mx-auto">
-        {/* Welcome Section - Reduced padding */}
-        <div className="text-center py-2">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-1">
-            {t('welcome')}
+    <div className="space-y-6 p-4">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            🏠 {t('dashboard')}
           </h1>
-          <p className="text-base text-gray-600">{t('tagline')}</p>
+          <p className="text-gray-600 mt-1">
+            Welcome to your dairy farm management dashboard
+          </p>
         </div>
-
-        {/* Quick Actions - Improved Grid Layout */}
-        <div className="grid grid-cols-2 gap-3 max-w-lg mx-auto">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer bg-green-50 border-green-200" onClick={() => navigate('/diary')}>
-            <CardContent className="p-3">
-              <div className="text-center">
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <BookOpen className="h-5 w-5 text-green-600" />
-                </div>
-                <h3 className="font-semibold text-sm text-green-800">{t('animalDiary')}</h3>
-                <p className="text-xs text-green-600 mt-1">Track your cows</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow cursor-pointer bg-blue-50 border-blue-200" onClick={() => navigate('/tasks')}>
-            <CardContent className="p-3">
-              <div className="text-center">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <CheckSquare className="h-5 w-5 text-blue-600" />
-                </div>
-                <h3 className="font-semibold text-sm text-blue-800">{t('tasksCalendar')}</h3>
-                <p className="text-xs text-blue-600 mt-1">Manage tasks</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow cursor-pointer bg-purple-50 border-purple-200" onClick={() => navigate('/finances')}>
-            <CardContent className="p-3">
-              <div className="text-center">
-                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <DollarSign className="h-5 w-5 text-purple-600" />
-                </div>
-                <h3 className="font-semibold text-sm text-purple-800">{t('financesOverview')}</h3>
-                <p className="text-xs text-purple-600 mt-1">Track finances</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow cursor-pointer bg-orange-50 border-orange-200" onClick={() => navigate('/tasks')}>
-            <CardContent className="p-3">
-              <div className="text-center">
-                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Calendar className="h-5 w-5 text-orange-600" />
-                </div>
-                <h3 className="font-semibold text-sm text-orange-800">{t('calendarOverview')}</h3>
-                <p className="text-xs text-orange-600 mt-1">View calendar</p>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="flex gap-2">
+          <Button asChild size="sm">
+            <Link to="/diary">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Record
+            </Link>
+          </Button>
         </div>
+      </div>
 
-        {/* Upcoming Tasks - Compact design */}
+      {/* Alerts Section */}
+      {(urgentReminders.length > 0 || lowStockItems.length > 0) && (
+        <div className="space-y-3">
+          {/* Urgent Reminders Alert */}
+          {urgentReminders.length > 0 && (
+            <Card className="border-red-200 bg-red-50">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-red-800">
+                  <Bell className="h-5 w-5" />
+                  Urgent Reminders ({urgentReminders.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {urgentReminders.slice(0, 3).map((reminder) => (
+                    <div key={reminder.id} className="flex justify-between items-center bg-white p-2 rounded">
+                      <span className="font-medium">{reminder.title}</span>
+                      <span className="text-sm text-red-600">
+                        {format(new Date(reminder.due_date), 'MMM d')}
+                      </span>
+                    </div>
+                  ))}
+                  {urgentReminders.length > 3 && (
+                    <Button asChild variant="outline" size="sm" className="w-full mt-2">
+                      <Link to="/reminders">View All Reminders</Link>
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Low Stock Alert */}
+          {lowStockItems.length > 0 && (
+            <Card className="border-orange-200 bg-orange-50">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-orange-800">
+                  <AlertTriangle className="h-5 w-5" />
+                  Low Stock Alert ({lowStockItems.length} items)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {lowStockItems.slice(0, 3).map((item) => (
+                    <div key={item.id} className="flex justify-between items-center bg-white p-2 rounded">
+                      <span className="font-medium">{item.item_name}</span>
+                      <span className="text-sm text-orange-600">
+                        {item.quantity} {item.unit}
+                      </span>
+                    </div>
+                  ))}
+                  {lowStockItems.length > 3 && (
+                    <Button asChild variant="outline" size="sm" className="w-full mt-2">
+                      <Link to="/inventory">View Inventory</Link>
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Bell className="h-4 w-4 text-orange-600" />
-              {t('upcomingTasksWeek')}
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Animals</CardTitle>
+            <Cow className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {upcomingTasks.length > 0 ? (
-              <div className="space-y-2">
-                {upcomingTasks.map((task) => (
-                  <div key={task.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                    <div>
-                      <h4 className="font-medium text-sm">{task.title}</h4>
-                      <p className="text-xs text-gray-600">
-                        Due: {new Date(task.due_date).toLocaleDateString()}
-                        {task.assigned_to && ` • ${task.assigned_to}`}
-                      </p>
-                    </div>
-                    <div className={`px-2 py-1 rounded text-xs font-medium ${
-                      task.priority === 'High' ? 'bg-red-100 text-red-700' :
-                      task.priority === 'Medium' ? 'bg-orange-100 text-orange-700' :
-                      'bg-green-100 text-green-700'
-                    }`}>
-                      {task.priority}
-                    </div>
-                  </div>
-                ))}
-                <Button variant="outline" onClick={() => navigate('/tasks')} className="w-full mt-2" size="sm">
-                  View All Tasks
-                </Button>
-              </div>
-            ) : (
-              <p className="text-gray-500 text-center py-3 text-sm">{t('noUpcomingTasks')}</p>
-            )}
+            <div className="text-2xl font-bold">{animals.length}</div>
+            <p className="text-xs text-muted-foreground">
+              Active livestock in your herd
+            </p>
           </CardContent>
         </Card>
 
-        {/* Financial Summary - Compact design */}
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-4 w-4 text-green-600" />
-              {t('farmFinancialSnapshot')}
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Income</CardTitle>
+            <TrendingUp className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-3 text-center">
-              <div>
-                <p className="text-xs text-gray-600">{t('totalIncome')}</p>
-                <p className="text-lg font-bold text-green-600">KSh {totalIncome.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-600">{t('totalExpenses')}</p>
-                <p className="text-lg font-bold text-red-600">KSh {totalExpenses.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-600">{t('balance')}</p>
-                <p className={`text-lg font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  KSh {balance.toLocaleString()}
-                </p>
-              </div>
+            <div className="text-2xl font-bold text-green-600">
+              KSh {totalIncome.toLocaleString()}
             </div>
-            <Button variant="outline" onClick={() => navigate('/finances')} className="w-full mt-3" size="sm">
-              View Detailed Finances
-            </Button>
+            <p className="text-xs text-muted-foreground">
+              Revenue from all sources
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
+            <TrendingDown className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">
+              KSh {totalExpenses.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Operating and other costs
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
+            <DollarSign className={`h-4 w-4 ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`} />
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-bold ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              KSh {netProfit.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Income minus expenses
+            </p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link to="/diary">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5" />
+                Dairy Records
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Manage animal profiles, production, health, and breeding records
+              </p>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link to="/finances">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5" />
+                Financial Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Track income, expenses, and profitability
+              </p>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link to="/inventory">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5" />
+                Inventory Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Monitor feed, medicine, and equipment stock levels
+              </p>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link to="/tasks">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckSquare className="h-5 w-5" />
+                Task Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Create and track daily farm tasks
+              </p>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link to="/reminders">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="h-5 w-5" />
+                Reminders
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Set up alerts for important farm activities
+              </p>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link to="/more">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MoreHorizontal className="h-5 w-5" />
+                More Features
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Settings, reports, and additional tools
+              </p>
+            </CardContent>
+          </Link>
+        </Card>
+      </div>
+
+      {/* Recent Activity */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Recent Activity
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {financialRecords.slice(0, 5).map((record) => (
+              <div key={record.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                <div>
+                  <p className="font-medium">{record.category}</p>
+                  <p className="text-sm text-gray-600">
+                    {format(new Date(record.transaction_date), 'MMM d, yyyy')}
+                  </p>
+                </div>
+                <div className={`font-bold ${
+                  record.transaction_type === 'Income' ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {record.transaction_type === 'Income' ? '+' : '-'}KSh {Number(record.amount).toLocaleString()}
+                </div>
+              </div>
+            ))}
+            {financialRecords.length === 0 && (
+              <p className="text-center text-gray-500 py-4">
+                No recent activity. Start by adding some records!
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

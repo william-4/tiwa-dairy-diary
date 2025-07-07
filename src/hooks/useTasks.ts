@@ -2,7 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Tables, TablesInsert } from '@/integrations/supabase/types';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 type Task = Tables<'tasks'>;
 type TaskInsert = TablesInsert<'tasks'>;
@@ -12,6 +12,20 @@ export const useTasks = () => {
     queryKey: ['tasks'],
     queryFn: async () => {
       console.log('Fetching tasks from database...');
+      
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error('Error getting user:', userError);
+        throw userError;
+      }
+      
+      if (!user) {
+        console.log('No authenticated user found');
+        return [];
+      }
+
       const { data, error } = await supabase
         .from('tasks')
         .select(`
@@ -21,6 +35,7 @@ export const useTasks = () => {
             tag
           )
         `)
+        .eq('user_id', user.id)
         .order('due_date', { ascending: true });
       
       if (error) {
@@ -40,15 +55,29 @@ export const useCreateTask = () => {
   return useMutation({
     mutationFn: async (task: Omit<TaskInsert, 'user_id'>) => {
       console.log('Creating new task:', task);
-      const { data: { user } } = await supabase.auth.getUser();
+      
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error('User authentication error:', userError);
+        throw new Error('Authentication failed');
+      }
+      
       if (!user) {
         console.error('User not authenticated');
         throw new Error('Not authenticated');
       }
 
+      const taskData = {
+        ...task,
+        user_id: user.id
+      };
+
+      console.log('Task data to insert:', taskData);
+
       const { data, error } = await supabase
         .from('tasks')
-        .insert({ ...task, user_id: user.id })
+        .insert(taskData)
         .select()
         .single();
       

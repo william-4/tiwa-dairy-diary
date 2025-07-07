@@ -90,11 +90,9 @@ const Tasks = () => {
     setAnimalFilter('all');
   };
 
-  // Show error state if there's an error loading tasks
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 pb-20">
-        <PageHeader title={t('tasks')} />
         <div className="p-4 max-w-6xl mx-auto">
           <Card>
             <CardContent className="p-12 text-center">
@@ -112,21 +110,19 @@ const Tasks = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <PageHeader title={t('tasks')} />
-      
       <div className="p-4 space-y-4 max-w-6xl mx-auto">
         {/* Header with Add Button */}
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
-              {t('tasks')} ✅
+              <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+              ✅ {t('tasks')}
             </h1>
             <p className="text-gray-600 text-sm mt-1">Manage your farm tasks and reminders</p>
           </div>
           <Button 
             onClick={handleAddTask} 
-            className="bg-green-600 hover:bg-green-700" 
+            className="bg-purple-600 hover:bg-purple-700" 
             size="sm"
           >
             <Plus className="h-4 w-4 mr-1 md:mr-2" />
@@ -138,7 +134,7 @@ const Tasks = () => {
         {isLoading && (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <div className="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+              <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
               <div className="text-gray-600">{t('loading')}</div>
             </div>
           </div>
@@ -262,7 +258,7 @@ const Tasks = () => {
                     }
                   </p>
                   {tasks.length === 0 && (
-                    <Button onClick={handleAddTask} className="bg-green-600 hover:bg-green-700">
+                    <Button onClick={handleAddTask} className="bg-purple-600 hover:bg-purple-700">
                       <Plus className="h-4 w-4 mr-2" />
                       Add Your First Task
                     </Button>
@@ -274,7 +270,7 @@ const Tasks = () => {
         )}
       </div>
 
-      {/* Task Form Modal - Improved positioning and backdrop */}
+      {/* Task Form Modal */}
       {formOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
           <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl">

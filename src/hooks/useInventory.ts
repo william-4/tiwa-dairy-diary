@@ -4,8 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { Tables, TablesInsert } from '@/integrations/supabase/types';
 import { toast } from '@/hooks/use-toast';
 
-type InventoryItem = Tables<'inventory'>;
-type InventoryInsert = TablesInsert<'inventory'>;
+type InventoryItem = Tables<'inventory'> & {
+  cost?: number | null;
+};
+type InventoryInsert = TablesInsert<'inventory'> & {
+  cost?: number | null;
+};
 
 export const useInventory = () => {
   return useQuery({
@@ -110,12 +114,11 @@ export const useLowStockItems = () => {
       const { data, error } = await supabase
         .from('inventory')
         .select('*')
-        .gt('reorder_level', 0) // Only items with reorder level set
+        .gt('reorder_level', 0)
         .order('quantity', { ascending: true });
       
       if (error) throw error;
       
-      // Filter items where quantity is less than or equal to reorder level
       return (data as InventoryItem[]).filter(item => 
         Number(item.quantity) <= Number(item.reorder_level || 0)
       );

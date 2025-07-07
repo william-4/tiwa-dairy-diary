@@ -74,6 +74,8 @@ const Reminders = () => {
       case 'Dry-off': return 'bg-yellow-100 text-yellow-800';
       case 'Calving': return 'bg-green-100 text-green-800';
       case 'Payment': return 'bg-red-100 text-red-800';
+      case 'Vet Visit': return 'bg-purple-100 text-purple-800';
+      case 'Feeding Schedule': return 'bg-orange-100 text-orange-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -91,183 +93,243 @@ const Reminders = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 p-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">🔔 Reminders</h1>
-        <Button onClick={() => setShowForm(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Reminder
-        </Button>
-      </div>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="p-4 space-y-6 max-w-6xl mx-auto">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">🔔 Reminders</h1>
+          <Button onClick={() => setShowForm(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Reminder
+          </Button>
+        </div>
 
-      {/* Reminders List */}
-      <div className="space-y-4">
-        {reminders.length === 0 ? (
+        {/* Summary Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card>
-            <CardContent className="p-8 text-center">
-              <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No reminders set yet. Create your first reminder!</p>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-blue-600">{reminders.length}</div>
+              <div className="text-sm text-gray-600">Total Reminders</div>
             </CardContent>
           </Card>
-        ) : (
-          reminders.map((reminder) => {
-            const urgency = getUrgencyStatus(reminder.due_date);
-            const UrgencyIcon = urgency.icon;
-            
-            return (
-              <Card key={reminder.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-semibold">{reminder.title}</h3>
-                        <Badge className={getReminderTypeColor(reminder.reminder_type)}>
-                          {reminder.reminder_type}
-                        </Badge>
-                        {reminder.is_recurring && (
-                          <Badge variant="outline" className="text-xs">
-                            Recurring
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-orange-600">
+                {reminders.filter(r => {
+                  const today = new Date();
+                  const due = new Date(r.due_date);
+                  return due.toDateString() === today.toDateString();
+                }).length}
+              </div>
+              <div className="text-sm text-gray-600">Due Today</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-red-600">
+                {reminders.filter(r => {
+                  const today = new Date();
+                  const due = new Date(r.due_date);
+                  return due < today;
+                }).length}
+              </div>
+              <div className="text-sm text-gray-600">Overdue</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-green-600">
+                {reminders.filter(r => r.is_recurring).length}
+              </div>
+              <div className="text-sm text-gray-600">Recurring</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Reminders List */}
+        <div className="space-y-4">
+          {reminders.length === 0 ? (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">No reminders set yet</h3>
+                <p className="text-gray-500 mb-4">
+                  Stay on top of your farm activities by setting up reminders for important tasks
+                </p>
+                <Button onClick={() => setShowForm(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Your First Reminder
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            reminders.map((reminder) => {
+              const urgency = getUrgencyStatus(reminder.due_date);
+              const UrgencyIcon = urgency.icon;
+              
+              return (
+                <Card key={reminder.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="font-semibold">{reminder.title}</h3>
+                          <Badge className={getReminderTypeColor(reminder.reminder_type)}>
+                            {reminder.reminder_type}
                           </Badge>
-                        )}
-                      </div>
-                      
-                      {reminder.description && (
-                        <p className="text-sm text-gray-600 mb-2">{reminder.description}</p>
-                      )}
-                      
-                      <div className="flex items-center gap-4 text-sm">
-                        <div className={`flex items-center gap-1 ${urgency.color}`}>
-                          <UrgencyIcon className="h-4 w-4" />
-                          <span>{format(new Date(reminder.due_date), 'MMM d, yyyy')}</span>
+                          {reminder.is_recurring && (
+                            <Badge variant="outline" className="text-xs">
+                              🔄 Recurring
+                            </Badge>
+                          )}
                         </div>
                         
-                        {reminder.animal_id && (
-                          <div className="flex items-center gap-1 text-gray-600">
-                            <span>🐄</span>
-                            <span>
-                              {animals.find(a => a.id === reminder.animal_id)?.name || 'Unknown Animal'}
+                        {reminder.description && (
+                          <p className="text-sm text-gray-600 mb-2">{reminder.description}</p>
+                        )}
+                        
+                        <div className="flex items-center gap-4 text-sm">
+                          <div className={`flex items-center gap-1 ${urgency.color}`}>
+                            <UrgencyIcon className="h-4 w-4" />
+                            <span>{format(new Date(reminder.due_date), 'MMM d, yyyy')}</span>
+                            <span className="font-medium">
+                              {urgency.status === 'overdue' && '(Overdue)'}
+                              {urgency.status === 'today' && '(Today)'}
+                              {urgency.status === 'soon' && '(Soon)'}
                             </span>
                           </div>
-                        )}
+                          
+                          {reminder.animal_id && (
+                            <div className="flex items-center gap-1 text-gray-600">
+                              <span>🐄</span>
+                              <span>
+                                {animals.find(a => a.id === reminder.animal_id)?.name || 'Unknown Animal'}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
+                      
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleComplete(reminder.id)}
+                        className="ml-4"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Complete
+                      </Button>
                     </div>
-                    
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleComplete(reminder.id)}
-                      className="ml-4"
-                    >
-                      <CheckCircle className="h-4 w-4 mr-1" />
-                      Complete
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })
-        )}
+                  </CardContent>
+                </Card>
+              );
+            })
+          )}
+        </div>
+
+        {/* Add Reminder Dialog */}
+        <Dialog open={showForm} onOpenChange={setShowForm}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add New Reminder</DialogTitle>
+            </DialogHeader>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Title *</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="e.g., Deworm all cattle"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="reminder_type">Type *</Label>
+                <Select 
+                  value={formData.reminder_type} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, reminder_type: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select reminder type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Deworming">💊 Deworming</SelectItem>
+                    <SelectItem value="Heat Detection">🔥 Heat Detection</SelectItem>
+                    <SelectItem value="Dry-off">🚫 Dry-off</SelectItem>
+                    <SelectItem value="Calving">🐄 Calving</SelectItem>
+                    <SelectItem value="Vet Visit">👨‍⚕️ Vet Visit</SelectItem>
+                    <SelectItem value="Feeding Schedule">🥬 Feeding Schedule</SelectItem>
+                    <SelectItem value="Payment">💰 Payment</SelectItem>
+                    <SelectItem value="Custom">📝 Custom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="due_date">Due Date *</Label>
+                <Input
+                  id="due_date"
+                  type="date"
+                  value={formData.due_date}
+                  onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="animal_id">Related Animal (Optional)</Label>
+                <Select 
+                  value={formData.animal_id} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, animal_id: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select an animal" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No specific animal</SelectItem>
+                    {animals.map((animal) => (
+                      <SelectItem key={animal.id} value={animal.id}>
+                        {animal.name} {animal.tag ? `(${animal.tag})` : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Additional details..."
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button type="submit" className="flex-1" disabled={createReminder.isPending}>
+                  Add Reminder
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
-
-      {/* Add Reminder Dialog */}
-      <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add New Reminder</DialogTitle>
-          </DialogHeader>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Title *</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="e.g., Deworm all cattle"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="reminder_type">Type *</Label>
-              <Select 
-                value={formData.reminder_type} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, reminder_type: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select reminder type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Deworming">Deworming</SelectItem>
-                  <SelectItem value="Heat Detection">Heat Detection</SelectItem>
-                  <SelectItem value="Dry-off">Dry-off</SelectItem>
-                  <SelectItem value="Calving">Calving</SelectItem>
-                  <SelectItem value="Payment">Payment</SelectItem>
-                  <SelectItem value="Custom">Custom</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="due_date">Due Date *</Label>
-              <Input
-                id="due_date"
-                type="date"
-                value={formData.due_date}
-                onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="animal_id">Related Animal (Optional)</Label>
-              <Select 
-                value={formData.animal_id} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, animal_id: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select an animal" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">No specific animal</SelectItem>
-                  {animals.map((animal) => (
-                    <SelectItem key={animal.id} value={animal.id}>
-                      {animal.name} {animal.tag ? `(${animal.tag})` : ''}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Additional details..."
-                rows={3}
-              />
-            </div>
-
-            <div className="flex gap-3 pt-4">
-              <Button type="submit" className="flex-1" disabled={createReminder.isPending}>
-                Add Reminder
-              </Button>
-              <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

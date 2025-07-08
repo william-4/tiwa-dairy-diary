@@ -60,34 +60,46 @@ const Dashboard = () => {
 
       <div className="p-4 space-y-6 max-w-6xl mx-auto">
         {/* Main Action Buttons */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-          <Button asChild className="h-24 bg-blue-600 hover:bg-blue-700 flex-col gap-2">
-            <Link to="/diary">
-              <BookOpen className="h-8 w-8" />
-              <span className="text-sm font-semibold">🐄 Dairy Diary</span>
-            </Link>
-          </Button>
+        <div className="grid grid-cols-2 gap-4 mt-6">
+          <div className="text-center">
+            <Button asChild className="h-24 w-full bg-blue-600 hover:bg-blue-700 flex-col gap-2">
+              <Link to="/diary">
+                <BookOpen className="h-8 w-8" />
+                <span className="text-sm font-semibold">🐄 Dairy Diary</span>
+              </Link>
+            </Button>
+            <p className="text-xs text-gray-600 mt-2">Track your cows, milk production, health & breeding in one place.</p>
+          </div>
           
-          <Button asChild className="h-24 bg-purple-600 hover:bg-purple-700 flex-col gap-2">
-            <Link to="/tasks">
-              <CheckSquare className="h-8 w-8" />
-              <span className="text-sm font-semibold">✅ Tasks</span>
-            </Link>
-          </Button>
+          <div className="text-center">
+            <Button asChild className="h-24 w-full bg-purple-600 hover:bg-purple-700 flex-col gap-2">
+              <Link to="/tasks">
+                <CheckSquare className="h-8 w-8" />
+                <span className="text-sm font-semibold">✅ Tasks</span>
+              </Link>
+            </Button>
+            <p className="text-xs text-gray-600 mt-2">Plan daily farm activities and assign them to workers.</p>
+          </div>
           
-          <Button asChild className="h-24 bg-orange-600 hover:bg-orange-700 flex-col gap-2">
-            <Link to="/finances">
-              <DollarSign className="h-8 w-8" />
-              <span className="text-sm font-semibold">💰 Financials</span>
-            </Link>
-          </Button>
+          <div className="text-center">
+            <Button asChild className="h-24 w-full bg-orange-600 hover:bg-orange-700 flex-col gap-2">
+              <Link to="/finances">
+                <DollarSign className="h-8 w-8" />
+                <span className="text-sm font-semibold">💰 Financials</span>
+              </Link>
+            </Button>
+            <p className="text-xs text-gray-600 mt-2">Monitor income, expenses & farm profitability.</p>
+          </div>
           
-          <Button asChild className="h-24 bg-emerald-600 hover:bg-emerald-700 flex-col gap-2">
-            <Link to="/inventory">
-              <Package className="h-8 w-8" />
-              <span className="text-sm font-semibold">📦 Inventory</span>
-            </Link>
-          </Button>
+          <div className="text-center">
+            <Button asChild className="h-24 w-full bg-emerald-600 hover:bg-emerald-700 flex-col gap-2">
+              <Link to="/inventory">
+                <Package className="h-8 w-8" />
+                <span className="text-sm font-semibold">📦 Inventory</span>
+              </Link>
+            </Button>
+            <p className="text-xs text-gray-600 mt-2">Keep track of your feed, medicine, and farm tools stock.</p>
+          </div>
         </div>
 
         {/* Alerts Section */}

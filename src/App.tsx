@@ -11,6 +11,7 @@ import Dashboard from "@/pages/Dashboard";
 import AnimalDiary from "@/pages/AnimalDiary";
 import Tasks from "@/pages/Tasks";
 import Finances from "@/pages/Finances";
+import FinanceForm from "@/pages/FinanceForm";
 import Inventory from "@/pages/Inventory";
 import Reminders from "@/pages/Reminders";
 import Auth from "@/pages/Auth";
@@ -90,6 +91,11 @@ const App = () => (
               <Route path="/finances" element={
                 <ProtectedRoute>
                   <Layout><Finances /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/finances/add" element={
+                <ProtectedRoute>
+                  <Layout><FinanceForm /></Layout>
                 </ProtectedRoute>
               } />
               <Route path="/inventory" element={

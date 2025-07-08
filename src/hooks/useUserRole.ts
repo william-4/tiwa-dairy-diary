@@ -25,7 +25,7 @@ export const useUserRole = () => {
       }
       
       console.log('User role data:', data);
-      return data?.role || 'worker';
+      return data?.role || 'admin'; // Default to admin for all users
     },
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes

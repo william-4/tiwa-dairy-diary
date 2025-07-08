@@ -13,6 +13,7 @@ import FinanceForm from '@/components/FinanceForm';
 import FinanceCard from '@/components/FinanceCard';
 import PageHeader from '@/components/PageHeader';
 import { Tables } from '@/integrations/supabase/types';
+import { Link } from 'react-router-dom';
 
 type FinancialRecord = Tables<'financial_records'>;
 
@@ -127,9 +128,11 @@ const Finances = () => {
             </h1>
             <p className="text-gray-600 text-sm mt-1">Track your farm income and expenses</p>
           </div>
-          <Button onClick={handleAddRecord} className="bg-purple-600 hover:bg-purple-700" size="sm">
-            <Plus className="h-4 w-4 mr-1 md:mr-2" />
-            {t('addRecord')}
+          <Button asChild className="bg-purple-600 hover:bg-purple-700" size="sm">
+            <Link to="/finances/add">
+              <Plus className="h-4 w-4 mr-1 md:mr-2" />
+              {t('addRecord')}
+            </Link>
           </Button>
         </div>
 

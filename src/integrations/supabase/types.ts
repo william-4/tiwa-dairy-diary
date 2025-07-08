@@ -409,6 +409,7 @@ export type Database = {
       inventory: {
         Row: {
           category: string
+          cost: number | null
           created_at: string
           id: string
           item_name: string
@@ -423,6 +424,7 @@ export type Database = {
         }
         Insert: {
           category: string
+          cost?: number | null
           created_at?: string
           id?: string
           item_name: string
@@ -437,6 +439,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          cost?: number | null
           created_at?: string
           id?: string
           item_name?: string

@@ -47,7 +47,7 @@ const Inventory = () => {
 
   const units = [
     'kg', 'lbs', 'tons', 'bags', 'liters', 'gallons', 
-    'pieces', 'boxes', 'bottles', 'sachets'
+    'pieces', 'boxes', 'bottles', 'sachets', 'Other'
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {

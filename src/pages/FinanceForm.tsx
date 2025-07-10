@@ -56,7 +56,7 @@ const FinanceForm = () => {
         amount: Math.round(parseFloat(formData.amount) || 0),
         transaction_date: formData.transaction_date,
         description: formData.description || null,
-        animal_id: formData.animal_id || null,
+        animal_id: formData.animal_id === 'none' ? null : formData.animal_id || null,
         supplier_name: formData.supplier_name || null,
         supplier_contact: formData.supplier_contact || null,
         buyer_name: formData.buyer_name || null,
@@ -163,8 +163,8 @@ const FinanceForm = () => {
                   <SelectTrigger>
                     <SelectValue placeholder="Select an animal" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">No specific animal</SelectItem>
+                    <SelectContent>
+                      <SelectItem value="none">No specific animal</SelectItem>
                     {animals.map((animal) => (
                       <SelectItem key={animal.id} value={animal.id}>
                         {animal.name} {animal.tag ? `(${animal.tag})` : ''}

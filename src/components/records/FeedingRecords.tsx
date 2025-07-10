@@ -59,7 +59,7 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
       date: formData.date,
       feed_type: finalFeedType,
       quantity: formData.quantity ? parseFloat(formData.quantity) : null,
-      cost: formData.cost ? parseFloat(formData.cost) : null,
+      cost: formData.cost ? Math.round(parseFloat(formData.cost)) : null,
       source_of_feed: formData.source_of_feed || null,
       notes: formData.notes || null,
     };
@@ -77,7 +77,7 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
         await createFinancialRecord.mutateAsync({
           transaction_type: 'Expense',
           category: 'Feed',
-          amount: parseFloat(formData.cost),
+          amount: Math.round(parseFloat(formData.cost)),
           transaction_date: formData.date,
           animal_id: animalId,
           description: `Feed expense: ${finalFeedType}${formData.quantity ? ` (${formData.quantity}kg)` : ''}`,
@@ -202,9 +202,12 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
                   <Input
                     id="cost"
                     type="number"
-                    step="0.01"
+                    step="1"
                     value={formData.cost}
-                    onChange={(e) => setFormData(prev => ({ ...prev, cost: e.target.value }))}
+                    onChange={(e) => {
+                      const value = Math.round(parseFloat(e.target.value) || 0).toString();
+                      setFormData(prev => ({ ...prev, cost: value }));
+                    }}
                     placeholder="e.g., 1500"
                   />
                 </div>
@@ -213,7 +216,7 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
               {formData.cost && parseFloat(formData.cost) > 0 && (
                 <div className="p-3 bg-blue-50 rounded-lg">
                   <p className="text-sm font-medium text-blue-800">
-                    Cost: KSh {parseFloat(formData.cost).toFixed(2)}
+                    Cost: KSh {Math.round(parseFloat(formData.cost)).toLocaleString()}
                   </p>
                   <p className="text-xs text-blue-600 mt-1">
                     This will be automatically added to your Finance records

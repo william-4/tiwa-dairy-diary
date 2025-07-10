@@ -8,16 +8,16 @@ export const fetchUserRole = async (userId: string): Promise<UserRole> => {
       .from('user_roles')
       .select('role')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle(); // Use maybeSingle to avoid "no rows" error
     
     if (error) {
       console.error('Error fetching user role:', error);
-      return 'worker'; // Default to worker if no role found
+      return 'admin'; // Default to admin for all users
     }
     
-    return data?.role || 'worker';
+    return data?.role || 'admin'; // Default to admin if no role found
   } catch (error) {
     console.error('Error fetching user role:', error);
-    return 'worker';
+    return 'admin';
   }
 };

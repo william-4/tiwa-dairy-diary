@@ -57,7 +57,7 @@ const GeneralHerdSummary = () => {
         description: formData.description || null,
         total_production: formData.total_production ? Number(formData.total_production) : null,
         total_animals_affected: formData.total_animals_affected ? Number(formData.total_animals_affected) : null,
-        cost: formData.cost ? Number(formData.cost) : null,
+        cost: formData.cost ? Math.round(Number(formData.cost)) : null,
         notes: formData.notes || null
       });
 
@@ -227,10 +227,13 @@ const GeneralHerdSummary = () => {
                   <Input
                     id="cost"
                     type="number"
-                    step="0.01"
+                    step="1"
                     value={formData.cost}
-                    onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
-                    placeholder="0.00"
+                    onChange={(e) => {
+                      const value = Math.round(parseFloat(e.target.value) || 0).toString();
+                      setFormData({ ...formData, cost: value });
+                    }}
+                    placeholder="0"
                   />
                 </div>
               </div>

@@ -18,6 +18,7 @@ const Inventory = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [customCategory, setCustomCategory] = useState('');
+  const [customUnit, setCustomUnit] = useState('');
   const [formData, setFormData] = useState({
     item_name: '',
     category: '',
@@ -54,16 +55,17 @@ const Inventory = () => {
     e.preventDefault();
     
     const finalCategory = formData.category === 'Other' ? customCategory : formData.category;
+    const finalUnit = formData.unit === 'Other' ? customUnit : formData.unit;
     
     const itemData = {
       item_name: formData.item_name,
       category: finalCategory,
       quantity: parseFloat(formData.quantity) || 0,
-      unit: formData.unit,
+      unit: finalUnit,
       reorder_level: parseFloat(formData.reorder_level) || null,
       supplier_name: formData.supplier_name || null,
       supplier_contact: formData.supplier_contact || null,
-      cost: parseFloat(formData.cost) || null,
+      cost: Math.round(parseFloat(formData.cost) || 0) || null,
       notes: formData.notes || null,
     };
 
@@ -86,7 +88,7 @@ const Inventory = () => {
       item_name: item.item_name,
       category: categories.includes(item.category) ? item.category : 'Other',
       quantity: item.quantity.toString(),
-      unit: item.unit,
+      unit: units.includes(item.unit) ? item.unit : 'Other',
       reorder_level: item.reorder_level?.toString() || '',
       supplier_name: item.supplier_name || '',
       supplier_contact: item.supplier_contact || '',
@@ -97,6 +99,10 @@ const Inventory = () => {
     
     if (!categories.includes(item.category)) {
       setCustomCategory(item.category);
+    }
+    
+    if (!units.includes(item.unit)) {
+      setCustomUnit(item.unit);
     }
     
     setShowForm(true);
@@ -112,6 +118,7 @@ const Inventory = () => {
     setShowForm(false);
     setEditingItem(null);
     setCustomCategory('');
+    setCustomUnit('');
     setFormData({
       item_name: '',
       category: '',
@@ -343,6 +350,19 @@ const Inventory = () => {
                 </div>
               )}
 
+              {formData.unit === 'Other' && (
+                <div className="space-y-2">
+                  <Label htmlFor="custom_unit">Specify Unit *</Label>
+                  <Input
+                    id="custom_unit"
+                    value={customUnit}
+                    onChange={(e) => setCustomUnit(e.target.value)}
+                    placeholder="Enter custom unit (e.g., drums, rolls)"
+                    required
+                  />
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="quantity">Quantity *</Label>
@@ -381,10 +401,14 @@ const Inventory = () => {
                     id="cost"
                     type="number"
                     value={formData.cost}
-                    onChange={(e) => setFormData(prev => ({ ...prev, cost: e.target.value }))}
+                    onChange={(e) => {
+                      // Round to whole numbers only for cost fields
+                      const value = Math.round(parseFloat(e.target.value) || 0).toString();
+                      setFormData(prev => ({ ...prev, cost: value }));
+                    }}
                     placeholder="0"
                     min="0"
-                    step="0.01"
+                    step="1"
                   />
                 </div>
               </div>

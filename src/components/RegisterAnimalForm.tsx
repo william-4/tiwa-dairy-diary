@@ -90,8 +90,7 @@ const RegisterAnimalForm = ({ onSuccess, onClose }: RegisterAnimalFormProps) => 
         gender: data.gender,
         source: data.source,
         notes: data.notes || null,
-        // Note: Photo upload would be implemented with Supabase Storage
-        photo_url: null, // Will be implemented when storage is set up
+        photo_url: uploadedPhoto ? `uploaded_${uploadedPhoto.name}` : null, // Store photo reference for now
       };
 
       await createAnimal.mutateAsync(animalData);
@@ -126,9 +125,11 @@ const RegisterAnimalForm = ({ onSuccess, onClose }: RegisterAnimalFormProps) => 
                 <Camera className="mx-auto h-8 w-8 text-gray-400 mb-2" />
                 <div className="flex justify-center">
                   <label className="cursor-pointer">
-                    <Button type="button" variant="outline" className="pointer-events-none">
-                      <Upload className="h-4 w-4 mr-2" />
-                      Choose Photo
+                    <Button type="button" variant="outline" asChild>
+                      <span>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Choose Photo
+                      </span>
                     </Button>
                     <input
                       type="file"

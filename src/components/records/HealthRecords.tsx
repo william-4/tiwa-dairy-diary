@@ -42,7 +42,7 @@ const HealthRecords = ({ animalId }: HealthRecordsProps) => {
       health_issue: formData.health_issue || null,
       treatment_given: formData.treatment_given || null,
       vet_name: formData.vet_name || null,
-      cost: formData.cost ? parseFloat(formData.cost) : null,
+      cost: formData.cost ? Math.round(parseFloat(formData.cost)) : null,
       vaccine_dewormer: formData.vaccine_dewormer || null,
       recovery_status: formData.recovery_status || null,
       next_appointment: formData.next_appointment || null,
@@ -154,9 +154,12 @@ const HealthRecords = ({ animalId }: HealthRecordsProps) => {
                 <Input
                   id="cost"
                   type="number"
-                  step="0.01"
+                  step="1"
                   value={formData.cost}
-                  onChange={(e) => setFormData(prev => ({ ...prev, cost: e.target.value }))}
+                  onChange={(e) => {
+                    const value = Math.round(parseFloat(e.target.value) || 0).toString();
+                    setFormData(prev => ({ ...prev, cost: value }));
+                  }}
                   placeholder="Enter cost"
                 />
               </div>

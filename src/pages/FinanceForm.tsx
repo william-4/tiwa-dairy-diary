@@ -53,7 +53,7 @@ const FinanceForm = () => {
       await createRecord.mutateAsync({
         transaction_type: formData.transaction_type,
         category: formData.category,
-        amount: parseFloat(formData.amount),
+        amount: Math.round(parseFloat(formData.amount) || 0),
         transaction_date: formData.transaction_date,
         description: formData.description || null,
         animal_id: formData.animal_id || null,
@@ -130,11 +130,15 @@ const FinanceForm = () => {
                     id="amount"
                     type="number"
                     value={formData.amount}
-                    onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
+                    onChange={(e) => {
+                      // Round to whole numbers only for cost fields
+                      const value = Math.round(parseFloat(e.target.value) || 0).toString();
+                      setFormData(prev => ({ ...prev, amount: value }));
+                    }}
                     placeholder="0"
                     required
                     min="0"
-                    step="0.01"
+                    step="1"
                   />
                 </div>
 

@@ -85,9 +85,9 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
     try {
       const taskData = {
         title: data.title,
-        description: data.description,
-        assigned_to: data.assigned_to,
-        animal_id: data.animal_id || null,
+        description: data.description || null,
+        assigned_to: data.assigned_to || 'General', // Default to 'General' if not assigned
+        animal_id: data.animal_id === 'none' ? null : data.animal_id || null,
         due_date: format(data.due_date, 'yyyy-MM-dd'),
         due_time: data.due_time || null,
         priority: data.priority,
@@ -139,19 +139,19 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="assigned_to"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Assign To 🧑🏽‍🌾</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Worker name (e.g., Wanjiku, John)" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="assigned_to"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Assign To (Optional) 🧑🏽‍🌾</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Worker name (e.g., Wanjiku, John) or leave blank for general task" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
             <FormField
               control={form.control}

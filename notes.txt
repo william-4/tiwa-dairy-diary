@@ -1,0 +1,7 @@
+FRONT-END NOTES
+
+
+bun run build && bun run preview  
+
+bun run preview (or npm run preview): Serves the built (production) 
+version of your app, so you see exactly what will be deployed.

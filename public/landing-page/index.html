@@ -105,12 +105,15 @@
             justify-content: space-between;
             align-items: center;
         }
-
-        .header .logo-text {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--primary-color);
+          #logo {
+            height: 60px;
+            width: auto;
+            display: block;
+            margin: 0 auto;
+            margin-left: 1rem;
         }
+
+    
 
         .header nav ul {
             list-style: none;
@@ -165,14 +168,14 @@
 
         .hero h1 {
             font-size: 3.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: .5rem;
             color: var(--primary-color);
             animation: slideInUp 1s ease-out;
         }
 
         .hero p {
             font-size: 1.3rem;
-            margin-bottom: 2.5rem;
+            margin-bottom: .5rem;
             color: var(--dark-gray);
             animation: fadeIn 1.5s ease-out;
         }
@@ -287,12 +290,6 @@
             justify-content: center;
         }
 
-        .footer .footer-logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-        }
 
         .footer-links ul {
             list-style: none;
@@ -416,6 +413,29 @@
                 grid-template-columns: 1fr;
             }
         }
+
+ .hero-btn {
+            background: linear-gradient(90deg, #4CAF50 60%, #61dafb 100%);
+            color: #fff !important;
+            font-size: 1.25rem;
+            font-weight: 600;
+            padding: 1.1rem 2.2rem;
+            border-radius: 2.5rem;
+            box-shadow: 0 2px 12px rgba(76,175,80,0.12);
+            border: none;
+            transition: background 0.2s, transform 0.2s;
+            text-align: center;
+            display: inline-block;
+        }
+        .hero-btn:hover {
+            background: linear-gradient(90deg, #388e3c 60%, #21a1f3 100%);
+            color: #fff;
+            transform: translateY(-2px) scale(1.04);
+            text-decoration: none;
+        }
+           
+
+
     </style>
 </head>
 
@@ -423,7 +443,8 @@
     <div id="root">
         <header class="header">
             <div class="container">
-                <img src="logo.png" alt="TIWA-Kilimo Logo" class="logo-img" />
+                <img id="logo" src="logo.png" alt="TIWA-Kilimo Logo" />
+      
                 <nav>
                     <ul>
                         <li><a href="#hero">Home</a></li>
@@ -436,15 +457,17 @@
         </header>
 
         <section id="hero" class="hero">
-            <div class="hero-content hero-flex">
-                <img src="tiwa-hero.jpg" alt="TIWA-Kilimo Hero" class="hero-img" />
+            <div class="hero-content" style="display: flex; align-items: center; gap: 2rem; max-width: 900px; margin: 0 auto;">
+                <div style="background: radial-gradient(circle at 60% 40%, #e0ffe6 60%, #b2f0c0 100%); border-radius: 50%; width: 260px; height: 260px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 24px rgba(0,0,0,0.10); flex-shrink: 0;">
+                    <img id="hero-img" src="tiwa-hero.jpg" alt="TIWA-Kilimo Hero" style="width: 180px; height: 180px; object-fit: cover; border-radius: 50%; box-shadow: none;" />
+                </div>
                 <div class="hero-text">
-                    <h1>TIWA-Kilimo: The Farmers Daily Diary</h1>
-                    <p>Goal: Maximise Milk Production. Manage your animal diary, tasks, finances, inventory, and reminders effortlessly in one intuitive platform. Focus on what matters most.</p>
-                    <div class="cta-buttons">
-                        <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn" target="_blank" rel="noopener">Download App</a>
-                        <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn" target="_blank" rel="noopener">Watch Demo</a>
-                    </div>
+                    <h1 style="font-size:2rem; margin-bottom:0.7rem; color:var(--primary-color); font-weight:700;">TIWA-Kilimo: The Farmers Daily Diary</h1>
+                    <p style="font-size:1rem; margin-bottom:1.2rem; color:var(--dark-gray);">Goal: Maximise Milk Production. Manage your animal diary, tasks, finances, inventory, and reminders effortlessly in one intuitive platform. Focus on what matters most.</p>
+                    <div class="cta-buttons" style="display:flex; gap:1.2rem; margin-top:1.2rem;">
+                        <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn hero-btn" target="_blank" rel="noopener">Download App</a>
+                        <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn hero-btn" target="_blank" rel="noopener">Watch Demo</a>
+                </div>
                 </div>
             </div>
         </section>
@@ -453,29 +476,31 @@
             <h2>Key Features</h2>
             <div class="features-grid">
                 <div class="feature-item reveal-element">
-                    <h3>🐮 Animal Diary</h3>
+                    <h3><span class="iconify" data-icon="mdi:cow" style="font-size:1.5em;vertical-align:middle;"></span> Animal Diary</h3>
                     <p>Keep detailed records of each animal, including health, breeding, and production.</p>
                 </div>
                 <div class="feature-item reveal-element">
-                    <h3>✅ Task Management</h3>
+                    <h3><span class="iconify" data-icon="mdi:check-circle-outline" style="font-size:1.5em;vertical-align:middle;"></span> Task Management</h3>
                     <p>Organize and track daily tasks, ensuring nothing is missed on your farm.</p>
                 </div>
                 <div class="feature-item reveal-element">
-                    <h3>💰 Financial Tracking</h3>
+                    <h3><span class="iconify" data-icon="mdi:cash-multiple" style="font-size:1.5em;vertical-align:middle;"></span> Financial Tracking</h3>
                     <p>Monitor your income and expenses to gain full control over your farm's finances.</p>
                 </div>
                 <div class="feature-item reveal-element">
-                    <h3>📦 Inventory Control</h3>
+                    <h3><span class="iconify" data-icon="mdi:package-variant-closed" style="font-size:1.5em;vertical-align:middle;"></span> Inventory Control</h3>
                     <p>Manage feed, medicine, and equipment inventory with ease.</p>
                 </div>
                 <div class="feature-item reveal-element">
-                    <h3>⏰ Reminders & Alerts</h3>
+                    <h3><span class="iconify" data-icon="mdi:alarm" style="font-size:1.5em;vertical-align:middle;"></span> Reminders & Alerts</h3>
                     <p>Set timely reminders for vaccinations, feeding, and other critical events.</p>
                 </div>
                 <div class="feature-item reveal-element">
-                    <h3>📊 Insightful Reports</h3>
+                    <h3><span class="iconify" data-icon="mdi:chart-bar" style="font-size:1.5em;vertical-align:middle;"></span> Insightful Reports</h3>
                     <p>Generate comprehensive reports to make informed decisions about your farm.</p>
                 </div>
+    <!-- Iconify for feature icons -->
+    <script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
             </div>
         </section>
 
@@ -503,23 +528,6 @@
             <h2>Ready to Maximise Milk Production?</h2>
             <p>Download TIWA-Kilimo today and take the first step towards a more organized, productive, and profitable dairy operation.</p>
             <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn" target="_blank" rel="noopener">Download App Now</a>
-        .cta-btn {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            margin: 0 1rem 1rem 0;
-            text-decoration: none;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        .cta-btn:hover {
-            background-color: #45a049;
-            transform: translateY(-2px);
-        }
         </section>
 
         <footer id="contact" class="footer">
@@ -542,7 +550,8 @@
                 </div>
                 <div class="footer-contact">
                     <p>Email: <a href="mailto:info@tiwa-kilimo.com">info@tiwa-kilimo.com</a></p>
-                    <p>Phone: +1 (555) 123-4567</p>
+                    <p>Phone: +254 795 177294</p>
+                    <p>WhatsApp: <a href="https://wa.me/254795177294" target="_blank" rel="noopener">wa.me/+254795177294</a></p>
                     <p>Address: 123 Farm Lane, Rural City, Country</p>
                 </div>
                 <div class="footer-bottom">

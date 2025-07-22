@@ -139,14 +139,15 @@
         /* Hero Section */
         .hero {
             background-color: var(--light-gray);
-            padding: 6rem 0;
+            padding: 2.5rem 0 1.5rem 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 70vh;
-            text-align: center;
+            min-height: 320px;
+            text-align: left;
             position: relative;
             overflow: hidden;
+            gap: 1.5rem;
         }
 
         .hero::before {
@@ -458,12 +459,35 @@
 
         <section id="hero" class="hero">
             <div class="hero-content" style="display: flex; align-items: center; gap: 2rem; max-width: 900px; margin: 0 auto;">
-                <div style="background: radial-gradient(circle at 60% 40%, #e0ffe6 60%, #b2f0c0 100%); border-radius: 50%; width: 260px; height: 260px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 24px rgba(0,0,0,0.10); flex-shrink: 0;">
-                    <img id="hero-img" src="tiwa-hero.jpg" alt="TIWA-Kilimo Hero" style="width: 180px; height: 180px; object-fit: cover; border-radius: 50%; box-shadow: none;" />
+                <div style="background: radial-gradient(circle at 60% 40%, #e0ffe6 60%, #b2f0c0 100%); border-radius: 50%; width: 320px; height: 320px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 32px rgba(0,0,0,0.12); flex-shrink: 0;">
+                    <img id="hero-img" src="tiwa-hero.jpg" alt="TIWA-Kilimo Hero" style="width: 220px; height: 220px; object-fit: cover; border-radius: 50%; box-shadow: none;" />
                 </div>
                 <div class="hero-text">
-                    <h1 style="font-size:2rem; margin-bottom:0.7rem; color:var(--primary-color); font-weight:700;">TIWA-Kilimo: The Farmers Daily Diary</h1>
-                    <p style="font-size:1rem; margin-bottom:1.2rem; color:var(--dark-gray);">Goal: Maximise Milk Production. Manage your animal diary, tasks, finances, inventory, and reminders effortlessly in one intuitive platform. Focus on what matters most.</p>
+                    <h1 style="font-size:2.7rem; margin-bottom:0.5rem; color:var(--primary-color); font-weight:800;">Maximise Your Milk Production</h1>
+                    <p style="font-size:1.1rem; margin-bottom:1.1rem; color:var(--dark-gray); max-width: 420px;">Simple, smart dairy records and reminders. Track animals, tasks, and finances in one app.</p>
+                </div>
+        </section>
+
+        <section class="how-it-works container reveal-element" style="margin: 2.5rem auto 2rem auto;">
+            <h2 style="text-align:center; font-size:2rem; margin-bottom:1.2rem;">How TIWA-Kilimo Helps You Increase Milk Production</h2>
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:2.5rem;">
+                <div style="flex:1 1 220px; min-width:220px; max-width:320px; background:#f8fff8; border-radius:1.2rem; box-shadow:0 2px 8px #e0ffe6; padding:1.5rem; text-align:center;">
+                    <span class="iconify" data-icon="mdi:clipboard-list-outline" style="font-size:2.2em;color:#4CAF50;"></span>
+                    <h3 style="margin:0.7rem 0 0.5rem 0; font-size:1.2rem;">Step 1: Record Production</h3>
+                    <p style="font-size:1rem;">Easily log daily milk yields and animal health for every cow.</p>
+                </div>
+                <div style="flex:1 1 220px; min-width:220px; max-width:320px; background:#f8fff8; border-radius:1.2rem; box-shadow:0 2px 8px #e0ffe6; padding:1.5rem; text-align:center;">
+                    <span class="iconify" data-icon="mdi:bell-alert-outline" style="font-size:2.2em;color:#4CAF50;"></span>
+                    <h3 style="margin:0.7rem 0 0.5rem 0; font-size:1.2rem;">Step 2: Get Notifications & Recommendations</h3>
+                    <p style="font-size:1rem;">Receive timely reminders and actionable tips to boost productivity.</p>
+                </div>
+                <div style="flex:1 1 220px; min-width:220px; max-width:320px; background:#f8fff8; border-radius:1.2rem; box-shadow:0 2px 8px #e0ffe6; padding:1.5rem; text-align:center;">
+                    <span class="iconify" data-icon="mdi:finance" style="font-size:2.2em;color:#4CAF50;"></span>
+                    <h3 style="margin:0.7rem 0 0.5rem 0; font-size:1.2rem;">Step 3: Track Finances</h3>
+                    <p style="font-size:1rem;">Monitor expenses and income to maximise your farm's profit and milk output.</p>
+                </div>
+            </div>
+        </section>
                     <div class="cta-buttons" style="display:flex; gap:1.2rem; margin-top:1.2rem;">
                         <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn hero-btn" target="_blank" rel="noopener">Download App</a>
                         <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn hero-btn" target="_blank" rel="noopener">Watch Demo</a>
@@ -524,6 +548,28 @@
             </div>
         </section>
 
+<div class="footer-forms" style="margin-top:2.5rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:2rem;">
+                    <form style="background:#f4f4f4; border-radius:1rem; padding:1.5rem; box-shadow:0 2px 8px #e0ffe6;" autocomplete="off">
+                        <h4 style="margin-bottom:0.7rem;">Talk to an Expert</h4>
+                        <input type="text" name="name" placeholder="Your Name" required style="width:100%;margin-bottom:0.7rem;padding:0.7rem;border-radius:0.5rem;border:1px solid #ccc;">
+                        <input type="email" name="email" placeholder="Your Email" required style="width:100%;margin-bottom:0.7rem;padding:0.7rem;border-radius:0.5rem;border:1px solid #ccc;">
+                        <textarea name="query" placeholder="Your Query" required style="width:100%;margin-bottom:0.7rem;padding:0.7rem;border-radius:0.5rem;border:1px solid #ccc;"></textarea>
+                        <button type="submit" class="hero-btn" style="width:100%;margin-top:0.5rem;">Send Query</button>
+                    </form>
+                    <form style="background:#f4f4f4; border-radius:1rem; padding:1.5rem; box-shadow:0 2px 8px #e0ffe6;" autocomplete="off">
+                        <h4 style="margin-bottom:0.7rem;">Join Our Mailing List</h4>
+                        <input type="email" name="email" placeholder="Your Email" required style="width:100%;margin-bottom:0.7rem;padding:0.7rem;border-radius:0.5rem;border:1px solid #ccc;">
+                        <button type="submit" class="hero-btn" style="width:100%;margin-top:0.5rem;">Subscribe</button>
+                    </form>
+                    <form style="background:#f4f4f4; border-radius:1rem; padding:1.5rem; box-shadow:0 2px 8px #e0ffe6;" autocomplete="off">
+                        <h4 style="margin-bottom:0.7rem;">Get the App</h4>
+                        <input type="text" name="phone" placeholder="Your Phone Number" required style="width:100%;margin-bottom:0.7rem;padding:0.7rem;border-radius:0.5rem;border:1px solid #ccc;">
+                        <button type="submit" class="hero-btn" style="width:100%;margin-top:0.5rem;">Send App Link</button>
+                    </form>
+                </div>
+
+
+
         <section class="cta-section container reveal-element">
             <h2>Ready to Maximise Milk Production?</h2>
             <p>Download TIWA-Kilimo today and take the first step towards a more organized, productive, and profitable dairy operation.</p>
@@ -557,6 +603,7 @@
                 <div class="footer-bottom">
                     &copy; 2025 TIWA-Kilimo. All rights reserved.
                 </div>
+                
             </div>
         </footer>
     </div>

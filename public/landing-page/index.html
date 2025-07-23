@@ -10,9 +10,9 @@
     <meta property="og:title" content="TIWA-Kilimo - The Farmers Daily Diary">
     <meta property="og:description" content="TIWA-Kilimo: The Farmers Daily Diary - Goal: Maximise Milk Production. Manage your animal diary, tasks, finances, inventory, and reminders all in one place.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.yourappwebsite.com">
-    <meta property="og:image" content="https://www.yourappwebsite.com/images/og-image.jpg">
-    <link rel="canonical" href="https://www.yourappwebsite.com/">
+    <meta property="og:url" content="https://www.tiwakilimo.com">
+    <meta property="og:image" content="https://www.tiwakilimo.com/images/og-image.jpg">
+    <link rel="canonical" href="https://www.tiwakilimo.com/">
 
     <!-- Favicon and App Icons for all devices -->
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -30,6 +30,16 @@
             --light-gray: #f4f4f4;
             --dark-gray: #555;
             --white: #fff;
+            --shadow-sm: 0 2px 8px rgba(224, 255, 230, 0.5);
+            --shadow-md: 0 4px 12px rgba(76, 175, 80, 0.12);
+            --border-radius-sm: 0.5rem;
+            --border-radius-md: 1rem;
+            --border-radius-lg: 1.2rem;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 0.7rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
         }
 
         body {
@@ -67,6 +77,10 @@
 
         a {
             color: var(--primary-color);
+            text-decoration: none;
+        }
+      button  a  {
+            color:var(--light-gray);
             text-decoration: none;
         }
 
@@ -139,7 +153,7 @@
         /* Hero Section */
         .hero {
             background-color: var(--light-gray);
-            padding: 2.5rem 0 1.5rem 0;
+            padding: 1.5rem 0 1.5rem 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -168,21 +182,21 @@
         }
 
         .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: .5rem;
+            font-size: 1.5rem;
+            margin-bottom: .2rem;
             color: var(--primary-color);
-            animation: slideInUp 1s ease-out;
+            animation: slideInUp 2s ease-out;
         }
 
         .hero p {
             font-size: 1.3rem;
-            margin-bottom: .5rem;
+            margin-bottom: .2rem;
             color: var(--dark-gray);
             animation: fadeIn 1.5s ease-out;
         }
 
         .hero .cta-buttons button {
-            margin: 0 1rem;
+            margin: 0 .5rem;
             animation: zoomIn 1.2s ease-out;
         }
 
@@ -338,6 +352,135 @@
             color: #bbb;
         }
 
+        /* Unified Components */
+        .section {
+            padding: var(--spacing-xl) 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: var(--spacing-lg);
+            color: var(--primary-color);
+        }
+
+        .grid {
+            display: grid;
+            gap: var(--spacing-lg);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: var(--spacing-xl);
+        }
+
+        .footer-forms.grid-3 {
+            grid-template-columns: repeat(3, 20vw);
+            justify-content: center;
+            margin: 2rem auto;
+        }
+
+        .card {
+            background: var(--light-gray);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            border-radius: var(--border-radius-sm);
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--border-radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary-color) 60%, var(--secondary-color) 100%);
+            color: var(--white);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #388e3c 60%, #21a1f3 100%);
+            transform: translateY(-2px);
+        }
+
+        .nav-link {
+            color: var(--dark-gray);
+            text-decoration: none;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--border-radius-sm);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .hero-blob {
+            background: radial-gradient(circle at 60% 40%, #e0ffe6 60%, #b2f0c0 100%);
+            border-radius: 50%;
+            width: 320px;
+            height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            flex-shrink: 0;
+        }
+
+        .hero-image {
+            width: 220px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-text {
+            max-width: 420px;
+        }
+
+        .hero-title {
+            font-size: 2.7rem;
+            margin-bottom: var(--spacing-xs);
+            color: var(--primary-color);
+            font-weight: 800;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-md);
+            color: var(--dark-gray);
+        }
+
         /* Animations */
         .reveal-element {
             opacity: 0;
@@ -381,37 +524,253 @@
             }
         }
 
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 25px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 10;
+        }
+
+        .hamburger span {
+            width: 30px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 10px;
+            transition: all 0.3s linear;
+            position: relative;
+            transform-origin: 1px;
+        }
+
+        .contact-icons {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: var(--border-radius-md);
+        }
+
+        .contact-icon {
+            color: var(--primary-color);
+            font-size: 2rem;
+            transition: transform 0.3s ease;
+            text-decoration: none;
+        }
+
+        .contact-icon:hover {
+            transform: translateY(-5px);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
+            #logo {
+                height: auto;
+                width: 30vw;
+                margin-left: 0;
+            }
+
             .header .container {
-                flex-direction: column;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1rem;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .header nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 100%;
+                height: 100vh;
+                background: var(--white);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: right 0.3s ease;
+                z-index: 5;
+            }
+
+            .header nav.active {
+                right: 0;
             }
 
             .header nav ul {
-                margin-top: 1rem;
                 flex-direction: column;
                 align-items: center;
+                margin: 0;
             }
 
             .header nav ul li {
-                margin: 0.5rem 0;
+                margin: 1rem 0;
             }
 
-            .hero h1 {
-                font-size: 2.5rem;
+            .nav-link {
+                font-size: 1.5rem;
+                padding: 1rem 2rem;
             }
 
-            .hero p {
-                font-size: 1rem;
+            .hamburger.active span:first-child {
+                transform: rotate(45deg) translate(0px, -2px);
             }
 
-            .hero .cta-buttons button {
-                margin: 0.5rem 0;
-                width: 80%;
+            .hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active span:last-child {
+                transform: rotate(-45deg) translate(-1px, 1px);
+            }
+
+            /* Hero Section Mobile */
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+                padding: 0.5rem;
+                width: 90vw;
+                font-size: small;
+                margin: 0 auto;
+            }
+
+            .hero-blob {
+                width: 200px;
+                height: 200px;
+                margin-bottom: 1rem;
+            }
+
+            .hero-image {
+                width: 140px;
+                height: 140px;
+            }
+
+            .hero-text {
+                max-width: 100%;
+                padding: 0 0.5rem;
+            }
+
+            .hero-title {
+                font-size: 1.5rem;
+                line-height: 1.2;
+                margin-bottom: 0.5rem;
+            }
+
+            .hero-description {
+                font-size: 0.9rem;
+                line-height: 1.4;
+                margin-bottom: 1rem;
+            }
+
+            .cta-buttons {
+                margin-top: 0.5rem;
+            }
+
+            .hero.section {
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+                min-height: auto;
+            }
+
+            /* Typography Mobile Optimizations */
+            h2 {
+                font-size: 1.6rem !important;
+                line-height: 1.4;
+            }
+
+            h3 {
+                font-size: 1.2rem !important;
+                line-height: 1.3;
+            }
+
+            h4 {
+                font-size: 1.1rem !important;
+                margin-bottom: 1rem !important;
+            }
+
+            p {
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+
+            .feature-item h3 {
+                font-size: 1.1rem !important;
+            }
+
+            .section-title {
+                font-size: 1.6rem !important;
+                margin-bottom: 1.5rem;
+            }
+
+            .testimonial-item p {
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+
+            .testimonial-item .author {
+                font-size: 0.85rem;
+            }
+
+            /* CTA Buttons Mobile */
+            .cta-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+                padding: 0 1rem;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            /* Grid Layouts Mobile */
+            .grid-3 {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
             }
 
             .features-grid, .testimonial-grid {
                 grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+
+            /* Forms Mobile */
+            .footer-forms.grid-3 {
+                grid-template-columns: 1fr;
+                width: 80vw;
+                margin: 2rem auto;
+                gap: 2rem;
+            }
+
+            .footer-forms .card {
+                padding: var(--spacing-md);
+                margin: 0;
+            }
+
+            .footer-forms h4 {
+                font-size: 1rem !important;
+                margin-bottom: 0.8rem !important;
+            }
+
+            .footer-forms .form-input {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+                margin-bottom: 0.6rem;
+            }
+
+            .footer-forms .btn {
+                font-size: 0.9rem;
+                padding: 0.8rem 1.5rem;
             }
         }
 
@@ -448,50 +807,56 @@
       
                 <nav>
                     <ul>
-                        <li><a href="#hero">Home</a></li>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#testimonials">Testimonials</a></li>
-                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#hero" class="nav-link">Home</a></li>
+                        <li><a href="#features" class="nav-link">Features</a></li>
+                        <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
+                        <li><a href="#contact" class="nav-link">Contact</a></li>
                     </ul>
                 </nav>
+
+                <button class="hamburger" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
         </header>
 
-        <section id="hero" class="hero">
-            <div class="hero-content" style="display: flex; align-items: center; gap: 2rem; max-width: 900px; margin: 0 auto;">
-                <div style="background: radial-gradient(circle at 60% 40%, #e0ffe6 60%, #b2f0c0 100%); border-radius: 50%; width: 320px; height: 320px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 32px rgba(0,0,0,0.12); flex-shrink: 0;">
-                    <img id="hero-img" src="tiwa-hero.jpg" alt="TIWA-Kilimo Hero" style="width: 220px; height: 220px; object-fit: cover; border-radius: 50%; box-shadow: none;" />
+        <section id="hero" class="hero section">
+            <div class="hero-content">
+                <div class="hero-blob">
+                    <img id="hero-img" src="tiwa-hero.jpg" alt="TIWA-Kilimo Hero" class="hero-image" />
                 </div>
                 <div class="hero-text">
-                    <h1 style="font-size:2.7rem; margin-bottom:0.5rem; color:var(--primary-color); font-weight:800;">Maximise Your Milk Production</h1>
-                    <p style="font-size:1.1rem; margin-bottom:1.1rem; color:var(--dark-gray); max-width: 420px;">Simple, smart dairy records and reminders. Track animals, tasks, and finances in one app.</p>
+                    <h1 class="hero-title">Maximise Your Milk Production</h1>
+                    <p class="hero-description">Simple, smart dairy records and reminders. Track animals, tasks, and finances in one app.</p>
                 </div>
         </section>
 
-        <section class="how-it-works container reveal-element" style="margin: 2.5rem auto 2rem auto;">
-            <h2 style="text-align:center; font-size:2rem; margin-bottom:1.2rem;">How TIWA-Kilimo Helps You Increase Milk Production</h2>
-            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:2.5rem;">
-                <div style="flex:1 1 220px; min-width:220px; max-width:320px; background:#f8fff8; border-radius:1.2rem; box-shadow:0 2px 8px #e0ffe6; padding:1.5rem; text-align:center;">
-                    <span class="iconify" data-icon="mdi:clipboard-list-outline" style="font-size:2.2em;color:#4CAF50;"></span>
-                    <h3 style="margin:0.7rem 0 0.5rem 0; font-size:1.2rem;">Step 1: Record Production</h3>
-                    <p style="font-size:1rem;">Easily log daily milk yields and animal health for every cow.</p>
+        <section class="how-it-works container section reveal-element">
+            <h2 class="section-title">How TIWA-Kilimo Helps You Increase Milk Production</h2>
+            <div class="grid grid-3">
+                <div class="card">
+                    <span class="iconify" data-icon="mdi:clipboard-list-outline"></span>
+                    <h3>Step 1: Record Production</h3>
+                    <p>Easily log daily milk yields and animal health for every cow.</p>
                 </div>
-                <div style="flex:1 1 220px; min-width:220px; max-width:320px; background:#f8fff8; border-radius:1.2rem; box-shadow:0 2px 8px #e0ffe6; padding:1.5rem; text-align:center;">
-                    <span class="iconify" data-icon="mdi:bell-alert-outline" style="font-size:2.2em;color:#4CAF50;"></span>
-                    <h3 style="margin:0.7rem 0 0.5rem 0; font-size:1.2rem;">Step 2: Get Notifications & Recommendations</h3>
-                    <p style="font-size:1rem;">Receive timely reminders and actionable tips to boost productivity.</p>
+                <div class="card">
+                    <span class="iconify" data-icon="mdi:bell-alert-outline"></span>
+                    <h3>Step 2: Get Notifications & Recommendations</h3>
+                    <p>Receive timely reminders and actionable tips to boost productivity.</p>
                 </div>
-                <div style="flex:1 1 220px; min-width:220px; max-width:320px; background:#f8fff8; border-radius:1.2rem; box-shadow:0 2px 8px #e0ffe6; padding:1.5rem; text-align:center;">
-                    <span class="iconify" data-icon="mdi:finance" style="font-size:2.2em;color:#4CAF50;"></span>
-                    <h3 style="margin:0.7rem 0 0.5rem 0; font-size:1.2rem;">Step 3: Track Finances</h3>
-                    <p style="font-size:1rem;">Monitor expenses and income to maximise your farm's profit and milk output.</p>
+                <div class="card">
+                    <span class="iconify" data-icon="mdi:finance"></span>
+                    <h3>Step 3: Track Finances</h3>
+                    <p>Monitor expenses and income to maximise your farm's profit and milk output.</p>
                 </div>
             </div>
         </section>
-                    <div class="cta-buttons" style="display:flex; gap:1.2rem; margin-top:1.2rem;">
-                        <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn hero-btn" target="_blank" rel="noopener">Download App</a>
-                        <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn hero-btn" target="_blank" rel="noopener">Watch Demo</a>
-                </div>
+                    <div class="cta-buttons">
+                        <a href="https://shiny-salamander-0e154d.netlify.app/" class="btn btn-primary" target="_blank" rel="noopener">Download App</a>
+                        <a href="https://shiny-salamander-0e154d.netlify.app/" class="btn btn-primary" target="_blank" rel="noopener">Watch Demo</a>
+                    </div>
                 </div>
             </div>
         </section>
@@ -548,23 +913,23 @@
             </div>
         </section>
 
-<div class="footer-forms" style="margin-top:2.5rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:2rem;">
-                    <form style="background:#f4f4f4; border-radius:1rem; padding:1.5rem; box-shadow:0 2px 8px #e0ffe6;" autocomplete="off">
-                        <h4 style="margin-bottom:0.7rem;">Talk to an Expert</h4>
-                        <input type="text" name="name" placeholder="Your Name" required style="width:100%;margin-bottom:0.7rem;padding:0.7rem;border-radius:0.5rem;border:1px solid #ccc;">
-                        <input type="email" name="email" placeholder="Your Email" required style="width:100%;margin-bottom:0.7rem;padding:0.7rem;border-radius:0.5rem;border:1px solid #ccc;">
-                        <textarea name="query" placeholder="Your Query" required style="width:100%;margin-bottom:0.7rem;padding:0.7rem;border-radius:0.5rem;border:1px solid #ccc;"></textarea>
-                        <button type="submit" class="hero-btn" style="width:100%;margin-top:0.5rem;">Send Query</button>
+<div class="footer-forms grid grid-3">
+                    <form class="card" autocomplete="off">
+                        <h4>Talk to an Expert</h4>
+                        <input type="text" name="name" placeholder="Your Name" required class="form-input">
+                        <input type="email" name="email" placeholder="Your Email" required class="form-input">
+                        <textarea name="query" placeholder="Your Query" required class="form-input"></textarea>
+                        <button type="submit" class="btn btn-primary">Send Query</button>
                     </form>
-                    <form style="background:#f4f4f4; border-radius:1rem; padding:1.5rem; box-shadow:0 2px 8px #e0ffe6;" autocomplete="off">
-                        <h4 style="margin-bottom:0.7rem;">Join Our Mailing List</h4>
-                        <input type="email" name="email" placeholder="Your Email" required style="width:100%;margin-bottom:0.7rem;padding:0.7rem;border-radius:0.5rem;border:1px solid #ccc;">
-                        <button type="submit" class="hero-btn" style="width:100%;margin-top:0.5rem;">Subscribe</button>
+                    <form class="card" autocomplete="off">
+                        <h4>Join Our Mailing List</h4>
+                        <input type="email" name="email" placeholder="Your Email" required class="form-input">
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
                     </form>
-                    <form style="background:#f4f4f4; border-radius:1rem; padding:1.5rem; box-shadow:0 2px 8px #e0ffe6;" autocomplete="off">
-                        <h4 style="margin-bottom:0.7rem;">Get the App</h4>
-                        <input type="text" name="phone" placeholder="Your Phone Number" required style="width:100%;margin-bottom:0.7rem;padding:0.7rem;border-radius:0.5rem;border:1px solid #ccc;">
-                        <button type="submit" class="hero-btn" style="width:100%;margin-top:0.5rem;">Send App Link</button>
+                    <form class="card" autocomplete="off">
+                        <h4>Get the App</h4>
+                        <input type="text" name="phone" placeholder="Your Phone Number" required class="form-input">
+                        <button type="submit" class="btn btn-primary">Send App Link</button>
                     </form>
                 </div>
 
@@ -573,10 +938,28 @@
         <section class="cta-section container reveal-element">
             <h2>Ready to Maximise Milk Production?</h2>
             <p>Download TIWA-Kilimo today and take the first step towards a more organized, productive, and profitable dairy operation.</p>
-            <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn" target="_blank" rel="noopener">Download App Now</a>
+          <button class=" btn btn-primary"     >
+             <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn" target="_blank" rel="noopener">Download App Now</a>
+        </button> 
         </section>
 
+        
+
         <footer id="contact" class="footer">
+
+<div class="contact-icons">
+            <a href="tel:+254795177294" class="contact-icon" aria-label="Phone">
+                <span class="iconify" data-icon="mdi:phone" style="color: #4CAF50;"></span>
+            </a>
+            <a href="mailto:info@tiwa-kilimo.com" class="contact-icon" aria-label="Email">
+                <span class="iconify" data-icon="mdi:email" style="color: #4CAF50;"></span>
+            </a>
+            <a href="https://wa.me/254795177294" class="contact-icon" aria-label="WhatsApp" target="_blank" rel="noopener">
+                <span class="iconify" data-icon="mdi:whatsapp" style="color: #4CAF50;"></span>
+            </a>
+        </div>
+
+
             <div class="container">
                 <div class="footer-logo">TIWA-Kilimo</div>
                 <div class="footer-links">
@@ -609,8 +992,30 @@
     </div>
 
     <script>
+        // Hamburger Menu Toggle
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.querySelector('nav');
+        const navLinks = document.querySelectorAll('nav a');
+
+        function toggleMenu() {
+            hamburger.classList.toggle('active');
+            nav.classList.toggle('active');
+            document.body.classList.toggle('menu-open');
+        }
+
+        hamburger.addEventListener('click', toggleMenu);
+
+        // Close menu when clicking a link
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                nav.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            });
+        });
+
         // Smooth scrolling for navigation links
-        document.querySelectorAll('nav a').forEach(anchor => {
+        navLinks.forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 document.querySelector(this.getAttribute('href')).scrollIntoView({

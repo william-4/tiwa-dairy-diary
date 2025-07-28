@@ -274,6 +274,8 @@
 
         /* Features Section */
         .features {
+
+
             padding: 3rem 0;
             margin-top: 5rem;
             background-color: var(--white);
@@ -285,35 +287,19 @@
             margin-bottom: 2rem;
         }
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 25em), 1fr));
-            gap: 2.5em;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2em;
+        /* Features section styling */
+        .features {
+            margin-bottom: var(--spacing-xl);
         }
 
-        .feature-item {
-            background-color: var(--light-gray);
-            padding: 2.5rem;
-            border-radius: 12px;
+        .features .card {
             text-align: left;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
         }
 
-        .feature-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-item h3 {
-            font-size: 1.8rem;
+        .features h3 {
+            font-size: 1.4rem;
             margin-bottom: 1rem;
+            color: var(--primary-color);
         }
 
         /* Testimonials Section */
@@ -480,6 +466,185 @@
             color: #bbb;
             margin-top: 1rem;
         }
+
+
+         /* Floating Button Styles */
+        .chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 9999px; /* Fully rounded */
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            z-index: 1000;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.05);
+            background-color: #45a049; /* Slightly darker green on hover */
+        }
+
+        /* Chat Window Styles */
+        .chat-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 320px;
+            max-height: 400px;
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 999;
+        }
+
+        .chat-window.open {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .chat-header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 16px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .chat-close-button {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .chat-close-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-body {
+            padding: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .chat-body p {
+            margin-bottom: 10px;
+        }
+
+        .chat-body a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .chat-body a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        /* Form Styles */
+        .chat-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: var(--dark-gray);
+        }
+
+        .chat-form input[type="text"],
+        .chat-form input[type="email"],
+        .chat-form textarea {
+            width: calc(100% - 20px); /* Account for padding */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95em;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .chat-form input[type="text"]:focus,
+        .chat-form input[type="email"]:focus,
+        .chat-form textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .chat-form textarea {
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 80px;
+        }
+
+        .chat-form button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            width: 100%;
+        }
+
+        .chat-form button:hover {
+            background-color: #45a049;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 400px) {
+            .chat-window {
+                width: calc(100% - 40px); /* Full width minus padding on smaller screens */
+                right: 20px;
+                left: 20px;
+                bottom: 80px;
+                max-height: 70vh; /* Adjust max height for smaller screens */
+            }
+
+            .chat-button {
+                bottom: 15px;
+                right: 15px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+
+
+
+
 
         @media (max-width: 768px) {
             .footer .container {
@@ -892,13 +1057,18 @@
                 line-height: 1.6;
             }
 
-            .feature-item h3 {
-                font-size: 1.1rem !important;
+            .features h3 {
+                font-size: 1.2rem !important;
             }
 
             .section-title {
                 font-size: 1.6rem !important;
                 margin-bottom: 1.5rem;
+            }
+
+            .card {
+                padding: var(--spacing-md);
+                margin: 0.5rem;
             }
 
             .testimonial-item p {
@@ -1088,16 +1258,16 @@
 
         <section id="features" class="features container">
             <h2>Key Features</h2> <hr>
-            <div class="features-grid">
-                <div class="feature-item reveal-element">
+            <div class="grid grid-3">
+                <div class="card reveal-element">
                     <h3><span class="iconify" data-icon="mdi:cow" style="font-size:1.5em;vertical-align:middle;"></span> Track Milk, Health & Breeding</h3>
                     <p>Log everything — from litres to vet visits — in seconds. Simple and quick daily recording for busy farmers.</p>
                 </div>
-                <div class="feature-item reveal-element">
+                <div class="card reveal-element">
                     <h3><span class="iconify" data-icon="mdi:whatsapp" style="font-size:1.5em;vertical-align:middle;"></span> Weekly WhatsApp Updates</h3>
                     <p>Never forget a heat cycle, vet visit, calving date, or supplier payment again. Get timely reminders right on WhatsApp.</p>
                 </div>
-                <div class="feature-item reveal-element">
+                <div class="card reveal-element">
                     <h3><span class="iconify" data-icon="mdi:cash-multiple" style="font-size:1.5em;vertical-align:middle;"></span> Know Your Farm's Finances</h3>
                     <p>See your income, expenses and profitability clearly — and stay in control of your dairy business.</p>
                 </div>
@@ -1301,5 +1471,89 @@
             }
         });
     </script>
+
+<!-- Floating Chat Button -->
+    <button id="chatButton" class="chat-button">
+        💬
+    </button>
+
+    <!-- Custom Chat Window -->
+    <div id="chatWindow" class="chat-window">
+        <div class="chat-header">
+            <span>Contact Us</span>
+            <button id="closeChatButton" class="chat-close-button">&times;</button>
+        </div>
+        <div class="chat-body">
+            <p>Please fill out the form below and we'll get back to you, or chat with us on WhatsApp.</p>
+
+            <form class="chat-form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Your Name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Your Email" required>
+
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" placeholder="Your Message" required></textarea>
+
+                <button type="submit">Send Message</button>
+            </form>
+
+            <p style="margin-top: 20px; text-align: center;">Prefer WhatsApp? <a href="https://wa.me/254704860195" target="_blank" rel="noopener">Chat on WhatsApp</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Get references to the button and window elements
+        const chatButton = document.getElementById('chatButton');
+        const chatWindow = document.getElementById('chatWindow');
+        const closeChatButton = document.getElementById('closeChatButton');
+
+        // Function to toggle the chat window visibility
+        function toggleChatWindow() {
+            chatWindow.classList.toggle('open');
+        }
+
+        // Add event listeners
+        chatButton.addEventListener('click', toggleChatWindow);
+        closeChatButton.addEventListener('click', toggleChatWindow);
+
+        // Close the chat window if clicked outside
+        document.addEventListener('click', (event) => {
+            if (!chatWindow.contains(event.target) && !chatButton.contains(event.target) && chatWindow.classList.contains('open')) {
+                chatWindow.classList.remove('open');
+            }
+        });
+
+        // Prevent form submission for this non-integrated example
+        const chatForm = document.querySelector('.chat-form');
+        if (chatForm) {
+            chatForm.addEventListener('submit', (event) => {
+                event.preventDefault(); // Stop the form from actually submitting
+                // You could add a simple alert here for demonstration, but per instructions, no alert().
+                // console.log('Form submitted (frontend only, not integrated)');
+                // For a real application, you would send this data to a backend.
+            });
+        }
+    </script>
+
+    <!-- Your Tawk.to Script - Keep this here if you want Tawk.to to load separately -->
+    <!-- Remember to replace {your_property_id} and {your_widget_id} with your actual Tawk.to IDs -->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/{your_property_id}/{your_widget_id}'; // <<< REPLACE THESE IDs
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
+    <!-- End of Tawk.to Script -->
+
+
+
+
 </body>
 </html>

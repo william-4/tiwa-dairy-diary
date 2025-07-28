@@ -20,6 +20,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="manifest" href="/site.webmanifest">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
+
 
     <style>
         /* General Styles */
@@ -204,6 +207,71 @@
             animation: zoomIn 2.2s ease-out;
         }
 
+
+        /* metric section   */
+
+ .metrics-section {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 2em;
+            text-align: center;
+        }
+
+        .metrics-section h2 {
+            color: #4CAF50;
+            font-size: 2.2rem;
+            margin-bottom: .5em;
+        }
+
+        .metrics-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 1em;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 2em;
+            border-radius: 8px;
+            background-color: #e8f5e9;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            flex: 1;
+            min-width: 200px;
+            max-width: 280px;
+        }
+
+        .metric-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-item iconify-icon {
+            font-size: 3rem;
+            color: #388e3c;
+            margin-bottom: 15px;
+        }
+
+        .metric-item .number {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #212121;
+            line-height: 1;
+        }
+
+        .metric-item .description {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.4;
+        }
+
+
         /* Features Section */
         .features {
             padding: 3rem 0;
@@ -219,17 +287,23 @@
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 20em), 1fr));
-            gap: 2em;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 25em), 1fr));
+            gap: 2.5em;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2em;
         }
 
         .feature-item {
             background-color: var(--light-gray);
-            padding: 2rem;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem;
+            border-radius: 12px;
+            text-align: left;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
         .feature-item:hover {
@@ -274,13 +348,33 @@
             transform: scale(1.02);
         }
 
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+
+        .testimonial-info {
+            text-align: left;
+        }
+
         .testimonial-item p {
             font-style: italic;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: left;
+            line-height: 1.6;
         }
 
         .testimonial-item .author {
             font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .testimonial-item .location {
+            font-size: 0.9rem;
+            opacity: 0.9;
         }
 
         /* Call to Action Section */
@@ -908,7 +1002,7 @@
                         <li><a href="#features" class="nav-link">Features</a></li>
                         <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
                         <li><a href="#contact" class="nav-link">Contact</a></li>
-                        <li><a href="#app" class="nav-link">App</a></li>
+                        <li><a href="https://shiny-salamander-0e154d.netlify.app/" class="nav-link" style="background-color: #4CAF50; color: white;">Login</a></li>
                     </ul>
                 </nav>
 
@@ -930,9 +1024,10 @@
                 <div class="hero-text">
                     <h1 class="hero-title">Maximise Your Milk Production</h1>
                     <p class="hero-description">Simple, smart dairy records and reminders. Track animals, tasks, and finances in one app.</p>
+                    <h3 class="hero-description" style="color: #4CAF50; border-radius: 2em;">Helping Dairy Farmers Track Over 6000 Litres of Milk Every Month  With Just Their Phone.</h3>
                     <div class="cta-buttons">
-                        <button class="btn btn-primary hero-btn">Get Started</button>
-                        <button class="btn btn-primary hero-btn">Download App</button>
+                       <a href="https://shiny-salamander-0e154d.netlify.app/"> <button class="btn btn-primary hero-btn">Get Started</button>
+                        <button class="btn btn-primary hero-btn">Download App</button>  </a>
                     </div>
                 </div>
             </div>
@@ -940,6 +1035,34 @@
 
             
         </section>
+
+
+    <div class="metrics-section">
+        <h2>Our Impact</h2>
+        <div class="metrics-grid">
+            <div class="metric-item">
+                <iconify-icon icon="mdi:account-group"></iconify-icon>
+                <div class="number">1,200+</div>
+                <p class="description">farmers reached through field visits, AgriTours, digital outreach, and pilot programs</p>
+            </div>
+            <div class="metric-item">
+                <iconify-icon icon="mdi:cow"></iconify-icon>
+                <div class="number">82,500+</div>
+                <p class="description">litres of milk tracked by early users in our dairy farm record-keeping tests</p>
+            </div>
+            <div class="metric-item">
+                <iconify-icon icon="mdi:cash-multiple"></iconify-icon>
+                <div class="number">KSh 3.2M+</div>
+                <p class="description">in expenses recorded across input costs, vet services, feed, and labor</p>
+            </div>
+            <div class="metric-item">
+                <iconify-icon icon="mdi:cellphone-link"></iconify-icon>
+                <div class="number">340+</div>
+                <p class="description">app testers from 9 counties actively engaging with the platform</p>
+            </div>
+        </div>
+    </div>
+
 
         <main style="position: relative; z-index: 3; background: var(--white);">
             <section class="how-it-works container section reveal-element">
@@ -967,28 +1090,16 @@
             <h2>Key Features</h2> <hr>
             <div class="features-grid">
                 <div class="feature-item reveal-element">
-                    <h3><span class="iconify" data-icon="mdi:cow" style="font-size:1.5em;vertical-align:middle;"></span> Animal Diary</h3>
-                    <p>Keep detailed records of each animal, including health, breeding, and production.</p>
+                    <h3><span class="iconify" data-icon="mdi:cow" style="font-size:1.5em;vertical-align:middle;"></span> Track Milk, Health & Breeding</h3>
+                    <p>Log everything — from litres to vet visits — in seconds. Simple and quick daily recording for busy farmers.</p>
                 </div>
                 <div class="feature-item reveal-element">
-                    <h3><span class="iconify" data-icon="mdi:check-circle-outline" style="font-size:1.5em;vertical-align:middle;"></span> Task Management</h3>
-                    <p>Organize and track daily tasks, ensuring nothing is missed on your farm.</p>
+                    <h3><span class="iconify" data-icon="mdi:whatsapp" style="font-size:1.5em;vertical-align:middle;"></span> Weekly WhatsApp Updates</h3>
+                    <p>Never forget a heat cycle, vet visit, calving date, or supplier payment again. Get timely reminders right on WhatsApp.</p>
                 </div>
                 <div class="feature-item reveal-element">
-                    <h3><span class="iconify" data-icon="mdi:cash-multiple" style="font-size:1.5em;vertical-align:middle;"></span> Financial Tracking</h3>
-                    <p>Monitor your income and expenses to gain full control over your farm's finances.</p>
-                </div>
-                <div class="feature-item reveal-element">
-                    <h3><span class="iconify" data-icon="mdi:package-variant-closed" style="font-size:1.5em;vertical-align:middle;"></span> Inventory Control</h3>
-                    <p>Manage feed, medicine, and equipment inventory with ease.</p>
-                </div>
-                <div class="feature-item reveal-element">
-                    <h3><span class="iconify" data-icon="mdi:alarm" style="font-size:1.5em;vertical-align:middle;"></span> Reminders & Alerts</h3>
-                    <p>Set timely reminders for vaccinations, feeding, and other critical events.</p>
-                </div>
-                <div class="feature-item reveal-element">
-                    <h3><span class="iconify" data-icon="mdi:chart-bar" style="font-size:1.5em;vertical-align:middle;"></span> Insightful Reports</h3>
-                    <p>Generate comprehensive reports to make informed decisions about your farm.</p>
+                    <h3><span class="iconify" data-icon="mdi:cash-multiple" style="font-size:1.5em;vertical-align:middle;"></span> Know Your Farm's Finances</h3>
+                    <p>See your income, expenses and profitability clearly — and stay in control of your dairy business.</p>
                 </div>
     <!-- Iconify for feature icons -->
     <script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
@@ -997,19 +1108,47 @@
 
         <section id="testimonials" class="testimonials">
             <div class="container">
-                <h2>What Our Users Say</h2>
+                <h2>What Our Farmers Say</h2>
                 <div class="testimonial-grid">
                     <div class="testimonial-item reveal-element">
-                        <p>"Your App Name has transformed how I manage my small dairy farm. It's incredibly user-friendly and keeps everything organized!"</p>
-                        <div class="author">- Jane Doe, Dairy Farmer</div>
+                        <div class="testimonial-header">
+                            <iconify-icon icon="mdi:account-circle" style="font-size: 3em; color: #fff;"></iconify-icon>
+                            <div class="testimonial-info">
+                                <div class="author">Wanjiku M.</div>
+                                <div class="location">Githunguri, Kiambu</div>
+                            </div>
+                        </div>
+                        <p>"I used to forget heat cycles, now I get reminders right on my phone. Since using TIWA-Kilimo, my breeding success rate has improved significantly. Very helpful for a small-scale farmer like me."</p>
                     </div>
                     <div class="testimonial-item reveal-element">
-                        <p>"The financial tracking feature alone has saved me hours every week. Highly recommend this app to any modern farmer."</p>
-                        <div class="author">- John Smith, Crop Producer</div>
+                        <div class="testimonial-header">
+                            <iconify-icon icon="mdi:account-circle" style="font-size: 3em; color: #fff;"></iconify-icon>
+                            <div class="testimonial-info">
+                                <div class="author">James K.</div>
+                                <div class="location">Limuru, Kiambu</div>
+                            </div>
+                        </div>
+                        <p>"The milk production tracking has helped me identify my best performing cows. I can now make better decisions about feeding and which genetics to keep in my herd. My average daily production has increased by 3 litres per cow."</p>
                     </div>
                     <div class="testimonial-item reveal-element">
-                        <p>"Never missed a vaccination again thanks to the reminders. An essential tool for efficient farm management."</p>
-                        <div class="author">- Emily White, Poultry Farmer</div>
+                        <div class="testimonial-header">
+                            <iconify-icon icon="mdi:account-circle" style="font-size: 3em; color: #fff;"></iconify-icon>
+                            <div class="testimonial-info">
+                                <div class="author">Mary N.</div>
+                                <div class="location">Kiambaa, Kiambu</div>
+                            </div>
+                        </div>
+                        <p>"Recording expenses was always a headache before. Now I know exactly how much I spend on feeds and services. The app has helped me reduce waste and save about Ksh 4,000 monthly on feed costs."</p>
+                    </div>
+                    <div class="testimonial-item reveal-element">
+                        <div class="testimonial-header">
+                            <iconify-icon icon="mdi:account-circle" style="font-size: 3em; color: #fff;"></iconify-icon>
+                            <div class="testimonial-info">
+                                <div class="author">Peter G.</div>
+                                <div class="location">Kikuyu, Kiambu</div>
+                            </div>
+                        </div>
+                        <p>"The vaccination and deworming reminders are very useful. I no longer have to keep paper records that get lost. Everything about my 5 cows is now properly tracked, and I can show the records to my vet when needed."</p>
                     </div>
                 </div>
             </div>
@@ -1057,8 +1196,8 @@
                     <div class="footer-logo">TIWA-Kilimo</div>
                     <div class="footer-contact">
                         <p>Email: <a href="mailto:info@tiwa-kilimo.com">info@tiwa-kilimo.com</a></p>
-                        <p>Phone: +254 795 177294</p>
-                        <p>WhatsApp: <a href="https://wa.me/254795177294" target="_blank" rel="noopener">wa.me/+254795177294</a></p>
+                        <p>Phone: +254 704 860195</p>
+                        <p>WhatsApp: <a href="https://wa.me/254704860195" target="_blank" rel="noopener">wa.me/+254795177294</a></p>
                     </div>
                 </div>
 
@@ -1084,7 +1223,7 @@
                             <a href="#" aria-label="LinkedIn"><img src="https://img.icons8.com/ios-filled/24/ffffff/linkedin.png" alt="LinkedIn"></a>
                             <a href="#" aria-label="Instagram"><img src="https://img.icons8.com/ios-filled/24/ffffff/instagram-new--v1.png" alt="Instagram"></a>
                         </div>
-                        <p class="address">123 Farm Lane, Rural City, Country</p>
+                        <p class="address">FarmLane, Githunguri, Kiambu County</p>
                     </div>
                 </div>
                 <div class="footer-bottom">

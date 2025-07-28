@@ -1,0 +1,21 @@
+:root {
+    /* Primary Colors */
+    --primary-brown: #8B4513;     /* Saddle Brown - rich earthy tone */
+    --primary-green: #556B2F;     /* Dark Olive Green - natural forest tone */
+    
+    /* Secondary Colors */
+    --light-brown: #DEB887;       /* Burlywood - lighter brown */
+    --light-green: #90AB76;       /* Sage Green - muted green */
+    
+    /* Accent Colors */
+    --cream: #FFFDD0;             /* Cream - off-white yellow */
+    --pale-khaki: #F3E5AB;        /* Pale Khaki - warmer off-white */
+    
+    /* Supporting Colors */
+    --dark-brown: #5C4033;        /* Dark Brown - for text */
+    --olive: #808000;             /* Olive - additional green tone */
+    
+    /* Background Colors */
+    --bg-cream: #FDFBF0;          /* Very Light Cream - for backgrounds */
+    --bg-tan: #F5F0E6;            /* Light Tan - alternative background */
+}

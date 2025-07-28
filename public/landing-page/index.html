@@ -21,10 +21,23 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="manifest" href="/site.webmanifest">
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-
-
+    
+    <!-- Montserrat font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
+        /* Font Base Styles */
+        :root {
+            --font-primary: 'Montserrat', sans-serif;
+            --font-weight-light: 300;
+            --font-weight-regular: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --font-weight-extrabold: 800;
+        }
         /* General Styles */
         :root {
             --primary-color: #4CAF50; /* Green */
@@ -318,7 +331,7 @@
 
         .testimonial-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 20em), 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 10em), 1fr));
             gap: 2em;
         }
 
@@ -763,6 +776,39 @@
             background: rgba(76, 175, 80, 0.1);
         }
 
+        /* Features Section */
+        .features {
+            padding: var(--spacing-xl) 0;
+            text-align: center;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .features .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+
+        .features .iconify {
+            font-size: 3.5em;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .features h3 {
+            margin-bottom: 1rem;
+            color: var(--dark-gray);
+        }
+
         .hero-carousel {
             position: absolute;
             top: 0;
@@ -1095,6 +1141,12 @@
             }
 
             /* Grid Layouts Mobile */
+            .features .grid-3 {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+                gap: 1rem;
+            }
+
             .grid-3 {
                 grid-template-columns: 1fr;
                 padding: 0 1rem;
@@ -1154,6 +1206,23 @@
             transform: translateY(-2px) scale(1.04);
             text-decoration: none;
         }
+
+        .one-picture {
+            display: block;
+            width: 80vw;
+            max-height: 500px;
+            object-fit: cover;
+            margin: 2rem auto;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-md);
+        }
+
+        @media (max-width: 768px) {
+            .one-picture {
+                width: 90vw;
+                max-height: 300px;
+            }
+        }
            
 
 
@@ -1172,7 +1241,7 @@
                         <li><a href="#features" class="nav-link">Features</a></li>
                         <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
                         <li><a href="#contact" class="nav-link">Contact</a></li>
-                        <li><a href="https://shiny-salamander-0e154d.netlify.app/" class="nav-link" style="background-color: #4CAF50; color: white;">Login</a></li>
+                        <li><button onclick="window.location.href='https://shiny-salamander-0e154d.netlify.app/'" class="nav-link" style="background-color: #4CAF50; color: white; cursor: pointer; padding: 8px 16px; border: none; border-radius: var(--border-radius-sm); width: 100%;">Login</button></li>
                     </ul>
                 </nav>
 
@@ -1210,46 +1279,146 @@
     <div class="metrics-section">
         <h2>Our Impact</h2>
         <div class="metrics-grid">
-            <div class="metric-item">
+            <div class="metric-item" style="opacity: 0; transform: translateY(20px);">
                 <iconify-icon icon="mdi:account-group"></iconify-icon>
-                <div class="number">1,200+</div>
+                <div class="number" data-value="1200">0+</div>
                 <p class="description">farmers reached through field visits, AgriTours, digital outreach, and pilot programs</p>
             </div>
-            <div class="metric-item">
+            <div class="metric-item" style="opacity: 0; transform: translateY(20px);">
                 <iconify-icon icon="mdi:cow"></iconify-icon>
-                <div class="number">82,500+</div>
+                <div class="number" data-value="82500">0+</div>
                 <p class="description">litres of milk tracked by early users in our dairy farm record-keeping tests</p>
             </div>
-            <div class="metric-item">
+            <div class="metric-item" style="opacity: 0; transform: translateY(20px);">
                 <iconify-icon icon="mdi:cash-multiple"></iconify-icon>
-                <div class="number">KSh 3.2M+</div>
+                <div class="number" data-value="3200000">0+</div>
                 <p class="description">in expenses recorded across input costs, vet services, feed, and labor</p>
             </div>
-            <div class="metric-item">
+            <div class="metric-item" style="opacity: 0; transform: translateY(20px);">
                 <iconify-icon icon="mdi:cellphone-link"></iconify-icon>
-                <div class="number">340+</div>
+                <div class="number" data-value="340">0+</div>
                 <p class="description">app testers from 9 counties actively engaging with the platform</p>
             </div>
         </div>
+        <script>
+            // Function to animate counting up
+            function animateValue(obj, start, end, duration) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    let current = Math.floor(progress * (end - start) + start);
+                    
+                    // Format the number based on its size
+                    if (end >= 1000000) {
+                        current = (current / 1000000).toFixed(1) + 'M+';
+                    } else if (end >= 1000) {
+                        current = (current / 1000).toFixed(1) + 'K+';
+                    } else {
+                        current = current + '+';
+                    }
+                    
+                    obj.innerHTML = current;
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            // Function to handle reveal animations
+            function handleReveal(entries, observer) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }
+
+            // Create observers
+            const metricsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Get all number elements in the metrics section
+                        const numbers = entry.target.querySelectorAll('.number');
+                        numbers.forEach(number => {
+                            if (!number.classList.contains('animated')) {
+                                const finalValue = parseInt(number.dataset.value);
+                                animateValue(number, 0, finalValue, 2000);
+                                number.classList.add('animated');
+                            }
+                        });
+
+                        // Add fade-in animation to metric items
+                        const items = entry.target.querySelectorAll('.metric-item');
+                        items.forEach((item, index) => {
+                            setTimeout(() => {
+                                item.style.transition = "all 0.6s ease";
+                                item.style.opacity = "1";
+                                item.style.transform = "translateY(0)";
+                            }, index * 200);
+                        });
+
+                        metricsObserver.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.2
+            });
+
+            const revealObserver = new IntersectionObserver(handleReveal, {
+                threshold: 0.15,
+                rootMargin: '0px'
+            });
+
+            // Start observing
+            metricsObserver.observe(document.querySelector('.metrics-grid'));
+
+            // Observe all reveal elements
+            document.querySelectorAll('.reveal-element').forEach(element => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                revealObserver.observe(element);
+            });
+
+            // Observe cards in the features section
+            document.querySelectorAll('.features .card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                revealObserver.observe(card);
+            });
+
+            // Observe testimonial items
+            document.querySelectorAll('.testimonial-item').forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                revealObserver.observe(item);
+            });
+        </script>
     </div>
 
 
         <main style="position: relative; z-index: 3; background: var(--white);">
             <section class="how-it-works container section reveal-element">
                 <h2 class="section-title">How TIWA-Kilimo Helps You Increase Milk Production</h2>
+                <img src="images/farmer-with-phone.jpg" alt="one image" class="one-picture" >
+                
                 <div class="grid grid-3">
                     <div class="card">
-                        <span class="iconify" data-icon="mdi:clipboard-list-outline"></span>
+                        <span class="iconify" data-icon="mdi:clipboard-list-outline" style="font-size: 3.5em; color: #4CAF50; margin-bottom: 1rem; display: block;"></span>
                         <h3>Step 1: Record Production</h3>
                         <p>Easily log daily milk yields and animal health for every cow.</p>
                 </div>
                 <div class="card">
-                    <span class="iconify" data-icon="mdi:bell-alert-outline"></span>
+                    <span class="iconify" data-icon="mdi:bell-alert-outline" style="font-size: 3.5em; color: #4CAF50; margin-bottom: 1rem; display: block;"></span>
                     <h3>Step 2: Get Notifications & Recommendations</h3>
                     <p>Receive timely reminders and actionable tips to boost productivity.</p>
                 </div>
                 <div class="card">
-                    <span class="iconify" data-icon="mdi:finance"></span>
+                    <span class="iconify" data-icon="mdi:finance" style="font-size: 3.5em; color: #4CAF50; margin-bottom: 1rem; display: block;"></span>
                     <h3>Step 3: Track Finances</h3>
                     <p>Monitor expenses and income to maximise your farm's profit and milk output.</p>
                 </div>
@@ -1257,20 +1426,28 @@
         
 
         <section id="features" class="features container">
-            <h2>Key Features</h2> <hr>
+            <h2 class="section-title">Key Features</h2>
+                <img src="images/kilimo-ui.JPG" alt="one image" class="one-picture" >
+
             <div class="grid grid-3">
                 <div class="card reveal-element">
-                    <h3><span class="iconify" data-icon="mdi:cow" style="font-size:1.5em;vertical-align:middle;"></span> Track Milk, Health & Breeding</h3>
+                    <span class="iconify" data-icon="mdi:cow"></span>
+                    <h3>Track Milk, Health & Breeding</h3>
                     <p>Log everything — from litres to vet visits — in seconds. Simple and quick daily recording for busy farmers.</p>
                 </div>
                 <div class="card reveal-element">
-                    <h3><span class="iconify" data-icon="mdi:whatsapp" style="font-size:1.5em;vertical-align:middle;"></span> Weekly WhatsApp Updates</h3>
+                    <span class="iconify" data-icon="mdi:whatsapp"></span>
+                    <h3>Weekly WhatsApp Updates</h3>
                     <p>Never forget a heat cycle, vet visit, calving date, or supplier payment again. Get timely reminders right on WhatsApp.</p>
                 </div>
                 <div class="card reveal-element">
-                    <h3><span class="iconify" data-icon="mdi:cash-multiple" style="font-size:1.5em;vertical-align:middle;"></span> Know Your Farm's Finances</h3>
+                    <span class="iconify" data-icon="mdi:cash-multiple"></span>
+                    <h3>Know Your Farm's Finances</h3>
                     <p>See your income, expenses and profitability clearly — and stay in control of your dairy business.</p>
                 </div>
+
+
+
     <!-- Iconify for feature icons -->
     <script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
             </div>
@@ -1324,6 +1501,19 @@
             </div>
         </section>
 
+
+        <section class="cta-section container reveal-element">
+            <h2>Ready to Maximise Milk Production?</h2>
+            <p>Download TIWA-Kilimo today and take the first step towards a more organized, productive, and profitable dairy operation.</p>
+          <button class=" btn btn-primary"     >
+             <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn" target="_blank" rel="noopener">Download App Now</a>
+        </button> 
+        </section>
+
+        
+
+
+
 <div class="footer-forms grid grid-3">
                     <form class="card" autocomplete="off">
                         <h4>Talk to an Expert</h4>
@@ -1346,15 +1536,6 @@
 
 
 
-        <section class="cta-section container reveal-element">
-            <h2>Ready to Maximise Milk Production?</h2>
-            <p>Download TIWA-Kilimo today and take the first step towards a more organized, productive, and profitable dairy operation.</p>
-          <button class=" btn btn-primary"     >
-             <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn" target="_blank" rel="noopener">Download App Now</a>
-        </button> 
-        </section>
-
-        
 
         <footer id="contact" class="footer">
 

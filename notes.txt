@@ -1,5 +1,21 @@
 FRONT-END NOTES
 
+deploy landing =  publish = "public/landing-page"
+deploy app = publish = "C:\\Users\\USER\\Desktop\\tiwa-kilimo\\tiwa-dairy-diary\\dist"
+
+
+
+
+[build]
+publish = "public/landing-page"  # changed from full path to relative
+# command = "bun run build"       # commented out to skip build
+# commandOrigin = "ui"            # commented out to stop UI override
+# publishOrigin = "ui"            # commented out to stop UI override
+# functions = "netlify/functions" # optional: comment if not using
+
+
+
+
 
 bun run build && bun run preview  
 

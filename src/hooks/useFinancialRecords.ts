@@ -28,6 +28,25 @@ export const useFinancialRecords = () => {
   });
 };
 
+// Fetch a single financial record by description (used for linking to health record)
+export const useGetFinancialRecord = (description: string) => {
+  return useQuery({
+    queryKey: ['financial_records', description],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('financial_records')
+        .select('*')
+        .eq('description', description)
+        .single(); // Only one record expected per health record
+
+      if (error && error.code !== 'PGRST116') throw error; // PGRST116: No rows found
+      return data;
+    },
+    enabled: !!description, // Only run if description is provided
+  });
+};
+
+
 export const useCreateFinancialRecord = () => {
   const queryClient = useQueryClient();
   

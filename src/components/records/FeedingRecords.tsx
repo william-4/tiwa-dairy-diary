@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Edit, Calendar, Wheat } from 'lucide-react';
 import { useFeedingRecords, useCreateFeedingRecord, useUpdateFeedingRecord } from '@/hooks/useFeedingRecords';
-import { useCreateFinancialRecord } from '@/hooks/useFinancialRecords';
+import { useCreateFinancialRecord, useUpdateFinancialRecord, useGetFinancialRecord } from '@/hooks/useFinancialRecords';
 import { format } from 'date-fns';
 
 interface FeedingRecordsProps {
@@ -65,24 +65,57 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
     };
 
     try {
-      let savedRecord;
+      let healthRecordId: string;
+
       if (editingRecord) {
-        savedRecord = await updateRecord.mutateAsync({ id: editingRecord.id, ...recordData });
+        await updateRecord.mutateAsync({ id: editingRecord.id, ...recordData });
+        healthRecordId = editingRecord.id;
       } else {
-        savedRecord = await createRecord.mutateAsync(recordData);
+        const created = await createRecord.mutateAsync(recordData);
+        healthRecordId = created.id;
       }
 
-      // Auto-create financial record if cost is provided
+      // Use healthRecordId as unique identifier in financial record description
       if (formData.cost && parseFloat(formData.cost) > 0) {
-        await createFinancialRecord.mutateAsync({
-          transaction_type: 'Expense',
-          category: 'Feed',
-          amount: Math.round(parseFloat(formData.cost)),
-          transaction_date: formData.date,
-          animal_id: animalId,
-          description: `Feed expense: ${finalFeedType}${formData.quantity ? ` (${formData.quantity}kg)` : ''}`,
-        });
+        const description = `HealthRecord:${healthRecordId}`;
+        setFinancialDescription(description);
+
+        // Fetch existing financial record by description only
+        console.log('Checking for existing financial record with description:', description);
+
+        const { data: existingFinancialRecord, error } = await supabase
+          .from('financial_records')
+          .select('*')
+          .eq('description', financialDescription)
+          .single();
+
+        if (error) {
+          console.error('Error fetching existing financial record:', error);
+        }
+        
+        if (existingFinancialRecord) {
+          console.log('Updating existing financial record for health issue:', description);
+          // Update the financial record
+          await updateFinancialRecord.mutateAsync({
+            id: existingFinancialRecord.id,
+            amount: Math.round(parseFloat(formData.cost)),
+            transaction_date: formData.date,
+            description,
+          });
+        } else {
+          console.log('Creating new financial record for health issue:', description);
+          // Create a new financial record
+          await createFinancialRecord.mutateAsync({
+            transaction_type: 'Expense',
+            category: 'Health',
+            amount: Math.round(parseFloat(formData.cost)),
+            transaction_date: formData.date,
+            animal_id: animalId,
+            description,
+          });
+        }
       }
+    
       
       setShowForm(false);
       setEditingRecord(null);

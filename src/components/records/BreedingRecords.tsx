@@ -72,6 +72,7 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
         await createRecord.mutateAsync(recordData);
       }
       
+      
       setShowForm(false);
       setEditingRecord(null);
       setFormData({

@@ -9,6 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Edit, Calendar, Heart, AlertCircle } from 'lucide-react';
 import { useHealthRecords, useCreateHealthRecord, useUpdateHealthRecord } from '@/hooks/useHealthRecords';
 import { format } from 'date-fns';
+import { useCreateFinancialRecord, useUpdateFinancialRecord } from '@/hooks/useFinancialRecords';
+import { supabase } from '@/integrations/supabase/client';
+
 
 interface HealthRecordsProps {
   animalId: string;
@@ -32,10 +35,13 @@ const HealthRecords = ({ animalId }: HealthRecordsProps) => {
   const { data: records, isLoading } = useHealthRecords(animalId);
   const createRecord = useCreateHealthRecord();
   const updateRecord = useUpdateHealthRecord();
+  const createFinancialRecord = useCreateFinancialRecord();
+  const updateFinancialRecord = useUpdateFinancialRecord();
+  const [financialDescription, setFinancialDescription] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const recordData = {
       animal_id: animalId,
       date: formData.date,
@@ -50,12 +56,57 @@ const HealthRecords = ({ animalId }: HealthRecordsProps) => {
     };
 
     try {
+      let healthRecordId: string;
+
       if (editingRecord) {
         await updateRecord.mutateAsync({ id: editingRecord.id, ...recordData });
+        healthRecordId = editingRecord.id;
       } else {
-        await createRecord.mutateAsync(recordData);
+        const created = await createRecord.mutateAsync(recordData);
+        healthRecordId = created.id;
       }
-      
+
+      // Use healthRecordId as unique identifier in financial record description
+      if (formData.cost && parseFloat(formData.cost) > 0) {
+        const description = `HealthRecord:${healthRecordId}`;
+        setFinancialDescription(description);
+
+        // Fetch existing financial record by description only
+        console.log('Checking for existing financial record with description:', description);
+
+        const { data: existingFinancialRecord, error } = await supabase
+          .from('financial_records')
+          .select('*')
+          .eq('description', financialDescription)
+          .single();
+
+        if (error) {
+          console.error('Error fetching existing financial record:', error);
+        }
+        
+        if (existingFinancialRecord) {
+          console.log('Updating existing financial record for health issue:', description);
+          // Update the financial record
+          await updateFinancialRecord.mutateAsync({
+            id: existingFinancialRecord.id,
+            amount: Math.round(parseFloat(formData.cost)),
+            transaction_date: formData.date,
+            description,
+          });
+        } else {
+          console.log('Creating new financial record for health issue:', description);
+          // Create a new financial record
+          await createFinancialRecord.mutateAsync({
+            transaction_type: 'Expense',
+            category: 'Health',
+            amount: Math.round(parseFloat(formData.cost)),
+            transaction_date: formData.date,
+            animal_id: animalId,
+            description,
+          });
+        }
+      }
+
       setShowForm(false);
       setEditingRecord(null);
       setFormData({
@@ -73,7 +124,7 @@ const HealthRecords = ({ animalId }: HealthRecordsProps) => {
       console.error('Error saving health record:', error);
     }
   };
-
+      
   const handleEdit = (record: any) => {
     setEditingRecord(record);
     setFormData({
@@ -157,8 +208,7 @@ const HealthRecords = ({ animalId }: HealthRecordsProps) => {
                   step="1"
                   value={formData.cost}
                   onChange={(e) => {
-                    const value = Math.round(parseFloat(e.target.value) || 0).toString();
-                    setFormData(prev => ({ ...prev, cost: value }));
+                    setFormData(prev => ({ ...prev, cost: e.target.value }));
                   }}
                   placeholder="Enter cost"
                 />

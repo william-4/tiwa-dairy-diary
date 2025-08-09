@@ -1,5 +1,11 @@
 FRONT-END NOTES
 
+#get update from front end
+
+git log backend -1
+git checkout frontend
+git cherry-pick <that-hash>
+
 deploy landing =  publish = "public/landing-page"
 deploy app = publish = "C:\\Users\\USER\\Desktop\\tiwa-kilimo\\tiwa-dairy-diary\\dist"
 

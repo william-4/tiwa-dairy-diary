@@ -148,7 +148,7 @@ const Auth = () => {
       title: "Welcome Guest!",
       description: "You can explore the app features. Note that your data won't be saved.",
     });
-    navigate('/');
+    navigate('/dashboard');
   };
 
   return (

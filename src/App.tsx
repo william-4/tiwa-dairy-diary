@@ -74,6 +74,9 @@ const App = () => (
                 </PublicRoute>
               } />
               <Route path="/" element={
+                <Navigate to="/auth" replace />
+              } />
+              <Route path="/dashboard" element={
                 <ProtectedRoute>
                   <Layout><Dashboard /></Layout>
                 </ProtectedRoute>

@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
-import Dashboard from "@/pages/Dashboard";
+import Dashboard from "@/pages/Dashboard-2";
 import AnimalDiary from "@/pages/AnimalDiary";
 import Tasks from "@/pages/Tasks";
 import Finances from "@/pages/Finances";

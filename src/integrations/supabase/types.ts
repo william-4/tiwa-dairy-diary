@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
   public: {
     Tables: {
@@ -65,66 +65,13 @@ export type Database = {
         }
         Relationships: []
       }
-      animals_history: {
-        Row: {
-          animal_id: string
-          breed: string | null
-          changed_at: string
-          changed_by: string | null
-          date_of_birth: string | null
-          gender: string | null
-          health_status: string | null
-          id: string
-          name: string | null
-          notes: string | null
-          operation_type: string
-          photo_url: string | null
-          source: string | null
-          tag: string | null
-          user_id: string
-        }
-        Insert: {
-          animal_id: string
-          breed?: string | null
-          changed_at?: string
-          changed_by?: string | null
-          date_of_birth?: string | null
-          gender?: string | null
-          health_status?: string | null
-          id?: string
-          name?: string | null
-          notes?: string | null
-          operation_type: string
-          photo_url?: string | null
-          source?: string | null
-          tag?: string | null
-          user_id: string
-        }
-        Update: {
-          animal_id?: string
-          breed?: string | null
-          changed_at?: string
-          changed_by?: string | null
-          date_of_birth?: string | null
-          gender?: string | null
-          health_status?: string | null
-          id?: string
-          name?: string | null
-          notes?: string | null
-          operation_type?: string
-          photo_url?: string | null
-          source?: string | null
-          tag?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       breeding_records: {
         Row: {
           actual_calving_date: string | null
           animal_id: string
           bull_ai_source: string | null
           conception_status: string | null
+          cost: number | null
           created_at: string
           date_of_heat: string | null
           date_served: string | null
@@ -132,8 +79,10 @@ export type Database = {
           expected_calving_date: string | null
           id: string
           mating_method: string | null
-          notes: string | null
+          notes: string
+          observation_date: string | null
           pregnancy_confirmation_date: string | null
+          steaming_date: string | null
           updated_at: string
           user_id: string
         }
@@ -142,6 +91,7 @@ export type Database = {
           animal_id: string
           bull_ai_source?: string | null
           conception_status?: string | null
+          cost?: number | null
           created_at?: string
           date_of_heat?: string | null
           date_served?: string | null
@@ -149,8 +99,10 @@ export type Database = {
           expected_calving_date?: string | null
           id?: string
           mating_method?: string | null
-          notes?: string | null
+          notes: string
+          observation_date?: string | null
           pregnancy_confirmation_date?: string | null
+          steaming_date?: string | null
           updated_at?: string
           user_id: string
         }
@@ -159,6 +111,7 @@ export type Database = {
           animal_id?: string
           bull_ai_source?: string | null
           conception_status?: string | null
+          cost?: number | null
           created_at?: string
           date_of_heat?: string | null
           date_served?: string | null
@@ -166,8 +119,10 @@ export type Database = {
           expected_calving_date?: string | null
           id?: string
           mating_method?: string | null
-          notes?: string | null
+          notes?: string
+          observation_date?: string | null
           pregnancy_confirmation_date?: string | null
+          steaming_date?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -298,51 +253,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      general_herd_records: {
-        Row: {
-          cost: number | null
-          created_at: string | null
-          date: string
-          description: string | null
-          id: string
-          notes: string | null
-          record_type: string
-          title: string
-          total_animals_affected: number | null
-          total_production: number | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          cost?: number | null
-          created_at?: string | null
-          date: string
-          description?: string | null
-          id?: string
-          notes?: string | null
-          record_type: string
-          title: string
-          total_animals_affected?: number | null
-          total_production?: number | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          cost?: number | null
-          created_at?: string | null
-          date?: string
-          description?: string | null
-          id?: string
-          notes?: string | null
-          record_type?: string
-          title?: string
-          total_animals_affected?: number | null
-          total_production?: number | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
       }
       health_records: {
         Row: {
@@ -685,24 +595,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      calculate_expected_calving_date: {
-        Args: { date_served: string }
-        Returns: string
-      }
-      get_user_role: {
-        Args: { _user_id: string }
-        Returns: Database["public"]["Enums"]["user_role"]
-      }
-      has_role: {
-        Args: {
-          _user_id: string
-          _role: Database["public"]["Enums"]["user_role"]
-        }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
-      user_role: "admin" | "worker"
+      user_role: "worker" | "owner"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -830,7 +726,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      user_role: ["admin", "worker"],
+      user_role: ["worker", "owner"],
     },
   },
 } as const

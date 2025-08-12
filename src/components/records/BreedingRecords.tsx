@@ -9,6 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Edit, Calendar, Baby, Heart, Zap } from 'lucide-react';
 import { useBreedingRecords, useCreateBreedingRecord, useUpdateBreedingRecord } from '@/hooks/useBreedingRecords';
 import { format } from 'date-fns';
+import { useCreateFinancialRecord, useUpdateFinancialRecord } from '@/hooks/useFinancialRecords';
+import { supabase } from '@/integrations/supabase/client';
 
 interface BreedingRecordsProps {
   animalId: string;
@@ -27,11 +29,18 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
     expected_calving_date: '',
     actual_calving_date: '',
     notes: '',
+    cost:'',
+    steaming_date: '',
+    observation_date: '',
   });
 
   const { data: records, isLoading } = useBreedingRecords(animalId);
   const createRecord = useCreateBreedingRecord();
   const updateRecord = useUpdateBreedingRecord();
+  const createFinancialRecord = useCreateFinancialRecord();
+  const updateFinancialRecord = useUpdateFinancialRecord();
+  const [financialDescription, setFinancialDescription] = useState<string | null>(null);
+  
 
   // Calculate expected calving date when date_served changes
   const calculateExpectedCalvingDate = (dateServed: string) => {
@@ -63,13 +72,61 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
       expected_calving_date: formData.expected_calving_date || null,
       actual_calving_date: formData.actual_calving_date || null,
       notes: formData.notes || null,
+      cost: formData.cost ? Math.round(parseFloat(formData.cost)) : null,
+      steaming_date: formData.steaming_date || null,
+      observation_date: formData.observation_date || null,
     };
 
     try {
+      let breedingRecordId: string;
+
       if (editingRecord) {
         await updateRecord.mutateAsync({ id: editingRecord.id, ...recordData });
+        breedingRecordId= editingRecord.id;
       } else {
-        await createRecord.mutateAsync(recordData);
+        const created = await createRecord.mutateAsync(recordData);
+        breedingRecordId = created.id;
+      }
+
+      // Use breedingRecordId as unique identifier in financial record description
+      if (formData.cost && parseFloat(formData.cost) > 0) {
+        const description = `BreedingRecord:${breedingRecordId}`;
+        setFinancialDescription(description);
+
+        // Fetch existing financial record by description only
+        console.log('Checking for existing financial record with description:', description);
+
+        const { data: existingFinancialRecord, error } = await supabase
+          .from('financial_records')
+          .select('*')
+          .eq('description', financialDescription)
+          .single();
+
+        if (error) {
+          console.error('Error fetching existing financial record:', error);
+        }
+        
+        if (existingFinancialRecord) {
+          console.log('Updating existing financial record for breeding expense:', description);
+          // Update the financial record
+          await updateFinancialRecord.mutateAsync({
+            id: existingFinancialRecord.id,
+            amount: Math.round(parseFloat(formData.cost)),
+            transaction_date: existingFinancialRecord.created_at,
+            description,
+          });
+        } else {
+          console.log('Creating new financial record for breeding expense:', description);
+          // Create a new financial record
+          await createFinancialRecord.mutateAsync({
+            transaction_type: 'Expense',
+            category: 'Breeding',
+            amount: Math.round(parseFloat(formData.cost)),
+            transaction_date: new Date().toISOString().split('T')[0],
+            animal_id: animalId,
+            description,
+          });
+        }
       }
       
       setShowForm(false);
@@ -84,6 +141,9 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
         expected_calving_date: '',
         actual_calving_date: '',
         notes: '',
+        cost: '',
+        steaming_date: '',
+        observation_date: '',
       });
     } catch (error) {
       console.error('Error saving breeding record:', error);
@@ -102,6 +162,9 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
       expected_calving_date: record.expected_calving_date || '',
       actual_calving_date: record.actual_calving_date || '',
       notes: record.notes || '',
+      cost: record.cost || '',
+      steaming_date: record.steaming_date || '',
+      observation_date: record.observation_date || '',
     });
     setShowForm(true);
   };
@@ -222,6 +285,40 @@ const BreedingRecords = ({ animalId }: BreedingRecordsProps) => {
                   onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                   rows={3}
                   placeholder="Additional notes..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cost">Cost (KSh)</Label>
+                <Input
+                  id="cost"
+                  type="number"
+                  step="1"
+                  value={formData.cost}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, cost: e.target.value }));
+                  }}
+                  placeholder="e.g., 1500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="steaming_date">Steaming Date</Label>
+                <Input
+                  id="steaming_date"
+                  type="date"
+                  value={formData.steaming_date}
+                  onChange={(e) => setFormData(prev => ({ ...prev, steaming_date: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="observation_date">Observation Date</Label>
+                <Input
+                  id="observation_date"
+                  type="date"
+                  value={formData.observation_date}
+                  onChange={(e) => setFormData(prev => ({ ...prev, observation_date: e.target.value }))}
                 />
               </div>
 

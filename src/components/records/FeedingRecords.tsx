@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Edit, Calendar, Wheat } from 'lucide-react';
 import { useFeedingRecords, useCreateFeedingRecord, useUpdateFeedingRecord } from '@/hooks/useFeedingRecords';
-import { useCreateFinancialRecord } from '@/hooks/useFinancialRecords';
+import { useCreateFinancialRecord, useUpdateFinancialRecord } from '@/hooks/useFinancialRecords';
 import { format } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
 
 interface FeedingRecordsProps {
   animalId: string;
@@ -32,6 +33,8 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
   const createRecord = useCreateFeedingRecord();
   const updateRecord = useUpdateFeedingRecord();
   const createFinancialRecord = useCreateFinancialRecord();
+  const updateFinancialRecord = useUpdateFinancialRecord();
+  const [financialDescription, setFinancialDescription] = useState<string | null>(null);
 
   const feedTypes = [
     'Napier Grass',
@@ -65,23 +68,55 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
     };
 
     try {
-      let savedRecord;
+      let feedingRecordId: string;
+
       if (editingRecord) {
-        savedRecord = await updateRecord.mutateAsync({ id: editingRecord.id, ...recordData });
+        await updateRecord.mutateAsync({ id: editingRecord.id, ...recordData });
+        feedingRecordId= editingRecord.id;
       } else {
-        savedRecord = await createRecord.mutateAsync(recordData);
+        const created = await createRecord.mutateAsync(recordData);
+        feedingRecordId = created.id;
       }
 
       // Auto-create financial record if cost is provided
       if (formData.cost && parseFloat(formData.cost) > 0) {
-        await createFinancialRecord.mutateAsync({
-          transaction_type: 'Expense',
-          category: 'Feed',
-          amount: Math.round(parseFloat(formData.cost)),
-          transaction_date: formData.date,
-          animal_id: animalId,
-          description: `Feed expense: ${finalFeedType}${formData.quantity ? ` (${formData.quantity}kg)` : ''}`,
-        });
+        const description = `FeedingRecord:${feedingRecordId}`;
+        setFinancialDescription(description);
+
+        // Fetch existing financial record by description only
+        console.log('Checking for existing financial record with description:', description);
+
+        const { data: existingFinancialRecord, error } = await supabase
+          .from('financial_records')
+          .select('*')
+          .eq('description', financialDescription)
+          .single();
+
+        if (error) {
+          console.error('Error fetching existing financial record:', error);
+        }
+        
+        if (existingFinancialRecord) {
+          console.log('Updating existing financial record for health issue:', description);
+          // Update the financial record
+          await updateFinancialRecord.mutateAsync({
+            id: existingFinancialRecord.id,
+            amount: Math.round(parseFloat(formData.cost)),
+            transaction_date: formData.date,
+            description,
+          });
+        } else {
+          console.log('Creating new financial record for health issue:', description);
+          // Create a new financial record
+          await createFinancialRecord.mutateAsync({
+            transaction_type: 'Expense',
+            category: 'Feed',
+            amount: Math.round(parseFloat(formData.cost)),
+            transaction_date: formData.date,
+            animal_id: animalId,
+            description,
+          });
+        }
       }
       
       setShowForm(false);
@@ -199,14 +234,13 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
 
                 <div className="space-y-2">
                   <Label htmlFor="cost">Cost (KSh)</Label>
-                  <Input
+                  <Input      
                     id="cost"
                     type="number"
                     step="1"
                     value={formData.cost}
                     onChange={(e) => {
-                      const value = Math.round(parseFloat(e.target.value) || 0).toString();
-                      setFormData(prev => ({ ...prev, cost: value }));
+                    setFormData(prev => ({ ...prev, cost: e.target.value }));
                     }}
                     placeholder="e.g., 1500"
                   />

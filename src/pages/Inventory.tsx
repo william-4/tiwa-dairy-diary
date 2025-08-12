@@ -11,6 +11,8 @@ import { Plus, Package, Edit, Trash2, AlertTriangle, Calendar } from 'lucide-rea
 import { useInventory, useCreateInventoryItem, useUpdateInventoryItem, useDeleteInventoryItem } from '@/hooks/useInventory';
 import { format } from 'date-fns';
 import { Tables } from '@/integrations/supabase/types';
+import { useCreateFinancialRecord, useUpdateFinancialRecord } from '@/hooks/useFinancialRecords';
+import { supabase } from '@/integrations/supabase/client';
 
 type InventoryItem = Tables<'inventory'>;
 
@@ -36,6 +38,8 @@ const Inventory = () => {
   const createItem = useCreateInventoryItem();
   const updateItem = useUpdateInventoryItem();
   const deleteItem = useDeleteInventoryItem();
+  const createFinancialRecord = useCreateFinancialRecord();
+  const updateFinancialRecord = useUpdateFinancialRecord();
 
   const categories = [
     'Feed',
@@ -69,16 +73,60 @@ const Inventory = () => {
       notes: formData.notes || null,
     };
 
+    let inventoryRecordId: string;
+
     try {
       if (editingItem) {
         await updateItem.mutateAsync({ id: editingItem.id, ...itemData });
+        inventoryRecordId = editingItem.id;
       } else {
-        await createItem.mutateAsync(itemData);
+        const created = await createItem.mutateAsync(itemData);
+        inventoryRecordId = created.id;
       }
       
       handleCloseForm();
     } catch (error) {
       console.error('Error saving inventory item:', error);
+    }
+
+    // Use inventoryRecordId as unique identifier in financial record description
+    if (formData.cost && parseFloat(formData.cost) > 0) {
+      const description = `InventoryRecord:${inventoryRecordId}`;
+
+      // Fetch existing financial record by description only
+      console.log('Checking for existing financial record with description:', description);
+
+      const { data: existingFinancialRecord, error } = await supabase
+        .from('financial_records')
+        .select('*')
+        .eq('description', description)
+        .single();
+
+      if (error) {
+        console.error('Error fetching existing financial record:', error);
+      }
+      
+      if (existingFinancialRecord) {
+        console.log('Updating existing financial record for inventory expense:', description);
+        // Update the financial record
+        await updateFinancialRecord.mutateAsync({
+          id: existingFinancialRecord.id,
+          amount: Math.round(parseFloat(formData.cost)),
+          transaction_date: existingFinancialRecord.created_at,
+          description,
+        });
+      } else {
+        console.log('Creating new financial record for inventory expense:', description);
+        // Create a new financial record
+        await createFinancialRecord.mutateAsync({
+          transaction_type: 'Expense',
+          category: 'Inventory',
+          amount: Math.round(parseFloat(formData.cost)),
+          transaction_date: new Date().toISOString().split('T')[0],
+          animal_id: null,
+          description,
+        });
+      }
     }
   };
 
@@ -396,7 +444,7 @@ const Inventory = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="cost">Cost (KSh)</Label>
+                  <Label htmlFor="cost">Total Cost (KSh)</Label>
                   <Input
                     id="cost"
                     type="number"

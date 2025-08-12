@@ -1,3 +1,11 @@
+
+
+netlify deploy --dir=dist --prod --site=fc4cd8dd-ed7b-4206-9e07-ecdd9ba868d3
+
+
+netlify deploy --dir=public/landing-page --prod --site=2b7ee2a5-391d-47da-aabe-461446a9340d
+
+
 FRONT-END NOTES
 
 #get update from front end
@@ -6,7 +14,18 @@ git log backend -1
 git checkout frontend
 git cherry-pick <that-hash>
 
+
+netlify deploy --dir=public/landing-page --prod
+
+netlify deploy --dir=dist --prod  
+
+
+rm -rf .netlify && netlify link
+
+
 deploy landing =  publish = "public/landing-page"
+
+
 deploy app = publish = "C:\\Users\\USER\\Desktop\\tiwa-kilimo\\tiwa-dairy-diary\\dist"
 
 
@@ -29,6 +48,12 @@ bun run preview (or npm run preview): Serves the built (production)
 version of your app, so you see exactly what will be deployed.
 
 
+npm create vite@latest my-app -- --template react
+cd my-app
+npm install
+npm run dev
+
+
 
 
 
@@ -49,10 +74,4 @@ deploy or prompt you to connect a Git provider.
 
 
 
-
-No, you do not need to run bun run build before 
-every git push. If you use Netlify’s Git integration,
- Netlify will run the build command for you after each 
- push. You only need to run bun run build locally if
-  you are doing a manual deploy (uploading the 
-  dist folder yourself).
+ 

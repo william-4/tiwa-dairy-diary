@@ -6,6 +6,14 @@ netlify deploy --dir=dist --prod --site=fc4cd8dd-ed7b-4206-9e07-ecdd9ba868d3
 netlify deploy --dir=public/landing-page --prod --site=2b7ee2a5-391d-47da-aabe-461446a9340d
 
 
+
+netlify deploy --dir=public/landing-page --prod --site=03ec937a-c994-4edd-8b59-5c6c26ee352e
+
+
+
+
+
+
 FRONT-END NOTES
 
 #get update from front end

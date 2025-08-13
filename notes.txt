@@ -1,3 +1,4 @@
+ backend get git cherry-pick -X theirs #hash  
 
 
 netlify deploy --dir=dist --prod --site=fc4cd8dd-ed7b-4206-9e07-ecdd9ba868d3

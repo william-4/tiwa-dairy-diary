@@ -1,5 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import LoadingHero from '@/components/LoadingHero';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,22 +32,21 @@ const Auth = () => {
     fullName: '',
   });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <div className="text-gray-600">Loading...</div>
-        </div>
-      </div>
-    );
-  }
+if (loading) {
+    return <LoadingHero onComplete={() => {}} />;
+}
+
+
 
   if (user && !isGuestMode) {
     return <Navigate to="/" replace />;
   }
 
-  const handleSignIn = async (e: React.FormEvent) => {
+
+
+
+const handleSignIn = async (e: React.FormEvent) => {
+
     e.preventDefault();
     setIsLoading(true);
     setError(null);

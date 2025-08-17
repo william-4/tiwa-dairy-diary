@@ -24,6 +24,7 @@ import {
 import { format } from 'date-fns';
 
 const Dashboard = () => {
+  console.log('Dashboard loaded');
   const { t } = useLanguage();
   const { data: animals = [] } = useAnimals();
   const { data: financialRecords = [] } = useFinancialRecords();
@@ -52,9 +53,15 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-4 text-center">
-        <h1 className="text-lg md:text-xl font-bold">
-          Welcome to TIWA Kilimo Dairy Diary – Record, Reflect, Grow
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-4 flex items-center justify-center gap-3">
+        <img
+          src="/landing-page/logo.png"
+          alt="TIWA Kilimo Logo"
+          className="h-20 w-20 md:h-12 md:w-12 rounded-full   p-1 shadow"
+          style={{ objectFit: 'contain' }}
+        />
+        <h1 className="text-lg md:text-xl font-bold text-left">
+          Record, Reflect, Grow
         </h1>
       </div>
 
@@ -62,40 +69,40 @@ const Dashboard = () => {
         {/* Main Action Buttons */}
         <div className="grid grid-cols-2 gap-4 mt-6">
           <div className="text-center">
-            <Button asChild className="h-24 w-full bg-blue-600 hover:bg-blue-700 flex-col gap-2">
+            <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 flex flex-col items-center justify-center gap-2 py-8">
               <Link to="/diary">
-                <BookOpen className="h-8 w-8" />
-                <span className="text-sm font-semibold">🐄 Dairy Diary</span>
+                <BookOpen className="h-40 w-40" />
+                <span className="text-lg font-semibold">Dairy Diary</span>
               </Link>
             </Button>
             <p className="text-xs text-gray-600 mt-2">Track your cows, milk production, health & breeding in one place.</p>
           </div>
           
           <div className="text-center">
-            <Button asChild className="h-24 w-full bg-purple-600 hover:bg-purple-700 flex-col gap-2">
+            <Button asChild className="w-full bg-purple-600 hover:bg-purple-700 flex flex-col items-center justify-center gap-2 py-8">
               <Link to="/tasks">
-                <CheckSquare className="h-8 w-8" />
-                <span className="text-sm font-semibold">✅ Tasks</span>
+                <CheckSquare className="h-40 w-40" />
+                <span className="text-lg font-semibold">Tasks</span>
               </Link>
             </Button>
             <p className="text-xs text-gray-600 mt-2">Plan daily farm activities and assign them to workers.</p>
           </div>
           
           <div className="text-center">
-            <Button asChild className="h-24 w-full bg-orange-600 hover:bg-orange-700 flex-col gap-2">
+            <Button asChild className="w-full bg-orange-600 hover:bg-orange-700 flex flex-col items-center justify-center gap-2 py-8">
               <Link to="/finances">
-                <DollarSign className="h-8 w-8" />
-                <span className="text-sm font-semibold">💰 Financials</span>
+                <DollarSign className="h-40 w-40" />
+                <span className="text-lg font-semibold">Financials</span>
               </Link>
             </Button>
             <p className="text-xs text-gray-600 mt-2">Monitor income, expenses & farm profitability.</p>
           </div>
           
           <div className="text-center">
-            <Button asChild className="h-24 w-full bg-emerald-600 hover:bg-emerald-700 flex-col gap-2">
+            <Button asChild className="w-full bg-emerald-600 hover:bg-emerald-700 flex flex-col items-center justify-center gap-2 py-8">
               <Link to="/inventory">
-                <Package className="h-8 w-8" />
-                <span className="text-sm font-semibold">📦 Inventory</span>
+                <Package className="h-40 w-40" />
+                <span className="text-lg font-semibold">Inventory</span>
               </Link>
             </Button>
             <p className="text-xs text-gray-600 mt-2">Keep track of your feed, medicine, and farm tools stock.</p>
@@ -110,8 +117,8 @@ const Dashboard = () => {
               <Card className="border-red-200 bg-red-50">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-red-800">
-                    <Bell className="h-5 w-5" />
-                    🔔 Urgent Reminders ({urgentReminders.length})
+        <Bell className="h-16 w-16" />
+                    Urgent Reminders ({urgentReminders.length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -145,8 +152,8 @@ const Dashboard = () => {
               <Card className="border-orange-200 bg-orange-50">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-orange-800">
-                    <AlertTriangle className="h-5 w-5" />
-                    📦 Low Stock Alert ({lowStockItems.length} items)
+        <AlertTriangle className="h-16 w-16" />
+                    Low Stock Alert ({lowStockItems.length} items)
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -178,8 +185,8 @@ const Dashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5" />
-              📊 Financial Summary
+      <DollarSign className="h-16 w-16" />
+              Financial Summary
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -211,7 +218,7 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Animals</CardTitle>
-              <Home className="h-4 w-4 text-muted-foreground" />
+      <Home className="h-16 w-16 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{animals.length}</div>
@@ -224,7 +231,7 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Reminders</CardTitle>
-              <Bell className="h-4 w-4 text-muted-foreground" />
+      <Bell className="h-16 w-16 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{upcomingReminders.length}</div>
@@ -239,8 +246,8 @@ const Dashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              📝 Recent Activities
+      <Calendar className="h-16 w-16" />
+              Recent Activities
             </CardTitle>
           </CardHeader>
           <CardContent>

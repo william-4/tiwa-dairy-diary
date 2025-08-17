@@ -8,11 +8,17 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // Add these for better Bun compatibility
+    hmr: {
+      overlay: false
+    },
+    watch: {
+      usePolling: false
+    }
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -25,9 +31,30 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+          // Add more chunks for better performance
+          router: ['react-router-dom'],
+          forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
+          supabase: ['@supabase/supabase-js', '@tanstack/react-query'],
         },
       },
     },
     chunkSizeWarningLimit: 1000,
+    // Optimize for Bun
+    target: 'esnext',
+    minify: 'terser',
+  },
+  // Add esbuild optimizations for Bun
+  esbuild: {
+    target: 'esnext',
+    platform: 'browser',
+  },
+  // Optimize deps for Bun
+  optimizeDeps: {
+    include: [
+      'react', 
+      'react-dom', 
+      'react-router-dom',
+      '@supabase/supabase-js'
+    ],
   },
 }));

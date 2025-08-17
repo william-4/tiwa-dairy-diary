@@ -118,7 +118,7 @@ const AnimalDiary = () => {
         <div className="p-4 max-w-6xl mx-auto">
           <Card>
             <CardContent className="p-12 text-center">
-              <div className="text-red-600 mb-4">⚠️ Error loading animals</div>
+              <div className="text-red-600 mb-4">Error loading animals</div>
               <p className="text-gray-600 mb-4">Please try refreshing the page</p>
               <Button onClick={() => window.location.reload()}>
                 Refresh Page
@@ -141,7 +141,7 @@ const AnimalDiary = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
-              🐄 {t('animalDiary')}
+              {t('animalDiary')}
             </h1>
             <p className="text-gray-600 text-sm mt-1">Manage your dairy cows and herd</p>
           </div>
@@ -198,7 +198,7 @@ const AnimalDiary = () => {
                 ) : (
                   <Card>
                     <CardContent className="p-6 md:p-12 text-center">
-                      <div className="text-6xl mb-4">🐄</div>
+                      <div className="text-6xl mb-4"></div>
                       <h3 className="text-lg font-medium mb-2">
                         {animals.length === 0 ? 'No animals registered yet' : 'No animals found'}
                       </h3>

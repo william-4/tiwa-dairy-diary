@@ -102,7 +102,7 @@ const Finances = () => {
         <div className="p-4 max-w-6xl mx-auto">
           <Card>
             <CardContent className="p-12 text-center">
-              <div className="text-red-600 mb-4">⚠️ Error loading financial records</div>
+              <div className="text-red-600 mb-4">Error loading financial records</div>
               <p className="text-gray-600 mb-4">Please try refreshing the page</p>
               <Button onClick={() => window.location.reload()}>
                 Refresh Page
@@ -124,7 +124,7 @@ const Finances = () => {
           <div>
             <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
               <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
-              {t('finances')} 💰
+              {t('finances')}
             </h1>
             <p className="text-gray-600 text-sm mt-1">Track your farm income and expenses</p>
           </div>

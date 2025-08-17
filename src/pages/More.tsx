@@ -38,10 +38,10 @@ const More = () => {
       <div className="p-4 space-y-6 max-w-6xl mx-auto">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">
-            ⚙️ {t('more')}
+            {t('more')}
           </h1>
           <Badge variant="outline">
-            {userRole === 'admin' ? '👑 Admin' : '👷 Worker'}
+            {userRole === 'admin' ? 'Admin' : 'Worker'}
           </Badge>
         </div>
 

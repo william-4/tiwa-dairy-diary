@@ -7,9 +7,13 @@ netlify deploy --dir=dist --prod --site=fc4cd8dd-ed7b-4206-9e07-ecdd9ba868d3
 netlify deploy --dir=public/landing-page --prod --site=2b7ee2a5-391d-47da-aabe-461446a9340d
 
 
+guided forms for step bread crums to gather intial alot of sata
 
 
+b698cb6beea0b02b18fb9ad2b3d77663f6e5c6f2
 
+d79962317dba0b65bdf4d2b5640503348b159aa1
+hard reset git diff waht changed .. etc //
 
 
 
@@ -78,8 +82,11 @@ deploy or prompt you to connect a Git provider.
 
 
 
+cd /mnt/c/Users/<YourWindowsUsername>/Desktop..
 
 
+export PS1="\u@\h:\W\$ "
 
+export PS1="\W# "
 
  

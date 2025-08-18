@@ -3,22 +3,16 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
-    // Add these for better Bun compatibility
-    hmr: {
-      overlay: false
-    },
-    watch: {
-      usePolling: false
-    }
+    port: 8888,
+    hmr: { overlay: false },
+    watch: { usePolling: false },
   },
   plugins: [
     react(),
-    mode === 'development' && componentTagger(),
+    mode === "development" && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -26,35 +20,35 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    outDir: "dist/app", // ✅ keeps landing page index.html untouched
+    target: "esnext",
+    minify: "esbuild", // faster than terser in most cases
+    sourcemap: false,
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
-          // Add more chunks for better performance
-          router: ['react-router-dom'],
-          forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
-          supabase: ['@supabase/supabase-js', '@tanstack/react-query'],
+          vendor: ["react", "react-dom"],
+          ui: ["@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu"],
+          router: ["react-router-dom"],
+          forms: ["react-hook-form", "@hookform/resolvers", "zod"],
+          supabase: ["@supabase/supabase-js", "@tanstack/react-query"],
         },
       },
     },
     chunkSizeWarningLimit: 1000,
-    // Optimize for Bun
-    target: 'esnext',
-    minify: 'terser',
   },
-  // Add esbuild optimizations for Bun
   esbuild: {
-    target: 'esnext',
-    platform: 'browser',
+    target: "esnext",
+    platform: "browser",
+    drop: ["console", "debugger"], // ✅ smaller + faster
   },
-  // Optimize deps for Bun
   optimizeDeps: {
     include: [
-      'react', 
-      'react-dom', 
-      'react-router-dom',
-      '@supabase/supabase-js'
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "@supabase/supabase-js",
     ],
   },
 }));

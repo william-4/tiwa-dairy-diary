@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 export const useAuthOperations = () => {
   const [loading, setLoading] = useState(false);
 
-  const signUp = async (email: string, password: string, fullName?: string) => {
+  const signUp = async (email: string, password: string, fullName?: string, phone?: string, farmName?: string, zone?: string) => {
     console.log('Attempting to sign up user:', email);
     setLoading(true);
     
@@ -31,7 +31,7 @@ export const useAuthOperations = () => {
 
       console.log('Sign up successful:', data);
       setLoading(false);
-      return { error: null };
+      return { data, error: null };
     } catch (error) {
       console.error('Unexpected sign up error:', error);
       setLoading(false);

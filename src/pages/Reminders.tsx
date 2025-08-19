@@ -105,7 +105,7 @@ const Reminders = () => {
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className="p-4 space-y-6 max-w-6xl mx-auto">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">🔔 Reminders</h1>
+          <h1 className="text-2xl font-bold">Reminders</h1>
           <Button onClick={() => setShowForm(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Add Reminder
@@ -186,9 +186,9 @@ const Reminders = () => {
                             {reminder.reminder_type}
                           </Badge>
                           {reminder.is_recurring && (
-                            <Badge variant="outline" className="text-xs">
-                              🔄 Recurring
-                            </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                Recurring
+                              </Badge>
                           )}
                         </div>
                         
@@ -209,7 +209,6 @@ const Reminders = () => {
                           
                           {reminder.animal_id && (
                             <div className="flex items-center gap-1 text-gray-600">
-                              <span>🐄</span>
                               <span>
                                 {animals.find(a => a.id === reminder.animal_id)?.name || 'Unknown Animal'}
                               </span>
@@ -264,14 +263,14 @@ const Reminders = () => {
                     <SelectValue placeholder="Select reminder type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Deworming">💊 Deworming</SelectItem>
-                    <SelectItem value="Heat Detection">🔥 Heat Detection</SelectItem>
-                    <SelectItem value="Dry-off">🚫 Dry-off</SelectItem>
-                    <SelectItem value="Calving">🐄 Calving</SelectItem>
-                    <SelectItem value="Vet Visit">👨‍⚕️ Vet Visit</SelectItem>
-                    <SelectItem value="Feeding Schedule">🥬 Feeding Schedule</SelectItem>
-                    <SelectItem value="Payment">💰 Payment</SelectItem>
-                    <SelectItem value="Custom">📝 Custom</SelectItem>
+                    <SelectItem value="Deworming">Deworming</SelectItem>
+                    <SelectItem value="Heat Detection">Heat Detection</SelectItem>
+                    <SelectItem value="Dry-off">Dry-off</SelectItem>
+                    <SelectItem value="Calving">Calving</SelectItem>
+                    <SelectItem value="Vet Visit">Vet Visit</SelectItem>
+                    <SelectItem value="Feeding Schedule">Feeding Schedule</SelectItem>
+                    <SelectItem value="Payment">Payment</SelectItem>
+                    <SelectItem value="Custom">Custom</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

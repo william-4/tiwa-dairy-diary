@@ -12,7 +12,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { supabase } from '@/integrations/supabase/client';
+import { v4 as uuidv4 } from 'uuid';
 
+ 
 const Auth = () => {
   const { user, loading, signIn, signUp } = useAuth();
   const navigate = useNavigate();
@@ -20,6 +23,12 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isGuestMode, setIsGuestMode] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showRoleButtons, setShowRoleButtons] = useState(true);
+  const [isFarmOwner, setIsFarmOwner] = useState(false);
+
+
+
 
   const [signInData, setSignInData] = useState({
     email: '',
@@ -30,6 +39,9 @@ const Auth = () => {
     email: '',
     password: '',
     fullName: '',
+    phone: '',
+    farmName: '',
+    zone: '',
   });
 
 if (loading) {
@@ -127,8 +139,24 @@ const handleSignIn = async (e: React.FormEvent) => {
           title: "Account Created!",
           description: "Please check your email for a confirmation link to complete your registration.",
         });
+
+        const { data: { user } } = await supabase.auth.getUser();
+
+        // Collect farm information during sign up
+        await supabase.from('profiles').insert(
+          {
+            id: user?.id,
+            email: signUpData.email,
+            phone: signUpData.phone,
+            farm_name: signUpData.farmName,
+            zone: signUpData.zone
+          }
+        );
+
+        console.log('Farm information collected successfully', signUpData);
+
         // Reset form
-        setSignUpData({ email: '', password: '', fullName: '' });
+        setSignUpData({ email: '', password: '', fullName: '', phone: '', farmName: '', zone: '' });
       }
     } catch (error: any) {
       const errorMessage = error?.message || "An unexpected error occurred";
@@ -164,6 +192,38 @@ const handleSignIn = async (e: React.FormEvent) => {
           <p className="text-sm text-gray-500 mt-2">Record. Reflect. Grow.</p>
         </div>
 
+        {showRoleButtons && (
+          <>
+            <Button 
+              id="btn-1"
+              type="submit"
+              className="w-full m-4"
+              disabled={isLoading}
+              onClick={() => {
+                setShowForm(true)
+                setShowRoleButtons(false);
+                setIsFarmOwner(true);
+              }}
+
+            >
+              Farm Owner
+            </Button>
+            <Button
+              id="btn-2"
+              type="submit"
+              className="w-full m-4"
+              disabled={isLoading} 
+              onClick={() => {
+                setShowForm(true)
+                setShowRoleButtons(false);
+              }}
+            >
+              Farm Worker
+          </Button> 
+          </>
+        )}
+
+        {showForm && (
         <Card>
           <CardHeader className="pb-4">
             <CardTitle className="text-center text-lg">Welcome</CardTitle>
@@ -230,6 +290,7 @@ const handleSignIn = async (e: React.FormEvent) => {
               
               <TabsContent value="signup" className="space-y-4">
                 <form onSubmit={handleSignUp} className="space-y-4">
+                  {/* Full Name */}
                   <div className="space-y-2">
                     <Label htmlFor="signup-name">Full Name</Label>
                     <Input
@@ -242,7 +303,8 @@ const handleSignIn = async (e: React.FormEvent) => {
                       disabled={isLoading}
                     />
                   </div>
-                  
+
+                  {/* Email */}
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
                     <Input
@@ -255,7 +317,8 @@ const handleSignIn = async (e: React.FormEvent) => {
                       disabled={isLoading}
                     />
                   </div>
-                  
+
+                  {/* Password */}
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Password</Label>
                     <div className="relative">
@@ -281,12 +344,58 @@ const handleSignIn = async (e: React.FormEvent) => {
                       </Button>
                     </div>
                   </div>
-                  
+
+                  {/* Extra Fields for Farm Owner */}
+                  {isFarmOwner && (
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-phone">Phone Number</Label>
+                        <Input
+                          id="signup-phone"
+                          type="tel"
+                          placeholder="Enter your phone number"
+                          value={signUpData.phone}
+                          onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
+                          required
+                          disabled={isLoading}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-farmname">Farm Name</Label>
+                        <Input
+                          id="signup-farmname"
+                          type="text"
+                          placeholder="Enter your farm name"
+                          value={signUpData.farmName}
+                          onChange={(e) => setSignUpData({ ...signUpData, farmName: e.target.value })}
+                          required
+                          disabled={isLoading}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-zone">Zone</Label>
+                        <Input
+                          id="signup-zone"
+                          type="text"
+                          placeholder="Enter your zone"
+                          value={signUpData.zone}
+                          onChange={(e) => setSignUpData({ ...signUpData, zone: e.target.value })}
+                          required
+                          disabled={isLoading}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Submit Button */}
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? 'Creating Account...' : 'Create Account'}
                   </Button>
                 </form>
               </TabsContent>
+
             </Tabs>
 
             {/* Continue as Guest Option */}
@@ -305,7 +414,7 @@ const handleSignIn = async (e: React.FormEvent) => {
               </p>
             </div>
           </CardContent>
-        </Card>
+        </Card> )}
       </div>
     </div>
   );

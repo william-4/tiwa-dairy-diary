@@ -78,7 +78,7 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
         feedingRecordId = created.id;
       }
 
-      // Auto-create financial record if cost is provided
+      // Use healthRecordId as unique identifier in financial record description
       if (formData.cost && parseFloat(formData.cost) > 0) {
         const description = `FeedingRecord:${feedingRecordId}`;
         setFinancialDescription(description);
@@ -118,6 +118,7 @@ const FeedingRecords = ({ animalId }: FeedingRecordsProps) => {
           });
         }
       }
+    
       
       setShowForm(false);
       setEditingRecord(null);

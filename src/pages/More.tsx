@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,13 +24,82 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import RoleBasedAccess from '@/components/RoleBasedAccess';
+import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/client";
+// import { useSession } from "@supabase/auth-helpers-react";
+
 
 const More = () => {
   const { t, language, setLanguage } = useLanguage();
   const { user, userRole, signOut } = useAuth();
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [email, setEmail] = useState('');
 
   const handleLanguageToggle = () => {
     setLanguage(language === 'en' ? 'sw' : 'en');
+  };
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email) {
+      console.error("Email is required");
+      return;
+    }
+
+    try {
+      // 1. Get the current logged-in user's ID
+      const {
+        data: { user: currentUser },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !currentUser) {
+        console.error("Error fetching current user:", userError);
+        return;
+      }
+
+      // 2. Get the target user ID from the email
+      const { data, error } = await supabaseAdmin.auth.admin.listUsers();
+      let targetUserId = "";
+
+      if (error) {
+        console.error(error);
+      } else {
+        // Tell TypeScript explicitly what type `u` is
+        const targetUser = data.users.find(
+          (u: { email?: string | null }) => u.email === email
+        );
+
+        if (!targetUser) {
+          console.error("User not found");
+        } else {
+          targetUserId = targetUser.id;
+          console.log("User ID:", targetUser.id);
+        }
+      }
+
+      // 3. Insert into user_roles
+      const { error: insertError } = await supabase
+        .from("user_roles")
+        .insert([
+          {
+            user_id: targetUserId,          
+            role: "worker",              
+            assigned_by: currentUser.id,        
+          }
+        ]);
+
+      if (insertError) {
+        console.error("Error inserting into user_roles:", insertError);
+        return;
+      }
+
+      console.log("Email and IDs successfully added to user_roles");
+
+    } catch (err) {
+      console.error("Unexpected error:", err);
+    }
   };
 
   return (
@@ -126,6 +195,32 @@ const More = () => {
                 <Smartphone className="h-4 w-4 mr-2" />
                 Coming Soon
               </Button>
+            </div>
+
+            {/* New Button for Email Form */}
+            <div>
+              <Button
+                variant="outline"
+                onClick={() => setShowEmailForm(!showEmailForm)}
+              >
+                {showEmailForm ? 'Confirm' : 'Add worker'}
+              </Button>
+
+              {showEmailForm && (
+                <form onSubmit={handleEmailSubmit} className="mt-3 space-y-2">
+                  <input
+                    type="email"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                    placeholder="Enter the worker's email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                  <Button type="submit" className="w-full">
+                    Save Email
+                  </Button>
+                </form>
+              )}
             </div>
           </CardContent>
         </Card>

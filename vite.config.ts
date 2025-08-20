@@ -1,38 +1,32 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import path from "path";
-import { componentTagger } from "lovable-tagger";
+import path from "node:path";
 
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8888,
-    hmr: { overlay: false },
-    watch: { usePolling: false },
-  },
-  plugins: [
-    react(),
-    mode === "development" && componentTagger(),
-  ].filter(Boolean),
+export default defineConfig({
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
   build: {
-    outDir: "dist/app", // ✅ keeps landing page index.html untouched
+    outDir: "dist", // ✅ Changed this to the standard 'dist' folder
     target: "esnext",
-    minify: "esbuild", // faster than terser in most cases
-    sourcemap: false,
+    minify: "esbuild",
+    sourcemap: false, // ⬇️ Set to false for faster builds and smaller output
     cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ["react", "react-dom"],
-          ui: ["@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu"],
-          router: ["react-router-dom"],
-          forms: ["react-hook-form", "@hookform/resolvers", "zod"],
+          vendor: ["react", "react-dom", "react-router-dom"], // ✅ Grouped core dependencies
           supabase: ["@supabase/supabase-js", "@tanstack/react-query"],
+          ui: [
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-dropdown-menu",
+            "react-hook-form",
+            "@hookform/resolvers",
+            "zod",
+          ], // ✅ Grouped remaining dependencies
         },
       },
     },
@@ -40,15 +34,6 @@ export default defineConfig(({ mode }) => ({
   },
   esbuild: {
     target: "esnext",
-    platform: "browser",
-    drop: ["console", "debugger"], // ✅ smaller + faster
+    drop: ["console", "debugger"],
   },
-  optimizeDeps: {
-    include: [
-      "react",
-      "react-dom",
-      "react-router-dom",
-      "@supabase/supabase-js",
-    ],
-  },
-}));
+});

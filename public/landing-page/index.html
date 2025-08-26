@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIWA-Kilimo - The Farmers Daily Diary</title>
+    <meta name="description" content="TIWA-Kilimo: The Farmers Daily Diary - Goal: Maximise Milk Production. Manage your animal diary, tasks, finances, inventory, and reminders all in one place.">
+    <meta name="keywords" content="TIWA-Kilimo, dairy diary, milk production, animal diary, tasks, finances, inventory, reminders, farm management, productivity">
+    <meta name="author" content="TIWA-Kilimo Team">
+    <meta property="og:title" content="TIWA-Kilimo - The Farmers Daily Diary">
+    <meta property="og:description" content="TIWA-Kilimo: The Farmers Daily Diary - Goal: Maximise Milk Production. Manage your animal diary, tasks, finances, inventory, and reminders all in one place.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.tiwakilimo.com">
+    <meta property="og:image" content="https://www.tiwakilimo.com/images/og-image.jpg">
+    <link rel="canonical" href="https://www.tiwakilimo.com/">
+
+    <!-- Favicon and App Icons for all devices -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="manifest" href="/site.webmanifest">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    
+    <!-- Montserrat font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* Font Base Styles */
+        :root {
+            --font-primary: 'Montserrat', sans-serif;
+            --font-weight-light: 300;
+            --font-weight-regular: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --font-weight-extrabold: 800;
+        }
+        /* General Styles */
+        :root {
+            --primary-color: #4CAF50; /* Green */
+            --secondary-color: #61dafbaa; /* React green-ish */
+            --text-color: #333;
+            --light-gray: #f4f4f4;
+            --dark-gray: #555;
+            --white: #fff;
+            --container-width: 90%;
+            --container-max-width: 90em;
+            --shadow-sm: 0 2px 8px rgba(224, 255, 230, 0.5);
+            --shadow-md: 0 4px 12px rgba(76, 175, 80, 0.12);
+            --border-radius-sm: 0.5em;
+            --border-radius-md: 1em;
+            --border-radius-lg: 1.2em;
+            --spacing-xs: 0.5em;
+            --spacing-sm: 0.7em;
+            --spacing-md: 1em;
+            --spacing-lg: 1.3em;
+            --spacing-xl: 1.5em;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            color: var(--text-color);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        #root {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0;
+            text-align: center;
+        }
+
+        .container {
+            width: var(--container-width, 90%);
+            max-width: var(--container-max-width, 100em);
+            margin: 0 auto;
+            padding: 0 1em;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+      button  a  {
+            color:var(--light-gray);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+          #logo {
+            height: 60px;
+            width: auto;
+            display: block;
+            margin: 0 auto;
+            margin-left: 1rem;
+        }
+
+    
+
+        .header nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .header nav ul li {
+            margin-left: 2rem;
+            background-color: rgba(76, 175, 80, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .header nav ul li a {
+            color: var(--dark-gray);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            display: block;
+        }
+
+        .header nav ul li:hover {
+            background-color: rgba(76, 175, 80, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .header nav ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            margin-bottom: 0;
+        }
+        
+        #root {
+            position: relative;
+        }
+
+        .hero-title, .hero-description {
+            color: var(--white);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .hero-title {
+            font-size: 3.7rem;
+            font-weight: 800;
+            animation: slideInUp 2s ease-out;
+        }
+
+      
+        .hero-description {
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-md);
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        .hero .cta-buttons button {
+            margin: 0 .5rem;
+            animation: zoomIn 2.2s ease-out;
+        }
+
+
+        /* metric section   */
+
+ .metrics-section {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 2em;
+            text-align: center;
+        }
+
+        .metrics-section h2 {
+            color: #4CAF50;
+            font-size: 2.2rem;
+            margin-bottom: .5em;
+        }
+
+        .metrics-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 1em;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 2em;
+            border-radius: 8px;
+            background-color: #e8f5e9;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            flex: 1;
+            min-width: 200px;
+            max-width: 280px;
+        }
+
+        .metric-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-item iconify-icon {
+            font-size: 3rem;
+            color: #388e3c;
+            margin-bottom: 15px;
+        }
+
+        .metric-item .number {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #212121;
+            line-height: 1;
+        }
+
+        .metric-item .description {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.4;
+        }
+
+
+        /* Features Section */
+        .features {
+
+
+            padding: 3rem 0;
+            margin-top: 5rem;
+            background-color: var(--white);
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Features section styling */
+        .features {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .features .card {
+            text-align: left;
+        }
+
+        .features h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .testimonials h2 {
+            color: var(--white);
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 10em), 1fr));
+            gap: 2em;
+        }
+
+        .testimonial-item {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .testimonial-item:hover {
+            transform: scale(1.02);
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+
+        .testimonial-info {
+            text-align: left;
+        }
+
+        .testimonial-item p {
+            font-style: italic;
+            margin-bottom: 1rem;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .testimonial-item .author {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .testimonial-item .location {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Call to Action Section */
+        .cta-section {
+            background-color: var(--light-gray);
+            padding: 4rem 0;
+            text-align: center;
+            margin-bottom: 3em;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #333;
+            color: var(--white);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            align-items: start;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .footer-links {
+            text-align: left;
+        }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .footer-links ul li a {
+            color: var(--white);
+            transition: color 0.3s ease;
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-socials {
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-socials a {
+            color: var(--white);
+            font-size: 1.5rem;
+            margin: 0 0.8rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-socials a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-contact p {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-bottom {
+            grid-column: 1 / -1;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            font-size: 0.9rem;
+            color: #bbb;
+            text-align: center;
+        }
+
+        .footer h4 {
+            color: var(--white);
+            margin-bottom: 1.2rem;
+            font-size: 1.1rem;
+        }
+
+        .footer-column {
+            text-align: left;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .address {
+            font-size: 0.9rem;
+            color: #bbb;
+            margin-top: 1rem;
+        }
+
+
+         /* Floating Button Styles */
+        .chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 9999px; /* Fully rounded */
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            z-index: 1000;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.05);
+            background-color: #45a049; /* Slightly darker green on hover */
+        }
+
+        /* Chat Window Styles */
+        .chat-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 320px;
+            max-height: 400px;
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 999;
+        }
+
+        .chat-window.open {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .chat-header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 16px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .chat-close-button {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .chat-close-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-body {
+            padding: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .chat-body p {
+            margin-bottom: 10px;
+        }
+
+        .chat-body a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .chat-body a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        /* Form Styles */
+        .chat-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: var(--dark-gray);
+        }
+
+        .chat-form input[type="text"],
+        .chat-form input[type="email"],
+        .chat-form textarea {
+            width: calc(100% - 20px); /* Account for padding */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95em;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .chat-form input[type="text"]:focus,
+        .chat-form input[type="email"]:focus,
+        .chat-form textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .chat-form textarea {
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 80px;
+        }
+
+        .chat-form button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            width: 100%;
+        }
+
+        .chat-form button:hover {
+            background-color: #45a049;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 400px) {
+            .chat-window {
+                width: calc(100% - 40px); /* Full width minus padding on smaller screens */
+                right: 20px;
+                left: 20px;
+                bottom: 80px;
+                max-height: 70vh; /* Adjust max height for smaller screens */
+            }
+
+            .chat-button {
+                bottom: 15px;
+                right: 15px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+
+
+
+
+
+        @media (max-width: 768px) {
+            .footer .container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
+            }
+
+            .footer-column {
+                text-align: center;
+            }
+
+            .footer-links ul {
+                align-items: center;
+            }
+
+            .social-icons {
+                justify-content: center;
+            }
+        }
+
+        /* Unified Components */
+        .section {
+            padding: 0;
+        }
+        
+        .section:not(.hero) {
+            padding: var(--spacing-xl) 0;
+        }
+
+        .how-it-works.section {
+            padding-top: 4rem;
+            position: relative;
+            z-index: 2;
+            background: var(--white);
+            min-height: auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: var(--spacing-lg);
+            color: var(--primary-color);
+        }
+
+        .grid {
+            display: grid;
+            gap: var(--spacing-lg);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 20em), 1fr));
+            max-width: 90%;
+            margin: 0 auto;
+            gap: var(--spacing-xl);
+        }
+
+        .footer-forms.grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 20em), 1fr));
+            justify-content: center;
+            margin: 2em auto;
+        }
+
+        .card {
+            background: var(--light-gray);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            border-radius: var(--border-radius-sm);
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--border-radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary-color) 60%, var(--secondary-color) 100%);
+            color: var(--white);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #388e3c 60%, #21a1f3 100%);
+            transform: translateY(-2px);
+        }
+
+        .nav-link {
+            color: var(--dark-gray);
+            text-decoration: none;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--border-radius-sm);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        /* Features Section */
+        .features {
+            padding: var(--spacing-xl) 0;
+            text-align: center;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .features .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+
+        .features .iconify {
+            font-size: 3.5em;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .features h3 {
+            margin-bottom: 1rem;
+            color: var(--dark-gray);
+        }
+
+        .hero-carousel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transform: scale(1.05);
+            transition: opacity 2s ease-in-out, transform 3s ease-out;
+        }
+
+        .hero-image:nth-child(1) {
+            opacity: 1;
+            animation: carouselAnim 21s infinite;
+        }
+        
+        .hero-image:nth-child(2) {
+            animation: carouselAnim 21s infinite 7s;
+        }
+        
+        .hero-image:nth-child(3) {
+            animation: carouselAnim 21s infinite 14s;
+        }
+
+        @keyframes carouselAnim {
+            0% {
+                opacity: 0;
+                transform: scale(1.05);
+            }
+            3%, 33% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            36%, 100% {
+                opacity: 0;
+                transform: scale(1.05);
+            }
+        }
+
+        .hero-text {
+            position: absolute;
+            z-index: 4;
+            text-align: center;
+            width: 100%;
+            max-width: 80vw;
+            padding: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: var(--container-max-width, 90em);
+            height: 100vh;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.3);
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        /* Hero styles consolidated above */
+
+        /* Animations */
+        .reveal-element {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .reveal-element.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 25px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 10;
+        }
+
+        .hamburger span {
+            width: 30px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 10px;
+            transition: all 0.3s linear;
+            position: relative;
+            transform-origin: 1px;
+        }
+
+        .contact-icons {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: var(--border-radius-md);
+        }
+
+        .contact-icon {
+            color: var(--primary-color);
+            font-size: 2rem;
+            transition: transform 0.3s ease;
+            text-decoration: none;
+        }
+
+        .contact-icon:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #logo {
+                height: auto;
+                width: 30vw;
+                margin-left: 0;
+            }
+
+            .header .container {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1rem;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .header nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 100%;
+                height: 100vh;
+                background: var(--white);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: right 0.3s ease;
+                z-index: 5;
+            }
+
+            .header nav.active {
+                right: 0;
+            }
+
+            .header nav ul {
+                flex-direction: column;
+                align-items: center;
+                margin: 0;
+            }
+
+            .header nav ul li {
+                margin: 1rem 0;
+            }
+
+            .nav-link {
+                font-size: 1.5rem;
+                padding: 1rem 2rem;
+            }
+
+            .hamburger.active span:first-child {
+                transform: rotate(45deg) translate(0px, -2px);
+            }
+
+            .hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active span:last-child {
+                transform: rotate(-45deg) translate(-1px, 1px);
+            }
+
+            /* Hero Section Mobile */
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+                padding: 0;
+                width: 100%;
+                height: 100vh;
+                font-size: small;
+                margin: 0;
+            }
+
+            .hero-image {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .hero-text {
+                max-width: 100%;
+                padding: 0 0.5rem;
+            }
+
+            .hero-title {
+                font-size: 1.5rem;
+                line-height: 1.2;
+                margin-bottom: 0.5rem;
+            }
+
+            .hero-description {
+                font-size: 0.9rem;
+                line-height: 1.4;
+                margin-bottom: 1rem;
+            }
+
+            .cta-buttons {
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .hero.section {
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+                min-height: auto;
+            }
+
+            /* Typography Mobile Optimizations */
+            h2 {
+                font-size: 1.6rem !important;
+                line-height: 1.4;
+            }
+
+            h3 {
+                font-size: 1.2rem !important;
+                line-height: 1.3;
+            }
+
+            h4 {
+                font-size: 1.1rem !important;
+                margin-bottom: 1rem !important;
+            }
+
+            p {
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+
+            .features h3 {
+                font-size: 1.2rem !important;
+            }
+
+            .section-title {
+                font-size: 1.6rem !important;
+                margin-bottom: 1.5rem;
+            }
+
+            .card {
+                padding: var(--spacing-md);
+                margin: 0.5rem;
+            }
+
+            .testimonial-item p {
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+
+            .testimonial-item .author {
+                font-size: 0.85rem;
+            }
+
+            /* CTA Buttons Mobile - Fixed for phone view */
+            .cta-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 0.8rem;
+                width: 100%;
+                max-width: 280px;
+                margin: 0 auto;
+                padding: 0 1rem;
+                box-sizing: border-box;
+            }
+
+            .btn,
+            .hero-btn {
+                width: 100%;
+                max-width: 100%;
+                font-size: 1rem;
+                padding: 0.8rem 1.5rem;
+                margin: 0;
+                box-sizing: border-box;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            /* Grid Layouts Mobile */
+            .features .grid-3 {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+                gap: 1rem;
+            }
+
+            .grid-3 {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+
+            .features-grid, .testimonial-grid {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+
+            /* Forms Mobile */
+            .footer-forms.grid-3 {
+                grid-template-columns: 1fr;
+                width: 80vw;
+                margin: 2rem auto;
+                gap: 2rem;
+            }
+
+            .footer-forms .card {
+                padding: var(--spacing-md);
+                margin: 0;
+            }
+
+            .footer-forms h4 {
+                font-size: 1rem !important;
+                margin-bottom: 0.8rem !important;
+            }
+
+            .footer-forms .form-input {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+                margin-bottom: 0.6rem;
+            }
+
+            .footer-forms .btn {
+                font-size: 0.9rem;
+                padding: 0.8rem 1.5rem;
+            }
+        }
+
+ .hero-btn {
+            background: linear-gradient(90deg, #4CAF50 60%, #61dafb 100%);
+            color: #fff !important;
+            font-size: 1.25rem;
+            font-weight: 600;
+            padding: 1.1rem 2.2rem;
+            border-radius: 2.5rem;
+            box-shadow: 0 2px 12px rgba(76,175,80,0.12);
+            border: none;
+            transition: background 0.2s, transform 0.2s;
+            text-align: center;
+            display: inline-block;
+        }
+        .hero-btn:hover {
+            background: linear-gradient(90deg, #388e3c 60%, #21a1f3 100%);
+            color: #fff;
+            transform: translateY(-2px) scale(1.04);
+            text-decoration: none;
+        }
+
+        .one-picture {
+            display: block;
+            width: 80vw;
+            max-height: 500px;
+            object-fit: cover;
+            margin: 2rem auto;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-md);
+        }
+
+        @media (max-width: 768px) {
+            .one-picture {
+                width: 90vw;
+                max-height: 300px;
+            }
+        }
+           
+
+
+    </style>
+</head>
+
+<body>
+    <div id="root">
+        <header class="header">
+            <div class="container">
+                <img id="logo" src="logo.png" alt="TIWA-Kilimo Logo" />
+      
+                <nav>
+                    <ul>
+                        <li><a href="#hero" class="nav-link">Home</a></li>
+                        <li><a href="#features" class="nav-link">Features</a></li>
+                        <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
+                        <li><a href="#contact" class="nav-link">Contact</a></li>
+                        <li><button onclick="window.location.href='https://tiwa-kilimo.netlify.app/'" class="nav-link" style="background-color: #4CAF50; color: white; cursor: pointer; padding: 8px 16px; border: none; border-radius: var(--border-radius-sm); width: 100%;">Login</button></li>
+                    </ul>
+                </nav>
+
+                <button class="hamburger" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </header>
+
+        <section id="hero" class="hero section">
+            <div class="hero-content">
+                <div class="hero-carousel">
+                    <img src="images/pexels-workman-milking.jpg" alt="TIWA-Kilimo Milking" class="hero-image" />
+                    <img src="images/farmer.jpg" alt="TIWA-Kilimo Farmer" class="hero-image" />
+                    <img src="images/phone-ui.jpg" alt="TIWA-Kilimo App UI" class="hero-image" />
+                </div>
+                <div class="hero-text">
+                    <h1 class="hero-title">Maximise Your Milk Production</h1>
+                    <!-- <h1 class="hero-description">Simple, smart dairy records and reminders. Track animals, tasks, and finances in one app.</h1> -->
+                    <p  style="color: #4CAF50; font-size: x-large;">Helping Dairy Farmers Track Over 6000 Litres of Milk Every Month  With Just Their Phone.</p>
+                    <div class="cta-buttons">
+                        <a href="https://tiwa-kilimo.netlify.app/" class="btn btn-primary hero-btn">Get Started</a>
+                        <a href="https://tiwa-kilimo.netlify.app/" class="btn btn-primary hero-btn">Download App</a>
+                    </div>
+                </div>
+            </div>
+
+
+            
+        </section>
+
+
+    <div class="metrics-section">
+        <h2>Our Impact</h2>
+        <div class="metrics-grid">
+            <div class="metric-item" style="opacity: 0; transform: translateY(20px);">
+                <iconify-icon icon="mdi:account-group"></iconify-icon>
+                <div class="number" data-value="1200">0+</div>
+                <p class="description">farmers reached through field visits, AgriTours, digital outreach, and pilot programs</p>
+            </div>
+            <div class="metric-item" style="opacity: 0; transform: translateY(20px);">
+                <iconify-icon icon="mdi:cow"></iconify-icon>
+                <div class="number" data-value="82500">0+</div>
+                <p class="description">litres of milk tracked by early users in our dairy farm record-keeping tests</p>
+            </div>
+            <div class="metric-item" style="opacity: 0; transform: translateY(20px);">
+                <iconify-icon icon="mdi:cash-multiple"></iconify-icon>
+                <div class="number" data-value="3200000">0+</div>
+                <p class="description">in expenses recorded across input costs, vet services, feed, and labor</p>
+            </div>
+            <div class="metric-item" style="opacity: 0; transform: translateY(20px);">
+                <iconify-icon icon="mdi:cellphone-link"></iconify-icon>
+                <div class="number" data-value="340">0+</div>
+                <p class="description">app testers from 9 counties actively engaging with the platform</p>
+            </div>
+        </div>
+
+
+        <section id="features" class="features container">
+            <h2 class="section-title">Key Features</h2>
+                <img src="images/kilimo-ui.JPG" alt="one image" class="one-picture" >
+
+            <div class="grid grid-3">
+                <div class="card reveal-element">
+                    <span class="iconify" data-icon="mdi:cow"></span>
+                    <h3>Track Milk, Health & Breeding</h3>
+                    <p>Log everything — from litres to vet visits — in seconds. Simple and quick daily recording for busy farmers.</p>
+                </div>
+                <div class="card reveal-element">
+                    <span class="iconify" data-icon="mdi:whatsapp"></span>
+                    <h3>Weekly WhatsApp Updates</h3>
+                    <p>Never forget a heat cycle, vet visit, calving date, or supplier payment again. Get timely reminders right on WhatsApp.</p>
+                </div>
+                <div class="card reveal-element">
+                    <span class="iconify" data-icon="mdi:cash-multiple"></span>
+                    <h3>Know Your Farm's Finances</h3>
+                    <p>See your income, expenses and profitability clearly — and stay in control of your dairy business.</p>
+                </div>
+
+
+
+
+
+        <script>
+            // Function to animate counting up
+            function animateValue(obj, start, end, duration) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    let current = Math.floor(progress * (end - start) + start);
+                    
+                    // Format the number based on its size
+                    if (end >= 1000000) {
+                        current = (current / 1000000).toFixed(1) + 'M+';
+                    } else if (end >= 1000) {
+                        current = (current / 1000).toFixed(1) + 'K+';
+                    } else {
+                        current = current + '+';
+                    }
+                    
+                    obj.innerHTML = current;
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            // Function to handle reveal animations
+            function handleReveal(entries, observer) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }
+
+            // Create observers
+            const metricsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Get all number elements in the metrics section
+                        const numbers = entry.target.querySelectorAll('.number');
+                        numbers.forEach(number => {
+                            if (!number.classList.contains('animated')) {
+                                const finalValue = parseInt(number.dataset.value);
+                                animateValue(number, 0, finalValue, 2000);
+                                number.classList.add('animated');
+                            }
+                        });
+
+                        // Add fade-in animation to metric items
+                        const items = entry.target.querySelectorAll('.metric-item');
+                        items.forEach((item, index) => {
+                            setTimeout(() => {
+                                item.style.transition = "all 0.6s ease";
+                                item.style.opacity = "1";
+                                item.style.transform = "translateY(0)";
+                            }, index * 200);
+                        });
+
+                        metricsObserver.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.2
+            });
+
+            const revealObserver = new IntersectionObserver(handleReveal, {
+                threshold: 0.15,
+                rootMargin: '0px'
+            });
+
+            // Start observing
+            metricsObserver.observe(document.querySelector('.metrics-grid'));
+
+            // Observe all reveal elements
+            document.querySelectorAll('.reveal-element').forEach(element => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                revealObserver.observe(element);
+            });
+
+            // Observe cards in the features section
+            document.querySelectorAll('.features .card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                revealObserver.observe(card);
+            });
+
+            // Observe testimonial items
+            document.querySelectorAll('.testimonial-item').forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                revealObserver.observe(item);
+            });
+        </script>
+    </div>
+
+
+        <main style="position: relative; z-index: 3; background: var(--white);">
+            <section class="how-it-works container section reveal-element">
+                <h2 class="section-title">How TIWA-Kilimo Helps You Increase Milk Production</h2>
+                <img src="images/farmer-with-phone.jpg" alt="one image" class="one-picture" >
+                
+                <div class="grid grid-3">
+                    <div class="card">
+                        <span class="iconify" data-icon="mdi:clipboard-list-outline" style="font-size: 3.5em; color: #4CAF50; margin-bottom: 1rem; display: block;"></span>
+                        <h3>Step 1: Record Production</h3>
+                        <p>Easily log daily milk yields and animal health for every cow.</p>
+                </div>
+                <div class="card">
+                    <span class="iconify" data-icon="mdi:bell-alert-outline" style="font-size: 3.5em; color: #4CAF50; margin-bottom: 1rem; display: block;"></span>
+                    <h3>Step 2: Get Notifications & Recommendations</h3>
+                    <p>Receive timely reminders and actionable tips to boost productivity.</p>
+                </div>
+                <div class="card">
+                    <span class="iconify" data-icon="mdi:finance" style="font-size: 3.5em; color: #4CAF50; margin-bottom: 1rem; display: block;"></span>
+                    <h3>Step 3: Track Finances</h3>
+                    <p>Monitor expenses and income to maximise your farm's profit and milk output.</p>
+                </div>
+            </div>
+        
+
+
+    <!-- Iconify for feature icons -->
+    <script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
+            </div>
+        </section>
+
+        <section id="testimonials" class="testimonials">
+            <div class="container">
+                <h2>What Our Farmers Say</h2>
+                <div class="testimonial-grid">
+                    <div class="testimonial-item reveal-element">
+                        <div class="testimonial-header">
+                            <iconify-icon icon="mdi:account-circle" style="font-size: 3em; color: #fff;"></iconify-icon>
+                            <div class="testimonial-info">
+                                <div class="author">Wanjiku M.</div>
+                                <div class="location">Githunguri, Kiambu</div>
+                            </div>
+                        </div>
+                        <p>"I used to forget heat cycles, now I get reminders right on my phone. Since using TIWA-Kilimo, my breeding success rate has improved significantly. Very helpful for a small-scale farmer like me."</p>
+                    </div>
+                    <div class="testimonial-item reveal-element">
+                        <div class="testimonial-header">
+                            <iconify-icon icon="mdi:account-circle" style="font-size: 3em; color: #fff;"></iconify-icon>
+                            <div class="testimonial-info">
+                                <div class="author">James K.</div>
+                                <div class="location">Limuru, Kiambu</div>
+                            </div>
+                        </div>
+                        <p>"The milk production tracking has helped me identify my best performing cows. I can now make better decisions about feeding and which genetics to keep in my herd. My average daily production has increased by 3 litres per cow."</p>
+                    </div>
+                    <div class="testimonial-item reveal-element">
+                        <div class="testimonial-header">
+                            <iconify-icon icon="mdi:account-circle" style="font-size: 3em; color: #fff;"></iconify-icon>
+                            <div class="testimonial-info">
+                                <div class="author">Mary N.</div>
+                                <div class="location">Kiambaa, Kiambu</div>
+                            </div>
+                        </div>
+                        <p>"Recording expenses was always a headache before. Now I know exactly how much I spend on feeds and services. The app has helped me reduce waste and save about Ksh 4,000 monthly on feed costs."</p>
+                    </div>
+                    <div class="testimonial-item reveal-element">
+                        <div class="testimonial-header">
+                            <iconify-icon icon="mdi:account-circle" style="font-size: 3em; color: #fff;"></iconify-icon>
+                            <div class="testimonial-info">
+                                <div class="author">Peter G.</div>
+                                <div class="location">Kikuyu, Kiambu</div>
+                            </div>
+                        </div>
+                        <p>"The vaccination and deworming reminders are very useful. I no longer have to keep paper records that get lost. Everything about my 5 cows is now properly tracked, and I can show the records to my vet when needed."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="cta-section container reveal-element">
+            <h2>Ready to Maximise Milk Production?</h2>
+            <p>Download TIWA-Kilimo today and take the first step towards a more organized, productive, and profitable dairy operation.</p>
+          <button class=" btn btn-primary"     >
+             <a href="https://tiwa-kilimo.netlify.app/" class="cta-btn" target="_blank" rel="noopener">Download App Now</a>
+        </button> 
+        </section>
+
+        
+ 
+
+
+<div class="footer-forms grid grid-3">
+                    <form class="card" autocomplete="off">
+                        <h4>Talk to an Expert</h4>
+                        <input type="text" name="name" placeholder="Your Name" required class="form-input">
+                        <input type="email" name="email" placeholder="Your Email" required class="form-input">
+                        <textarea name="query" placeholder="Your Query" required class="form-input"></textarea>
+                        <button type="submit" class="btn btn-primary">Send Query</button>
+                    </form>
+                    <form class="card" autocomplete="off">
+                        <h4>Join Our Mailing List</h4>
+                        <input type="email" name="email" placeholder="Your Email" required class="form-input">
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </form>
+                    <form class="card" autocomplete="off">
+                        <h4>Get the App</h4>
+                        <input type="text" name="phone" placeholder="Your Phone Number" required class="form-input">
+                        <button type="submit" class="btn btn-primary">Send App Link</button>
+                    </form>
+                </div>
+
+
+
+
+        <footer id="contact" class="footer">
+
+
+
+
+            <div class="container">
+                <div class="footer-column">
+                    <div class="footer-logo">TIWA-Kilimo</div>
+                    <div class="footer-contact">
+                        <p>Email: <a href="mailto:info@tiwakilimo.com">info@tiwakilimo.com</a></p>
+                        <p>Phone: +254 704 860195</p>
+                        <p>WhatsApp: <a href="https://wa.me/254704860195" target="_blank" rel="noopener">wa.me/+254795177294</a></p>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <div class="footer-links">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#hero">Home</a></li>
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="#testimonials">Testimonials</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <div class="footer-socials">
+                        <h4>Follow Us</h4>
+                        <div class="social-icons">
+                            <a href="https://www.facebook.com/share/1bEaeisY2x/" aria-label="Facebook" target="_blank" rel="noopener"><img src="https://img.icons8.com/ios-filled/24/ffffff/facebook-new.png" alt="Facebook"></a>
+                            <a href="https://wa.me/254704860195" aria-label="WhatsApp" target="_blank" rel="noopener"><img src="https://img.icons8.com/ios-filled/24/ffffff/whatsapp--v1.png" alt="WhatsApp"></a>
+                            <a href="https://www.linkedin.com/company/tiwa-kilimo/" aria-label="LinkedIn" target="_blank" rel="noopener"><img src="https://img.icons8.com/ios-filled/24/ffffff/linkedin.png" alt="LinkedIn"></a>
+                            <a href="https://www.instagram.com/tiwa_kilimo?igsh=MWh1emR4dDdkajh5bQ==" aria-label="Instagram" target="_blank" rel="noopener"><img src="https://img.icons8.com/ios-filled/24/ffffff/instagram-new--v1.png" alt="Instagram"></a>
+                        </div>
+                        <p class="address">FarmLane, Githunguri, Kiambu County</p>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    &copy; 2025 TIWA-Kilimo. All rights reserved.
+                </div>
+                
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Hamburger Menu Toggle
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.querySelector('nav');
+        const navLinks = document.querySelectorAll('nav a');
+
+        function toggleMenu() {
+            hamburger.classList.toggle('active');
+            nav.classList.toggle('active');
+            document.body.classList.toggle('menu-open');
+        }
+
+        hamburger.addEventListener('click', toggleMenu);
+
+        // Close menu when clicking a link
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                nav.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            });
+        });
+
+        // Smooth scrolling for navigation links
+        navLinks.forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // On-scroll reveal animation
+        const revealElements = document.querySelectorAll('.reveal-element');
+
+        const observerOptions = {
+            root: null, /* relative to the viewport */
+            rootMargin: '0px',
+            threshold: 0.1 /* 10% of the element visible to trigger */
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target); /* Stop observing once visible */
+                }
+            });
+        }, observerOptions);
+
+        revealElements.forEach(element => {
+            observer.observe(element);
+        });
+
+        // Basic Header Shrink/Shadow on Scroll (Optional, simple animation)
+        const header = document.querySelector('.header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+                header.style.padding = '0.7rem 0';
+            } else {
+                header.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                header.style.padding = '1rem 0';
+            }
+        });
+    </script>
+
+<!-- Floating Chat Button -->
+    <button id="chatButton" class="chat-button">
+        💬
+    </button>
+
+    <!-- Custom Chat Window -->
+    <div id="chatWindow" class="chat-window">
+        <div class="chat-header">
+            <span>Contact Us</span>
+            <button id="closeChatButton" class="chat-close-button">&times;</button>
+        </div>
+        <div class="chat-body">
+            <p>Please fill out the form below and we'll get back to you, or chat with us on WhatsApp.</p>
+
+            <form class="chat-form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Your Name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Your Email" required>
+
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" placeholder="Your Message" required></textarea>
+
+                <button type="submit">Send Message</button>
+            </form>
+
+            <p style="margin-top: 20px; text-align: center;">Prefer WhatsApp? <a href="https://wa.me/254704860195" target="_blank" rel="noopener">Chat on WhatsApp</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Get references to the button and window elements
+        const chatButton = document.getElementById('chatButton');
+        const chatWindow = document.getElementById('chatWindow');
+        const closeChatButton = document.getElementById('closeChatButton');
+
+        // Function to toggle the chat window visibility
+        function toggleChatWindow() {
+            chatWindow.classList.toggle('open');
+        }
+
+        // Add event listeners
+        chatButton.addEventListener('click', toggleChatWindow);
+        closeChatButton.addEventListener('click', toggleChatWindow);
+
+        // Close the chat window if clicked outside
+        document.addEventListener('click', (event) => {
+            if (!chatWindow.contains(event.target) && !chatButton.contains(event.target) && chatWindow.classList.contains('open')) {
+                chatWindow.classList.remove('open');
+            }
+        });
+
+        // Prevent form submission for this non-integrated example
+        const chatForm = document.querySelector('.chat-form');
+        if (chatForm) {
+            chatForm.addEventListener('submit', (event) => {
+                event.preventDefault(); // Stop the form from actually submitting
+                // You could add a simple alert here for demonstration, but per instructions, no alert().
+                // console.log('Form submitted (frontend only, not integrated)');
+                // For a real application, you would send this data to a backend.
+            });
+        }
+    </script>
+
+    <!-- Your Tawk.to Script - Keep this here if you want Tawk.to to load separately -->
+    <!-- Remember to replace {your_property_id} and {your_widget_id} with your actual Tawk.to IDs -->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/{your_property_id}/{your_widget_id}'; // <<< REPLACE THESE IDs
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
+    <!-- End of Tawk.to Script -->
+
+
+
+
+</body>
+</html>

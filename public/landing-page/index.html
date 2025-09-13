@@ -1126,18 +1126,29 @@
                 font-size: 0.85rem;
             }
 
-            /* CTA Buttons Mobile */
+            /* CTA Buttons Mobile - Fixed for phone view */
             .cta-buttons {
                 display: flex;
                 flex-direction: column;
-                gap: 1rem;
+                gap: 0.8rem;
                 width: 100%;
+                max-width: 280px;
+                margin: 0 auto;
                 padding: 0 1rem;
+                box-sizing: border-box;
             }
 
-            .btn {
+            .btn,
+            .hero-btn {
                 width: 100%;
-                text-align: center;
+                max-width: 100%;
+                font-size: 1rem;
+                padding: 0.8rem 1.5rem;
+                margin: 0;
+                box-sizing: border-box;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             /* Grid Layouts Mobile */
@@ -1241,7 +1252,7 @@
                         <li><a href="#features" class="nav-link">Features</a></li>
                         <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
                         <li><a href="#contact" class="nav-link">Contact</a></li>
-                        <li><button onclick="window.location.href='https://shiny-salamander-0e154d.netlify.app/'" class="nav-link" style="background-color: #4CAF50; color: white; cursor: pointer; padding: 8px 16px; border: none; border-radius: var(--border-radius-sm); width: 100%;">Login</button></li>
+                        <li><button onclick="window.location.href='https://tiwa-kilimo.netlify.app/'" class="nav-link" style="background-color: #4CAF50; color: white; cursor: pointer; padding: 8px 16px; border: none; border-radius: var(--border-radius-sm); width: 100%;">Login</button></li>
                     </ul>
                 </nav>
 
@@ -1262,11 +1273,11 @@
                 </div>
                 <div class="hero-text">
                     <h1 class="hero-title">Maximise Your Milk Production</h1>
-                    <p class="hero-description">Simple, smart dairy records and reminders. Track animals, tasks, and finances in one app.</p>
-                    <h3 class="hero-description" style="color: #4CAF50; border-radius: 2em;">Helping Dairy Farmers Track Over 6000 Litres of Milk Every Month  With Just Their Phone.</h3>
+                    <!-- <h1 class="hero-description">Simple, smart dairy records and reminders. Track animals, tasks, and finances in one app.</h1> -->
+                    <p  style="color: #4CAF50; font-size: x-large;">Helping Dairy Farmers Track Over 6000 Litres of Milk Every Month  With Just Their Phone.</p>
                     <div class="cta-buttons">
-                       <a href="https://shiny-salamander-0e154d.netlify.app/"> <button class="btn btn-primary hero-btn">Get Started</button>
-                        <button class="btn btn-primary hero-btn">Download App</button>  </a>
+                        <a href="https://tiwa-kilimo.netlify.app/" class="btn btn-primary hero-btn">Get Started</a>
+                        <a href="https://tiwa-kilimo.netlify.app/" class="btn btn-primary hero-btn">Download App</a>
                     </div>
                 </div>
             </div>
@@ -1300,6 +1311,33 @@
                 <p class="description">app testers from 9 counties actively engaging with the platform</p>
             </div>
         </div>
+
+
+        <section id="features" class="features container">
+            <h2 class="section-title">Key Features</h2>
+                <img src="images/kilimo-ui.JPG" alt="one image" class="one-picture" >
+
+            <div class="grid grid-3">
+                <div class="card reveal-element">
+                    <span class="iconify" data-icon="mdi:cow"></span>
+                    <h3>Track Milk, Health & Breeding</h3>
+                    <p>Log everything — from litres to vet visits — in seconds. Simple and quick daily recording for busy farmers.</p>
+                </div>
+                <div class="card reveal-element">
+                    <span class="iconify" data-icon="mdi:whatsapp"></span>
+                    <h3>Weekly WhatsApp Updates</h3>
+                    <p>Never forget a heat cycle, vet visit, calving date, or supplier payment again. Get timely reminders right on WhatsApp.</p>
+                </div>
+                <div class="card reveal-element">
+                    <span class="iconify" data-icon="mdi:cash-multiple"></span>
+                    <h3>Know Your Farm's Finances</h3>
+                    <p>See your income, expenses and profitability clearly — and stay in control of your dairy business.</p>
+                </div>
+
+
+
+
+
         <script>
             // Function to animate counting up
             function animateValue(obj, start, end, duration) {
@@ -1425,28 +1463,6 @@
             </div>
         
 
-        <section id="features" class="features container">
-            <h2 class="section-title">Key Features</h2>
-                <img src="images/kilimo-ui.JPG" alt="one image" class="one-picture" >
-
-            <div class="grid grid-3">
-                <div class="card reveal-element">
-                    <span class="iconify" data-icon="mdi:cow"></span>
-                    <h3>Track Milk, Health & Breeding</h3>
-                    <p>Log everything — from litres to vet visits — in seconds. Simple and quick daily recording for busy farmers.</p>
-                </div>
-                <div class="card reveal-element">
-                    <span class="iconify" data-icon="mdi:whatsapp"></span>
-                    <h3>Weekly WhatsApp Updates</h3>
-                    <p>Never forget a heat cycle, vet visit, calving date, or supplier payment again. Get timely reminders right on WhatsApp.</p>
-                </div>
-                <div class="card reveal-element">
-                    <span class="iconify" data-icon="mdi:cash-multiple"></span>
-                    <h3>Know Your Farm's Finances</h3>
-                    <p>See your income, expenses and profitability clearly — and stay in control of your dairy business.</p>
-                </div>
-
-
 
     <!-- Iconify for feature icons -->
     <script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
@@ -1506,7 +1522,7 @@
             <h2>Ready to Maximise Milk Production?</h2>
             <p>Download TIWA-Kilimo today and take the first step towards a more organized, productive, and profitable dairy operation.</p>
           <button class=" btn btn-primary"     >
-             <a href="https://shiny-salamander-0e154d.netlify.app/" class="cta-btn" target="_blank" rel="noopener">Download App Now</a>
+             <a href="https://tiwa-kilimo.netlify.app/" class="cta-btn" target="_blank" rel="noopener">Download App Now</a>
         </button> 
         </section>
 
@@ -1546,7 +1562,7 @@
                 <div class="footer-column">
                     <div class="footer-logo">TIWA-Kilimo</div>
                     <div class="footer-contact">
-                        <p>Email: <a href="mailto:info@tiwa-kilimo.com">info@tiwa-kilimo.com</a></p>
+                        <p>Email: <a href="mailto:info@tiwakilimo.com">info@tiwakilimo.com</a></p>
                         <p>Phone: +254 704 860195</p>
                         <p>WhatsApp: <a href="https://wa.me/254704860195" target="_blank" rel="noopener">wa.me/+254795177294</a></p>
                     </div>
@@ -1569,10 +1585,10 @@
                     <div class="footer-socials">
                         <h4>Follow Us</h4>
                         <div class="social-icons">
-                            <a href="#" aria-label="Facebook"><img src="https://img.icons8.com/ios-filled/24/ffffff/facebook-new.png" alt="Facebook"></a>
-                            <a href="#" aria-label="Twitter"><img src="https://img.icons8.com/ios-filled/24/ffffff/twitter.png" alt="Twitter"></a>
-                            <a href="#" aria-label="LinkedIn"><img src="https://img.icons8.com/ios-filled/24/ffffff/linkedin.png" alt="LinkedIn"></a>
-                            <a href="#" aria-label="Instagram"><img src="https://img.icons8.com/ios-filled/24/ffffff/instagram-new--v1.png" alt="Instagram"></a>
+                            <a href="https://www.facebook.com/share/1bEaeisY2x/" aria-label="Facebook" target="_blank" rel="noopener"><img src="https://img.icons8.com/ios-filled/24/ffffff/facebook-new.png" alt="Facebook"></a>
+                            <a href="https://wa.me/254704860195" aria-label="WhatsApp" target="_blank" rel="noopener"><img src="https://img.icons8.com/ios-filled/24/ffffff/whatsapp--v1.png" alt="WhatsApp"></a>
+                            <a href="https://www.linkedin.com/company/tiwa-kilimo/" aria-label="LinkedIn" target="_blank" rel="noopener"><img src="https://img.icons8.com/ios-filled/24/ffffff/linkedin.png" alt="LinkedIn"></a>
+                            <a href="https://www.instagram.com/tiwa_kilimo?igsh=MWh1emR4dDdkajh5bQ==" aria-label="Instagram" target="_blank" rel="noopener"><img src="https://img.icons8.com/ios-filled/24/ffffff/instagram-new--v1.png" alt="Instagram"></a>
                         </div>
                         <p class="address">FarmLane, Githunguri, Kiambu County</p>
                     </div>

@@ -1,0 +1,11 @@
+Using npm as the preferred package manager. Found multiple lockfiles for c:\Users\USER\Desktop\tiwa-kilimo\tiwa-dairy-diary. To resolve this issue, 
+delete the lockfiles that don't match your preferred package manager or
+ change the setting "npm.packageManager" to a value other than "auto".
+
+
+
+
+
+
+
+ before loading the root of the app which is auth ... i need  when the app is loading on lazy loading i need 3 views of different contrasting colors with like a hero with word on like what the app does on 3 points for each page , 1. production yield 2,. cost of the farm, and 3 . scientic proven insights on your records ... just something with low lcp, on refresh of the auth page should show this same simple animation make it on a single file please  tsx or jsx or the best just it should instally please lowest lsp u can achieve

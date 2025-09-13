@@ -4,7 +4,7 @@
 netlify deploy --dir=dist --prod --site=fc4cd8dd-ed7b-4206-9e07-ecdd9ba868d3
 
 
-
+vi
 
 guided forms for step bread crums to gather intial alot of sata
 

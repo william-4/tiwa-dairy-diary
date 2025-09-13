@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "bunx vite --clearScreen=false",
-    "build": "bunx tsc && bunx vite build",
-    "build:dev": "bunx vite build --mode development",
-    "lint": "bunx eslint .",
-    "preview": "bunx vite preview"
+    "dev": "npx vite --clearScreen=false",
+    "build": "npx tsc && npx vite build",
+    "build:dev": "npx vite build --mode development",
+    "lint": "npx eslint .",
+    "preview": "npx vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -82,7 +82,7 @@
     "terser": "^5.43.1",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^7.1.5"
   },
   "trustedDependencies": [
     "@swc/core"
